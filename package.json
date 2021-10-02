@@ -1,0 +1,24 @@
+{
+  "name": "code",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/hmonpa/TFG.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/hmonpa/TFG/issues"
+  },
+  "homepage": "https://github.com/hmonpa/TFG#readme",
+  "devDependencies": {
+    "chalk": "^4.1.2",
+    "solc": "^0.8.9",
+    "web3": "^1.0.0-beta.55"
+  }
+}
