@@ -10,13 +10,13 @@ const contractPath = path.resolve(__dirname, "../contracts", "UsersContract.sol"
 const source = fs.readFileSync(contractPath, 'utf-8');
 
 // console.log(source);
-//const {interface, bytecode} = solc.compile(source, 1).contracts[':UsersContract'];
+const {interface, bytecode} = solc.compile(source, 1).contracts[':UsersContract'];
 
 //console.log(solc.compile(source, 1));
-// console.log(chalk.green(bytecode));
-// console.log(chalk.cyan(interface));
+console.log(chalk.green(bytecode));
+console.log(chalk.cyan(interface));
 
-var input = {
+/*var input = {
     language: 'Solidity',
     sources: {
       'UsersContract.sol': {
@@ -32,9 +32,6 @@ var input = {
     }
   };
 
-var output = JSON.parse(solc.compile(JSON.stringify(input)));
-// console.log(output.bytecode);
+var output = JSON.parse(solc.compile(JSON.stringify(input)));*/
 
-const bytecode = output.contracts['UsersContract.sol'];
-
-//console.log(chalk.green(bytecode));
+// exports.bytecode = output.contracts['UsersContract.sol']['UsersContract'].evm.bytecode.object;
