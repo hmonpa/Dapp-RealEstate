@@ -1,6 +1,6 @@
 {
   "name": "code",
-  "version": "1.0.0",
+  "version": "1.0.8",
   "description": "",
   "main": "index.js",
   "scripts": {
@@ -8,19 +8,21 @@
   },
   "repository": {
     "type": "git",
-    "url": ""
+    "url": "git+https://github.com/hmonpa/TFG.git"
   },
   "author": "",
   "license": "ISC",
   "bugs": {
-    "url": ""
+    "url": "https://github.com/hmonpa/TFG/issues"
   },
-  "homepage": "",
+  "homepage": "https://github.com/hmonpa/TFG#readme",
   "devDependencies": {
     "chalk": "^4.1.2",
-    "ganache-cli": "^6.12.2",
     "mocha": "^7.2.0",
     "solc": "^0.4.24",
     "web3": "^1.0.0-beta.55"
+  },
+  "dependencies": {
+    "save-dev": "^0.0.1-security"
   }
 }

@@ -1,12 +1,10 @@
 const assert = require('assert');           // Los valores que se recuperan del SM coinciden con los que le proveemos
 const Web3 = require('web3');
-const ganache = require('ganache-cli');
 
 const provider = new Web3.providers.HttpProvider("HTTP://127.0.0.1:7545");      // @ Local server (Ganache => Red local Ethereum)
 const web3 = new Web3(provider);                                                // Instancia para comunicar con Ganache
 
 const { interface, bytecode } = require('../scripts/compile');
-const { doesNotMatch } = require('assert');
 
 let accounts;
 let usersContract;
@@ -20,13 +18,13 @@ beforeEach(async() => {         // Ejecuta el código antes de ejecutar cada tes
 });
 
 // Bug pending to solve
-describe('The UsersContract', async() => {
+describe('The UsersContract', () => {
 //     it ('should resolve', function(done){
 //         this.timeout(500);
 //         setTimeout(done, 300);
 //     });
 
-    it ('should deploy', () => {
+    it ('should deploy', function(done) {
         // console.log(usersContract.options.address);
         assert.ok(usersContract.options.address);
     });
