@@ -4,22 +4,23 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": ""
+    "test": "mocha"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/hmonpa/TFG.git"
+    "url": ""
   },
   "author": "",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/hmonpa/TFG/issues"
+    "url": ""
   },
-  "homepage": "https://github.com/hmonpa/TFG#readme",
+  "homepage": "",
   "devDependencies": {
     "chalk": "^4.1.2",
-    "mocha": "^5.2.0",
-    "solc": "^0.4.25",
+    "ganache-cli": "^6.12.2",
+    "mocha": "^7.2.0",
+    "solc": "^0.4.24",
     "web3": "^1.0.0-beta.55"
   }
 }

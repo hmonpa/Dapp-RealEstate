@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: GPL-3.0         // License header
-pragma solidity ^0.4.25;  
+pragma solidity ^0.4.24;  
 
 contract UsersContract {
     struct User {
