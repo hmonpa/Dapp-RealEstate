@@ -14,14 +14,14 @@ contract UsersContract {
     event onUserJoined(address, string);                    
 
     function join(string memory name, string memory surname) public {
-        require(!userJoined(msg.sender));                                               // Sólo se puede registrar un usuario que no se haya unido anteriormente
+        // require(!userJoined(msg.sender));                                               // Sólo se puede registrar un usuario que no se haya unido anteriormente
         User storage user = users[msg.sender];
         user.name = name;
         user.surname = surname;
-        joinedUsers[msg.sender] = true;
+        //joinedUsers[msg.sender] = true;
         totalUsers.push(msg.sender);
 
-        emit onUserJoined(msg.sender, string(abi.encodePacked(name, " ", surname)));  // Real time event
+        //emit onUserJoined(msg.sender, string(abi.encodePacked(name, " ", surname)));  // Real time event
     }
 
     // Devuelve un usuario
