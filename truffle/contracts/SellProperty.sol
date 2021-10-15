@@ -47,4 +47,8 @@ contract SellProperty {
 
         emit PropertyPurchased(msg.sender, property.price);
     }
+
+    function totalProperties() public view returns(uint){
+        return properties.length;
+    }
 }

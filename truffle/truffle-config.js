@@ -6,5 +6,16 @@ module.exports = {
       network_id: '*',           // In dev => Any network
       gas: 5000000
     }
+  },
+  compilers: {
+    solc: {
+      version: "0.4.24",
+    }
+  },
+  solc: {
+    optimizer: {
+      enabled: true,
+      runs: 500
+    }
   }
-}
+};
