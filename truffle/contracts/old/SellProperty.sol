@@ -19,10 +19,10 @@ contract SellProperty {
         // string cadastralRef;
     }
 
-    struct tokenisedProperty {
-        uint numTokens;
-        uint priceToken;                // Price / numTokens
-    }
+    // struct tokenisedProperty {
+    //     uint numTokens;
+    //     uint priceToken;                // Price / numTokens
+    // }
 
     Property[] public properties;
     mapping(address => Buyer) public buyers;

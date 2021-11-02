@@ -3,7 +3,7 @@ module.exports = {
     monpadev: {
       host: 'localhost',
       port: 7545,
-      network_id: '*',           // In dev => Any network
+      network_id: '*',           // Any network (default: none)
       gas: 5000000
     }
   },
@@ -12,10 +12,10 @@ module.exports = {
       version: "0.4.24",
     }
   },
-  solc: {
-    optimizer: {
-      enabled: true,
-      runs: 500
-    }
-  }
+  // solc: {
+  //   optimizer: {
+  //     enabled: true,
+  //     runs: 500
+  //   }
+  // }
 };
