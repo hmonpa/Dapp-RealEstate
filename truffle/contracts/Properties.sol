@@ -12,6 +12,16 @@ contract Properties {
         uploadProperty("Viladecans", 150000);
     }
 
+    event PropertyCreated(
+        uint256 id,
+        string city,
+        uint256 price,
+        bool isSelled,
+        uint256 createdAt
+    );
+
+    event isPropertySelled (uint256 id, bool isSelled);
+
     struct Property {
         uint256 id;
         string city;
@@ -20,13 +30,12 @@ contract Properties {
         uint256 createdAt;
     }
 
-
     // CRUD
-
     // Se crea una nueva propiedad
     function uploadProperty(string _city, uint256 _price) public{
-        properties[propertyCounter] = Property(propertyCounter, _city, _price, false, block.timestamp);
         propertyCounter++;
+        properties[propertyCounter] = Property(propertyCounter, _city, _price, false, block.timestamp);
+        emit PropertyCreated(propertyCounter, _city, _price, false, block.timestamp);
     }
 
     // // Se ejecuta al vender la propiedad (isSelled = 1)
@@ -40,6 +49,7 @@ contract Properties {
         _property.isSelled = true;
 
         properties[_id] = _property;
+        emit isPropertySelled(_id, _property.isSelled);
     }
 
 }
