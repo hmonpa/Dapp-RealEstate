@@ -1,12 +1,15 @@
 {
     "server": {
-        "baseDir": "./client"  
+        "baseDir": [
+            "./client",
+            "./truffle/build/contracts" 
+        ] 
     },
     "files": [
         "./client/**/*.{html,htm,css,js}"
     ],
     "routes": {
-        "/libs" : "./node_modules"
+        "./libs" : "./node_modules"
     },
     "port": 3003
 }

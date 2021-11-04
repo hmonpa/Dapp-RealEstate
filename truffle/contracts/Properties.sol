@@ -46,7 +46,7 @@ contract Properties {
     // Se ejecuta al vender una propiedad (isSelled = 1)
     function removeProperty(uint _id) public{
         Property memory _property = properties[_id];
-        _property.isSelled = true;
+        _property.isSelled = !_property.isSelled;
 
         properties[_id] = _property;
         emit isPropertySelled(_id, _property.isSelled);
