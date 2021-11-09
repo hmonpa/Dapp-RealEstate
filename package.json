@@ -24,9 +24,11 @@
     "web3": "^1.0.0-beta.55"
   },
   "dependencies": {
+    "@chainlink/contracts": "^0.2.2",
     "@truffle/contract": "^4.3.38",
     "bootstrap": "^5.1.3",
     "chai": "^4.3.4",
+    "ipfs-core": "^0.11.1",
     "lite-server": "^2.6.1",
     "save-dev": "^0.0.1-security"
   }
