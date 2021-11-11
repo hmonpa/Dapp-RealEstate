@@ -1,0 +1,7 @@
+# Hardhat files
+cache
+artifacts
+
+# Directories
+node_modules/
+.nuxt/
