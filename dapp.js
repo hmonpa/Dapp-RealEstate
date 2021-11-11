@@ -12,7 +12,7 @@ export const Dapp = {
         await Dapp.uploadProperty()
         await Dapp.isSelled()
     },
-    // Load 
+    // Loading network
     loadEthereum: async() => {
         if (window.ethereum){
             Dapp.web3Provider = window.ethereum
@@ -31,7 +31,20 @@ export const Dapp = {
     },
     // Load smart contracts
     loadContracts: async() => {
-        const res = await fetch('/build/contracts/Properties.json');
+        const res = await fetch("Properties.json")
+                .then(function(response) {
+                if(response.ok){
+                    response.blob().then(function(miBlob) {
+                        var objectURL = URL.createObjectURL(miBlob);
+                        miJSON.src = objectURL;
+                    })
+                } else {
+                    console.log('Respuesta de red OK pero respuesta HTTP NOK ');
+                }
+            })
+            .catch(function(err) {
+                console.log('Error en la petición Fetch: ' + err.message);
+            })
         const propertiesJSON = await res.json();
         Dapp.contracts.Properties = await TruffleContract(propertiesJSON);
         Dapp.contracts.Properties.setProvider(Dapp.web3Provider);

@@ -4,7 +4,7 @@
         <div class="container d-flex align-items-center justify-content-between">
 
         <div class="logo">
-            <h1><a href="#">DAPP</a></h1>
+            <h1><a href="#">Decentralized app</a></h1>
             <!-- Uncomment below if you prefer to use an image logo -->
             <!-- <a href="index.html"><img src="/img/logo.png" alt="" class="img-fluid"></a>-->
         </div>

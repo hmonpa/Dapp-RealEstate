@@ -4,7 +4,7 @@
       <div class="container">
 
         <div class="section-title" data-aos="fade-up">
-          <h2>Upload new property to the platform</h2>
+          <h2>Upload properties</h2>
           <vue-metamask @onComplete="loadMetaMask">
           </vue-metamask>
         </div>
@@ -65,7 +65,7 @@
                 <div class="sent-message">Your message has been sent. Thank you!</div>
               </div>-->
               <div class="text-center">
-                <button type="submit" @click="load">Upload</button>
+                <button type="submit">Upload</button>
               </div>
             </form>
           </div>
@@ -78,8 +78,9 @@
 </template>
 <script>
 import VueMetamask from '/node_modules/vue-metamask/src/VueMetamask.vue';
-import { truffle } from '../../truffle-config';
+// import { truffle } from '../../truffle-config';
 import { Dapp } from '../../dapp';
+// import { ui } from '../../ui';
 export default {
   components: {
     VueMetamask

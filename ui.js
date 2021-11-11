@@ -1,6 +1,6 @@
-const propertyForm = document.querySelector("#propertyForm")
-document.addEventListener("DOMContentLoaded", () => {
-    Dapp.init();
+const propertyForm = document.querySelector("#propertyForm");
+document.addEventListener("DOMContentLoaded", async() => {
+    await Dapp.init();
 })
 propertyForm.addEventListener("submit", e => {
     e.preventDefault();
