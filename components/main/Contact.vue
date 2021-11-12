@@ -5,8 +5,8 @@
 
         <div class="section-title" data-aos="fade-up">
           <h2>Upload properties</h2>
-          <vue-metamask @onComplete="loadMetaMask">
-          </vue-metamask>
+          <!--<vue-metamask @onComplete="loadMetaMask">
+          </vue-metamask>-->
         </div>
 
         <div class="row">
@@ -82,26 +82,40 @@ import VueMetamask from '/node_modules/vue-metamask/src/VueMetamask.vue';
 import { Dapp } from '../../dapp';
 // import { ui } from '../../ui';
 export default {
-  components: {
-    VueMetamask
-  },
+
+  // components: {
+  //   VueMetamask
+  // },
   data(){
-    return {
-      contracts: [],
-      Dapp: null
-    }
+    return {}
   },
   // head(){},
-  methods: {
-    // Load MetaMask and save the address
-    loadMetaMask(data){
-      // (async () => {
-      //   await Dapp.loadContracts();
-      // })()
-      console.log("MetaMask info: ", data);
-      console.log("Yeeeeei");
-      Dapp.init();
+  methods: {  
+    async start(){
+      await Dapp.init();
     },
+    // Load MetaMask and save the address
+    // loadMetaMask(data){
+    //   console.log("MetaMask info: ", data);
+    //   Dapp.init();
+    //   // console.log(Dapp.account);
+    // },
+    // loadData() {
+    //   const propertyForm = document.querySelector("#propertyForm");
+    //   document.addEventListener("DOMContentLoaded", async() => {
+    //       await Dapp.init();
+    //   })
+    //   propertyForm.addEventListener("submit", e => {
+    //     e.preventDefault();
+
+    //     console.log(propertyForm["city"].value, propertyForm["price"].value)
+
+    //     Dapp.uploadProperty(propertyForm["city"].value, propertyForm["price"].value);
+    //   });
+    // }
+  },
+  beforeMount(){
+    this.start()
   }
 }
 </script>

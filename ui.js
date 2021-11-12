@@ -5,7 +5,7 @@ document.addEventListener("DOMContentLoaded", async() => {
 propertyForm.addEventListener("submit", e => {
     e.preventDefault();
 
-    // console.log(propertyForm["city"].value, propertyForm["price"].value)
+    console.log(propertyForm["city"].value, propertyForm["price"].value)
 
     Dapp.uploadProperty(propertyForm["city"].value, propertyForm["price"].value);
 });

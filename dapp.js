@@ -1,13 +1,18 @@
 var TruffleContract = require('@truffle/contract');
+// var network = require('./migrations/1_deploy_contract');
+const Properties = require('./build/contracts/Properties.json');
 
 export const Dapp = {
     contracts: {},
     init: async() => {
         console.log('Dapp loaded');
+        // console.log(typeof(Properties));
+        console.log('Contract:', Properties);
         await Dapp.loadEthereum()
         await Dapp.checkAccount()
+        // setTimeout(await Dapp.loadContracts, 3000);
         await Dapp.loadContracts()
-        Dapp.render()
+        // Dapp.render()
         await Dapp.renderProperties()
         await Dapp.uploadProperty()
         await Dapp.isSelled()
@@ -17,9 +22,8 @@ export const Dapp = {
         if (window.ethereum){
             Dapp.web3Provider = window.ethereum
             await window.ethereum.request({ method: 'eth_requestAccounts' });
-        } else if (window.web3) {
-            web3 = new Web3(window.web3.currentProvider)
-        } else {
+        } 
+        else {
             console.log('No ethereum browser is installed. Try it installing MetaMask')
         }
     },
@@ -31,32 +35,27 @@ export const Dapp = {
     },
     // Load smart contracts
     loadContracts: async() => {
-        const res = await fetch("Properties.json")
-                .then(function(response) {
-                if(response.ok){
-                    response.blob().then(function(miBlob) {
-                        var objectURL = URL.createObjectURL(miBlob);
-                        miJSON.src = objectURL;
-                    })
-                } else {
-                    console.log('Respuesta de red OK pero respuesta HTTP NOK ');
-                }
-            })
-            .catch(function(err) {
-                console.log('Error en la petición Fetch: ' + err.message);
-            })
-        const propertiesJSON = await res.json();
+        // Obj to JSON
+        const propertiesJSON = await JSON.stringify(Properties);
         Dapp.contracts.Properties = await TruffleContract(propertiesJSON);
         Dapp.contracts.Properties.setProvider(Dapp.web3Provider);
+
+        // Network
+        const network = await Dapp.contracts.Properties.detectNetwork();        // 5777
+        const networkType = await Dapp.contracts.Properties.networkType;        // ethereum
+        // console.log(networkType);
+        // console.log(network.id)
         
-        // Properties is deployed...
+        // Properties contract will be deployed...
         Dapp.Properties = await Dapp.contracts.Properties.deployed();
-        console.log(Dapp.Properties)
+        console.log(Dapp.Properties);
+        console.log("prueba");
     },
     render: () => {
         document.getElementById('account').innerText = Dapp.account;
     },
     renderProperties: async() => {
+        
         const propertyCounter = await Dapp.Properties.propertyCounter();
         const propertyCtrNum = propertyCounter.toNumber();
 
