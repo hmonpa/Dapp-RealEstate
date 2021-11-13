@@ -1,3 +1,5 @@
+import Web3 from 'web3';
+
 var TruffleContract = require('@truffle/contract');
 // var network = require('./migrations/1_deploy_contract');
 const Properties = require('./build/contracts/Properties.json');
@@ -38,13 +40,15 @@ export const Dapp = {
         // Obj to JSON
         const propertiesJSON = await JSON.stringify(Properties);
         Dapp.contracts.Properties = await TruffleContract(propertiesJSON);
-        Dapp.contracts.Properties.setProvider(Dapp.web3Provider);
+        // Some tests for solve contractName problems
+        var provider = new Web3.providers.HttpProvider("http://localhost:7545");
+        Dapp.contracts.Properties.setProvider(provider);
+        console.log(Dapp.contracts.Properties.toJSON())
 
-        // Network
+        // Some vars
         const network = await Dapp.contracts.Properties.detectNetwork();        // 5777
-        const networkType = await Dapp.contracts.Properties.networkType;        // ethereum
-        // console.log(networkType);
-        // console.log(network.id)
+        // const networkType = await Dapp.contracts.Properties.networkType;     // ethereum
+        // const contractAddr = await Dapp.contracts.Properties.address();      // contract address
         
         // Properties contract will be deployed...
         Dapp.Properties = await Dapp.contracts.Properties.deployed();
