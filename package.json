@@ -38,10 +38,8 @@
     "go-ipfs": "^0.10.0",
     "ipfs": "^0.60.0",
     "ipfs-core": "^0.11.1",
-    "lite-server": "^2.6.1",
     "nuxt": "^2.15.7",
     "save-dev": "^0.0.1-security",
-    "truffle-contract": "^4.0.31",
-    "vue-metamask": "^2.1.0"
+    "truffle-contract": "^4.0.31"
   }
 }
