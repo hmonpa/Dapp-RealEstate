@@ -5,8 +5,6 @@
 
         <div class="section-title" data-aos="fade-up">
           <h2>Upload properties</h2>
-          <!--<vue-metamask @onComplete="loadMetaMask">
-          </vue-metamask>-->
         </div>
 
         <div class="row">
@@ -15,6 +13,7 @@
             <div class="contact-about">
               <div>
                 <p>Your current address is</p>
+                <p id="account"></p>
               </div>
               <!--<div class="social-links">
                 <a href="#" class="twitter"><i class="bi bi-twitter"></i></a>
@@ -65,11 +64,12 @@
                 <div class="sent-message">Your message has been sent. Thank you!</div>
               </div>-->
               <div class="text-center">
-                <button type="submit">Upload</button>
+                <button type="submit" @click="uploadData">Upload</button>
+              </div>
+              <div id="propertyList">
               </div>
             </form>
           </div>
-
         </div>
 
       </div>
@@ -77,44 +77,29 @@
     <!-- End Contact Section -->
 </template>
 <script>
-// import VueMketamask from '/node_modules/vue-metamask/src/VueMetamask.vue';
 import { Dapp } from '../../dapp';
-// import { ui } from '../../ui';
 export default {
-
-  // components: {
-  //   VueMetamask
-  // },
   data(){
     return {}
   },
-  // head(){},
   methods: {  
     async start(){
       await Dapp.init();
     },
-    // Load MetaMask and save the address
-    // loadMetaMask(data){
-    //   console.log("MetaMask info: ", data);
-    //   Dapp.init();
-    //   // console.log(Dapp.account);
-    // },
-    // loadData() {
-    //   const propertyForm = document.querySelector("#propertyForm");
-    //   document.addEventListener("DOMContentLoaded", async() => {
-    //       await Dapp.init();
-    //   })
-    //   propertyForm.addEventListener("submit", e => {
-    //     e.preventDefault();
+    uploadData() {
+      const propertyForm = document.querySelector("#propertyForm");
+      propertyForm.addEventListener("submit", e => {
+        e.preventDefault();
 
-    //     console.log(propertyForm["city"].value, propertyForm["price"].value)
+        console.log(propertyForm["city"].value, propertyForm["price"].value)
 
-    //     Dapp.uploadProperty(propertyForm["city"].value, propertyForm["price"].value);
-    //   });
-    // }
+        Dapp.uploadProperty(propertyForm["city"].value, propertyForm["price"].value);
+      });
+    }
   },
   beforeMount(){
-    this.start()
+    // Call to JS
+    this.start();
   }
 }
 </script>

@@ -18,7 +18,7 @@ export const Dapp = {
         Dapp.render();
         await Dapp.renderProperties();
         await Dapp.uploadProperty();
-        await Dapp.isSelled();
+        await Dapp.removeProperty();
     },
 
     // Loading network
@@ -36,7 +36,8 @@ export const Dapp = {
     checkAccount: async() => {
         const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
         Dapp.account = accounts[0];
-        console.log(Dapp.account);
+        var account = Dapp.account;
+        console.log(account);
     },
 
     // Load smart contracts
@@ -49,6 +50,7 @@ export const Dapp = {
 
         // Properties contract will be deployed...
         Dapp.Properties = await Properties.deployed();
+        console.log("Deployed done");
     },
     render: () => {
         document.getElementById('account').innerText = Dapp.account;
