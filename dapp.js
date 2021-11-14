@@ -61,15 +61,15 @@ export const Dapp = {
         const propertyCtrNum = propertyCounter.toNumber();
 
         let html = '';
-
+        let properties = [];
         for(let i = 1; i <= propertyCounter; i++){
             const property = await Dapp.Properties.properties(i);
-            const id = property[0];
-            const city = property[1];
-            const price = property[2].toNumber();
-            const isSelled = property[3];
+            let id = property[0];
+            let city = property[1];
+            let price = property[2].toNumber();
+            let isSelled = property[3];
 
-            const dateUploading = property[4];
+            let dateUploading = new Date(property[4]*1000).toLocaleString();
 
             let propertyElement = `
             <div>
@@ -78,7 +78,7 @@ export const Dapp = {
                 <br>
                 <span>Price: ${price}</span>
                 <br>
-                <span>Upload date: ${new Date(dateUploading*1000).toLocaleString()}</span>
+                <span>Upload date: ${dateUploading}</span>
                 <br>
                 <input data-id="${id}" type="checkbox" 
                     ${isSelled && "checked"} onchange="Dapp.removeProperty(this)"/>
@@ -86,8 +86,13 @@ export const Dapp = {
             </div>
             `
             html += propertyElement;
+            properties.push(city, price, isSelled, dateUploading);
+
         }
+        // console.log(properties);
+        Dapp.allProperties = properties;
         document.querySelector('#propertyList').innerHTML = html;
+
     },
     uploadProperty: async(city, price) => {
         const res = await Dapp.Properties.uploadProperty(city, price, {

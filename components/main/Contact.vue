@@ -66,6 +66,7 @@
               <div class="text-center">
                 <button type="submit" @click="uploadData">Upload</button>
               </div>
+              <div id="cities"></div>
               <div id="propertyList">
               </div>
             </form>
@@ -78,14 +79,34 @@
 </template>
 <script>
 import { Dapp } from '../../dapp';
+const IPFS = require('ipfs-core');
+
 export default {
   data(){
     return {}
   },
   methods: {  
+    // Starts the dApp 
     async start(){
+      // Testing with InterPlanetary File System Protocol
+      /* const ipfs = await IPFS.create();
+      const { cid } = await ipfs.add('Prueba');
+      const cidString = cid.toString();
+      console.log(cidString);
+      
+      const stream = ipfs.cat(cidString);
+      let data = '';
+
+      for await (const chunk of stream){
+        data += chunk.toString();
+      } */
+
       await Dapp.init();
+      // Testing
+      console.log(Dapp.allProperties);
     },
+
+    // Upload data from the form
     uploadData() {
       const propertyForm = document.querySelector("#propertyForm");
       propertyForm.addEventListener("submit", e => {
