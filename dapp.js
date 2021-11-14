@@ -1,24 +1,26 @@
-import Web3 from 'web3';
+const Web3 = require('web3');
 
-var TruffleContract = require('@truffle/contract');
-// var network = require('./migrations/1_deploy_contract');
-const Properties = require('./build/contracts/Properties.json');
+// https://www.trufflesuite.com/docs/truffle/advanced/build-processes
+var propertiesJson = require('./build/contracts/Properties.json');                          // Get a contract into the dapp
+var TruffleContract = require('@truffle/contract');                                 // Turn that contract into an abstraction I can use
+var Properties = TruffleContract(propertiesJson);
+
+Properties.setProvider(new Web3.providers.HttpProvider("http://127.0.0.1:7545"));   // Provide the contract with a web3 provider
 
 export const Dapp = {
     contracts: {},
     init: async() => {
+        Dapp.Properties = Properties;
         console.log('Dapp loaded');
-        // console.log(typeof(Properties));
-        console.log('Contract:', Properties);
-        await Dapp.loadEthereum()
-        await Dapp.checkAccount()
-        // setTimeout(await Dapp.loadContracts, 3000);
-        await Dapp.loadContracts()
-        // Dapp.render()
-        await Dapp.renderProperties()
-        await Dapp.uploadProperty()
-        await Dapp.isSelled()
+        await Dapp.loadEthereum();
+        await Dapp.checkAccount();
+        await Dapp.loadContracts();
+        Dapp.render();
+        await Dapp.renderProperties();
+        await Dapp.uploadProperty();
+        await Dapp.isSelled();
     },
+
     // Loading network
     loadEthereum: async() => {
         if (window.ethereum){
@@ -26,34 +28,27 @@ export const Dapp = {
             await window.ethereum.request({ method: 'eth_requestAccounts' });
         } 
         else {
-            console.log('No ethereum browser is installed. Try it installing MetaMask')
+            console.log('There is no Ethereum wallet installed. Try installing MetaMask')
         }
     },
+
     // Save the first account from Ganache
     checkAccount: async() => {
         const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
         Dapp.account = accounts[0];
         console.log(Dapp.account);
     },
+
     // Load smart contracts
     loadContracts: async() => {
-        // Obj to JSON
-        const propertiesJSON = await JSON.stringify(Properties);
-        Dapp.contracts.Properties = await TruffleContract(propertiesJSON);
-        // Some tests for solve contractName problems
-        var provider = new Web3.providers.HttpProvider("http://localhost:7545");
-        Dapp.contracts.Properties.setProvider(provider);
-        console.log(Dapp.contracts.Properties.toJSON())
+        // Variables of interest
+        const network       = await Dapp.Properties.detectNetwork();        // 5777
+        const networkType   = await Dapp.Properties.networkType;            // ethereum
+        const contractAddr  = await Dapp.Properties.address;                // contract address
+        const checkWeb3     = await Dapp.Properties.web3;
 
-        // Some vars
-        const network = await Dapp.contracts.Properties.detectNetwork();        // 5777
-        // const networkType = await Dapp.contracts.Properties.networkType;     // ethereum
-        // const contractAddr = await Dapp.contracts.Properties.address();      // contract address
-        
         // Properties contract will be deployed...
-        Dapp.Properties = await Dapp.contracts.Properties.deployed();
-        console.log(Dapp.Properties);
-        console.log("prueba");
+        Dapp.Properties = await Properties.deployed();
     },
     render: () => {
         document.getElementById('account').innerText = Dapp.account;

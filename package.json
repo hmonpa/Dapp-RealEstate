@@ -39,6 +39,7 @@
     "lite-server": "^2.6.1",
     "nuxt": "^2.15.7",
     "save-dev": "^0.0.1-security",
+    "truffle-contract": "^4.0.31",
     "vue-metamask": "^2.1.0"
   }
 }

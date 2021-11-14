@@ -77,8 +77,7 @@
     <!-- End Contact Section -->
 </template>
 <script>
-import VueMetamask from '/node_modules/vue-metamask/src/VueMetamask.vue';
-// import { truffle } from '../../truffle-config';
+// import VueMketamask from '/node_modules/vue-metamask/src/VueMetamask.vue';
 import { Dapp } from '../../dapp';
 // import { ui } from '../../ui';
 export default {
