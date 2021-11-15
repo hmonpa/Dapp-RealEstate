@@ -4,4 +4,5 @@ artifacts
 
 # Directories
 node_modules/
+recursos/
 .nuxt/
