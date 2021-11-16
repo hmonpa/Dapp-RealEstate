@@ -6,7 +6,7 @@ contract('Properties', () => {
         this.Properties = await Properties.deployed();
     });
 
-    it('contract deployed successfully', async() => {
+    it('Properties contract deployed successfully', async() => {
         const address = this.Properties.address;
 
         assert.notEqual(address, null);
