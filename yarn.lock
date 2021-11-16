@@ -2435,6 +2435,8 @@
     "super-split" "^1.1.0"
 
 "@types/bn.js@^4.11.3":
+  "integrity" "sha512-pqr857jrp2kPuO9uRjZ3PwnJTjoQy+fcdxvBTvHm6dkmEL9q+hDD/2j/0ELOBPtPnS8LjCX0gI9nbl8lVkadpg=="
+  "resolved" "https://registry.npmjs.org/@types/bn.js/-/bn.js-4.11.6.tgz"
   "version" "4.11.6"
   dependencies:
     "@types/node" "*"
@@ -6271,6 +6273,8 @@
     "number-to-bn" "1.7.0"
 
 "ethjs-util@0.1.6":
+  "integrity" "sha512-CUnVOQq7gSpDHZVVrQW8ExxUETWrnrvXYvYz55wOU8Uj4VCgw56XC2B/fVqQN+f7gmrnRHSLVnFAwsCuNwji8w=="
+  "resolved" "https://registry.npmjs.org/ethjs-util/-/ethjs-util-0.1.6.tgz"
   "version" "0.1.6"
   dependencies:
     "is-hex-prefixed" "1.0.0"
@@ -13637,6 +13641,8 @@
   "version" "5.7.1"
 
 "semver@^5.5.0":
+  "integrity" "sha512-sauaDf/PZdVgrLTNYHRtpXa1iRiKcaebiKQ1BJdpQlWH2lCvexQdX55snPFyK7QzpudqbCI0qXFfOasHdyNDGQ=="
+  "resolved" "https://registry.npmjs.org/semver/-/semver-5.7.1.tgz"
   "version" "5.7.1"
 
 "semver@^5.6.0":

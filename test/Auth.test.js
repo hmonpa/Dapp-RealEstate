@@ -12,13 +12,20 @@ contract('Auth', () => {
         assert.notEqual(address, undefined);
         assert.notEqual(address, 0x0);
         assert.notEqual(address, "");
+
     });
 
-    it('get users list', async() => {
-        const usersCounter = await this.Auth.usersCounter();
-        const user = await this.Auth.users()[0];
+    it('get users list and individual', async() => {
+        let signUp = await this.Auth.signUp("Example", "example@example.com", "pass12345");
+        
+        const userCounter = await this.Auth.usersCounter();
+        assert.equal(userCounter.toNumber(), 2);
 
-        assert.equal(user.name, "Héctor");
+        const user = signUp.logs[0].args;
+
+        assert.equal(user.name, "Example");
+        assert.equal(user.email, "example@example.com");
         assert.equal(user.password, "pass12345");
     });
+
 });

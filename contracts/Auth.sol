@@ -8,61 +8,67 @@ contract Auth {
     struct User 
     {
         address addr;               // Wallet @
-        string name;                
+        string name;    
+        string email;            
         string password;
         // string vatId;               // DNI
         // string ipfsImageCid;        // Image
         bool isLoggedIn;
     }
 
-    mapping(address => User) public users;
+    mapping(uint256 => User) public users;
 
     constructor() public 
     {
-        signUp(msg.sender, "Héctor", "pass12345");
-        usersCounter++;
+        signUp("Héctor", "hmonpa@gmail.com", "pass12345");
     }
 
     event newUser(
         address addr,
         string name,
+        string email,
         string password,
         bool isLoggedIn
     );
 
     function signUp(
-        address _address,
-        string memory _name,
-        string memory _password
+        string _name,
+        string _email,
+        string _password
     ) public returns (bool) 
     {
-        require(users[_address].addr != msg.sender);
-
+        require(users[usersCounter].addr != msg.sender);
+        address _address = msg.sender;
+        users[usersCounter] = User(_address, _name, _email, _password, false);
         usersCounter++;
-        users[_address] = User(_address, _name, _password, false);
-        emit newUser(_address, _name, _password, false);
+        emit newUser(_address, _name, _email, _password, false);
         return true;
     }
 
     function signIn(address _address, string memory _password) public returns (bool)
     {
-        if (keccak256(abi.encodePacked(users[_address].password)) 
-        == keccak256(abi.encodePacked(_password)))
+        if (
+            keccak256(abi.encodePacked(users[usersCounter].password)) 
+            == keccak256(abi.encodePacked(_password)) 
+            && 
+            users[usersCounter].addr 
+            == _address
+        )
         {
-            users[_address].isLoggedIn = true;
-            return users[_address].isLoggedIn;
+            users[usersCounter].isLoggedIn = true;
+            return users[usersCounter].isLoggedIn;
         } else {
             return false;
         }
     }
 
-    function checkIsUserLogged(address _address) public view returns (bool, string memory)
+    function checkIsUserLogged(uint _usersCounter) public view returns (bool, string memory)
     {
-        return (users[_address].isLoggedIn, users[_address].name);
+        return (users[_usersCounter].isLoggedIn, users[_usersCounter].name);
     }
 
-    function logout(address _address) public 
+    function logout(uint _usersCounter) public 
     {
-        users[_address].isLoggedIn = false;
+        users[_usersCounter].isLoggedIn = false;
     }
 }
