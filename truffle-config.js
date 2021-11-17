@@ -1,11 +1,10 @@
 module.exports = {
-  // migrations_directory: "./migrations",
   networks: {
     monpadev: {
       host: "127.0.0.1",
       port: 7545,
       network_id: "*",              // Any network
-      gas: 5000000               // Gas limit used for deploys (in wei)
+      gas: 5000000                  // Gas limit used for deploys (in wei)
     }
   },
   compilers: {

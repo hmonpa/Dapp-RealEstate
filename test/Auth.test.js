@@ -1,3 +1,5 @@
+const { assert } = require("chai");
+
 const Auth = artifacts.require('Auth');
 
 contract('Auth', () => {
@@ -8,7 +10,7 @@ contract('Auth', () => {
     it('Auth contract deployed successfully', async() => {
         const address = this.Auth.address;
 
-        // @ de contrato válida
+        // valid @ contract 
         assert.notEqual(address, null);
         assert.notEqual(address, undefined);
         assert.notEqual(address, 0x0);
@@ -17,14 +19,14 @@ contract('Auth', () => {
     });
 
     it('get users list and individual', async() => {
-        // Nuevo usuario
+        // Register a new user
         let signUp = await this.Auth.signUp("Example", "example@example.com", "pass12345");
         
-        // Número de usuarios total
+        // Total num of users
         const userCounter = await this.Auth.usersCounter();
         assert.equal(userCounter.toNumber(), 2);            
 
-        // Comprobación de datos
+        // 1st data verification
         const firstUser = await this.Auth.users(0);
         
         assert.equal(firstUser.name, "Héctor");
@@ -32,7 +34,7 @@ contract('Auth', () => {
         assert.equal(firstUser.password, "pass123456");
         assert.equal(firstUser.isLoggedIn, false);
 
-        // Segunda comprobación de datos
+        // 2nd data verification
         const secondUser = signUp.logs[0].args;
         assert.equal(secondUser.name, "Example");
         assert.equal(secondUser.email, "example@example.com");
@@ -40,7 +42,26 @@ contract('Auth', () => {
         assert.equal(secondUser.isLoggedIn, false);
     });
 
-    it('Users are logged successfully', async() => {
+    it('find specific user by address', async() => {  
+        let newUser = await this.Auth.signUp("Another User", "anotheruser@example.com", "pass12345");
+        newUser = newUser.logs[0].args;
+        let newUserAddr = newUser.addr;
+
+        let index = await this.Auth.getIndexFromAddr(newUserAddr);
+        // this tests passing only in local environment (all the @ are the same)
+        assert.equal(index, 0);         
+    });
+
+    it('find specific user by index', async() => {
+        const addrMatch = await this.Auth.getAddrFromIndex(0);
+
+        let firstUser = await this.Auth.users(0);
+        let firstAddr = firstUser.addr;
+
+        assert.equal(addrMatch, firstAddr);         
+    });
+
+    it('Users are logged successfully and logout', async() => {
         let UserExample = await this.Auth.users(1);
         let UserAddr = UserExample.addr;
         let UserPwd = UserExample.password;
@@ -52,19 +73,10 @@ contract('Auth', () => {
         let checkLoginByAddr = await this.Auth.checkIsUserLoggedByAddr(UserAddr);
         assert.equal(checkLoginByAddr, true);
 
-        // let checkLogin = await this.Auth.checkIsUserLogged(1);
-        // assert.equal(checkLogin, true);
+        await this.Auth.logoutByAddr(UserAddr);
+        checkLoginByAddr = await this.Auth.checkIsUserLoggedByAddr(UserAddr);
+        assert.equal(checkLoginByAddr, false);
     });
 
-    it('find specific user', async() => {
-        const usersCounter = await this.Auth.usersCounter();
-        
-        let newUser = await this.Auth.signUp("Another User", "anotheruser@example.com", "pass12345");
-        newUser = newUser.logs[0].args;
-        let newUserAddr = newUser.addr;
-
-        let index = await this.Auth.findByAddr(newUserAddr);
-        assert.equal(index, 0);
-    });
 
 });
