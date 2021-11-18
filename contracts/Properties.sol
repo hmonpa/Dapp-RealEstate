@@ -50,14 +50,19 @@ contract Properties {
         uint256 createdAt;
     }
 
+    // To be completed...
+    function getRandomId(uint _number) private view returns (uint)
+    {
+        return uint(keccak256(abi.encodePacked(block.difficulty, block.timestamp, _number)));
+    }
+
     // Creates a new property
     function uploadProperty(string _city, uint256 _price) public payable
     {
+        properties[propertyCounter] = Property(getRandomId(propertyCounter), _city, _price, false, block.timestamp);
+        emit PropertyCreated(getRandomId(propertyCounter), _city, _price, false, block.timestamp);
         propertyCounter++;
-        properties[propertyCounter] = Property(propertyCounter, _city, _price, false, block.timestamp);
-        emit PropertyCreated(propertyCounter, _city, _price, false, block.timestamp);
     }
-
 
     // Se ejecuta al vender una propiedad (isSelled = 1)
     function removeProperty(uint _id) public{
