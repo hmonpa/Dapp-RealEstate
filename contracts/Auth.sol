@@ -36,6 +36,12 @@ contract Auth {
         uint256 createdAt
     );
 
+    event userLogged(
+        address addr,
+        string name,
+        bool isLoggedIn
+    );
+
     // Register
     function signUp(
         string _name,
@@ -63,6 +69,7 @@ contract Auth {
         {
             users[usersCounter].isLoggedIn      = true;
             usersByAddr[_address].isLoggedIn   = true;
+            emit userLogged(_address, usersByAddr[_address].name, usersByAddr[_address].isLoggedIn);
             
             return true;
         } else {
@@ -109,4 +116,6 @@ contract Auth {
     {
         usersByAddr[_address].isLoggedIn = false;
     }
+
+
 }

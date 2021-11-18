@@ -22,7 +22,7 @@ contract Properties {
 
     constructor() public
     {
-        // owner = msg.sender;
+        // owner = msg.sender;                      // who creates the current transaction
         uploadProperty("Viladecans", 150000);
     }
 
@@ -50,19 +50,14 @@ contract Properties {
         uint256 createdAt;
     }
 
-    // CRUD
-    // Se crea una nueva propiedad
-    function uploadProperty(string _city, uint256 _price) public
+    // Creates a new property
+    function uploadProperty(string _city, uint256 _price) public payable
     {
         propertyCounter++;
         properties[propertyCounter] = Property(propertyCounter, _city, _price, false, block.timestamp);
         emit PropertyCreated(propertyCounter, _city, _price, false, block.timestamp);
     }
 
-    // // Se ejecuta al vender la propiedad (isSelled = 1)
-    // function updateProperty(){
-
-    // }
 
     // Se ejecuta al vender una propiedad (isSelled = 1)
     function removeProperty(uint _id) public{
@@ -73,4 +68,8 @@ contract Properties {
         emit isPropertySelled(_id, _property.isSelled);
     }
 
+    // modifier isOwner() {
+    //     require(owner == msg.sender);
+    //     _;
+    // }
 }
