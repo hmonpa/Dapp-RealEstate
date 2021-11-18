@@ -4,7 +4,6 @@ pragma solidity ^0.4.24;
 contract Auth {
 
     uint public usersCounter = 0;
-
     struct User 
     {
         address addr;                   // Wallet @
@@ -17,16 +16,17 @@ contract Auth {
         uint256 createdAt;
     }
 
-    // ----------------------- MAPPINGS -----------------------
-    mapping(uint256 => User) public users;
-    mapping(address => User) public usersByAddr;
-
     constructor() public 
     {
         // Register first user
         signUp("Héctor", "hmonpa@gmail.com", "pass123456");
     }
 
+    // ----------------------- MAPPINGS -----------------------
+    mapping(uint256 => User) public users;
+    mapping(address => User) public usersByAddr;
+
+    // ----------------------- EVENTS -----------------------
     event newUser(
         address addr,
         string name,
@@ -42,7 +42,8 @@ contract Auth {
         bool isLoggedIn
     );
 
-    // Register
+    // ----------------------- FUNCTIONS -----------------------
+    // Register a new user
     function signUp(
         string _name,
         string _email,
@@ -59,7 +60,7 @@ contract Auth {
         return true;
     }
 
-    // Login
+    // Login a user
     function signIn(address _address, string memory _password) public returns (bool)
     {
         if (keccak256(abi.encodePacked(usersByAddr[_address].password)) 

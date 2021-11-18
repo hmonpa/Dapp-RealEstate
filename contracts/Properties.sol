@@ -2,32 +2,30 @@
 pragma solidity ^0.4.24;  
 
 contract Properties {
-    
-    // address public owner;
-    // uint ipfsHash;
+
     uint public propertyCounter = 0;
-
-    // Clave - Valor
-    mapping (uint256 => Property) public properties;
-
-    // function set(uint x) public
-    // {
-    //     ipfsHash = x;
-    // }
-
-    // function get() public view returns(uint)
-    // {
-    //     return ipfsHash;
-    // }
-
+    struct Property 
+    {
+        uint256 id;
+        address owner;
+        string city;
+        uint256 price;
+        bool isSelled;
+        uint256 createdAt;
+    }
     constructor() public
     {
         // owner = msg.sender;                      // who creates the current transaction
         uploadProperty("Viladecans", 150000);
     }
 
+    // ----------------------- MAPPINGS -----------------------
+    mapping (uint256 => Property) public properties;
+
+    // ----------------------- EVENTS -----------------------
     event PropertyCreated(
-        uint256 id,                     // ID (Pending auto)
+        uint256 id,                     // ID
+        address owner,
         // string prAddress,            // City address
         string city,
         uint256 price,
@@ -41,40 +39,44 @@ contract Properties {
 
     event isPropertySelled (uint256 id, bool isSelled);
 
-    struct Property 
-    {
-        uint256 id;
-        string city;
-        uint256 price;
-        bool isSelled;
-        uint256 createdAt;
-    }
-
-    // To be completed...
-    function getRandomId(uint _number) private view returns (uint)
-    {
-        return uint(keccak256(abi.encodePacked(block.difficulty, block.timestamp, _number)));
+    // ----------------------- FUNCTIONS -----------------------
+    // Generates random number 
+    function getRandomId() private view returns (uint)
+    { 
+        return uint(keccak256(abi.encodePacked(block.difficulty, block.timestamp, msg.sender)))%20000;
     }
 
     // Creates a new property
     function uploadProperty(string _city, uint256 _price) public payable
     {
-        properties[propertyCounter] = Property(getRandomId(propertyCounter), _city, _price, false, block.timestamp);
-        emit PropertyCreated(getRandomId(propertyCounter), _city, _price, false, block.timestamp);
+        properties[propertyCounter] = Property(getRandomId(), msg.sender, _city, _price, false, block.timestamp);
+        emit PropertyCreated(getRandomId(), msg.sender, _city, _price, false, block.timestamp);
         propertyCounter++;
     }
 
-    // Se ejecuta al vender una propiedad (isSelled = 1)
-    function removeProperty(uint _id) public{
-        Property memory _property = properties[_id];
-        _property.isSelled = !_property.isSelled;
-
-        properties[_id] = _property;
-        emit isPropertySelled(_id, _property.isSelled);
+    // Get index from @
+    function getPropertyFromIndex(uint _index) public view returns (address)
+    {
+        if (_index <= propertyCounter) return properties[_index].owner;
+        else return 0x0;
     }
 
-    // modifier isOwner() {
-    //     require(owner == msg.sender);
-    //     _;
-    // }
+    // Get @ from index
+    function getPropertiesFromOwner(address _address) public view returns (uint[])
+    {
+        uint[] propertiesMatch;
+        for (uint i = 0; i < propertyCounter; i++)
+        {
+            if (_address == properties[i].owner) propertiesMatch.push(i);
+        }
+    }
+
+    // Marks the property as sold
+    function removeProperty(uint _i) public{
+        Property memory _property = properties[_i];
+        _property.isSelled = true;
+
+        properties[_i] = _property;
+        emit isPropertySelled(_i, _property.isSelled);
+    }
 }

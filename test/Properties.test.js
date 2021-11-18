@@ -1,4 +1,5 @@
 const Properties = artifacts.require('Properties');
+const { assert } = require("chai");
 const Web3 = require("web3")
 
 contract('Properties', () => {
@@ -17,12 +18,25 @@ contract('Properties', () => {
 
     it('get properties list', async() => {
         const propertyCounter = await this.Properties.propertyCounter();
-        const property = await this.Properties.properties(propertyCounter);
+        const propertyCounterNum = propertyCounter.toNumber();
+        const property = await this.Properties.properties(propertyCounterNum);
 
-        assert.equal(property.id.toNumber(), propertyCounter);
+        // assert.equal(property.id.toNumber(), propertyCounter);
         assert.equal(property.city, "Viladecans");
         assert.equal(property.price, "150000");
     });
+
+    it('get owner from property index', async() => {
+        const ownerAddr = await this.Properties.getPropertyFromIndex(0);
+        assert.notEqual(ownerAddr, "0x0");
+    })
+
+    it('get property from owner', async() => {
+        const res = await this.Properties.uploadProperty("City false", 0);
+        const index = await this.Properties.getPropertiesFromOwner('0xc43cb2fF3FC1A6f3f8B785659b71687350562335');
+
+        assert.equal(index, "abc");
+    })
     
     it('property created successfully', async() => {
         const res = await this.Properties.uploadProperty("City false", 0);
