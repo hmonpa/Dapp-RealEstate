@@ -37,7 +37,7 @@ contract Properties {
         uint256 createdAt
     );
 
-    event isPropertySelled (uint256 id, bool isSelled);
+    event isPropertySelled (uint256 index, bool isSelled);
 
     // ----------------------- FUNCTIONS -----------------------
     // Generates random number 
@@ -50,8 +50,8 @@ contract Properties {
     function uploadProperty(string _city, uint256 _price) public payable
     {
         properties[propertyCounter] = Property(getRandomId(), msg.sender, _city, _price, false, block.timestamp);
-        emit PropertyCreated(getRandomId(), msg.sender, _city, _price, false, block.timestamp);
         propertyCounter++;
+        emit PropertyCreated(getRandomId(), msg.sender, _city, _price, false, block.timestamp);
     }
 
     // Get index from @
@@ -69,14 +69,16 @@ contract Properties {
         {
             if (_address == properties[i].owner) propertiesMatch.push(i);
         }
+
+        return propertiesMatch;
     }
 
     // Marks the property as sold
     function removeProperty(uint _i) public{
-        Property memory _property = properties[_i];
-        _property.isSelled = true;
+        // Property memory _property = properties[_i];
+        // _property.isSelled = true;
 
-        properties[_i] = _property;
-        emit isPropertySelled(_i, _property.isSelled);
+        properties[_i].isSelled = true;
+        emit isPropertySelled(_i, properties[_i].isSelled);
     }
 }

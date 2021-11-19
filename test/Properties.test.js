@@ -1,6 +1,5 @@
 const Properties = artifacts.require('Properties');
 const { assert } = require("chai");
-const Web3 = require("web3")
 
 contract('Properties', () => {
     before(async() => {
@@ -19,9 +18,10 @@ contract('Properties', () => {
     it('get properties list', async() => {
         const propertyCounter = await this.Properties.propertyCounter();
         const propertyCounterNum = propertyCounter.toNumber();
-        const property = await this.Properties.properties(propertyCounterNum);
+        assert.equal(propertyCounterNum, 1);
+        
+        const property = await this.Properties.properties(propertyCounterNum-1);
 
-        // assert.equal(property.id.toNumber(), propertyCounter);
         assert.equal(property.city, "Viladecans");
         assert.equal(property.price, "150000");
     });
@@ -32,20 +32,19 @@ contract('Properties', () => {
     })
 
     it('get property from owner', async() => {
-        const res = await this.Properties.uploadProperty("City false", 0);
-        const index = await this.Properties.getPropertiesFromOwner('0xc43cb2fF3FC1A6f3f8B785659b71687350562335');
-
-        assert.equal(index, "abc");
+        await this.Properties.uploadProperty("City example 1", 0);
+        const indexesMatch = await this.Properties.getPropertiesFromOwner('0xc43cb2fF3FC1A6f3f8B785659b71687350562335');
+        let indexesString = indexesMatch.toString();
+        let indexes = indexesString.split(',');
     })
     
     it('property created successfully', async() => {
-        const res = await this.Properties.uploadProperty("City false", 0);
+        const res = await this.Properties.uploadProperty("City example 2", 0);
         const propertyEvent = res.logs[0].args;
 
         const propertyCounter = await this.Properties.propertyCounter();
 
-        assert.equal(propertyEvent.id.toNumber(), 2);
-        assert.equal(propertyEvent.city, "City false");
+        assert.equal(propertyEvent.city, "City example 2");
         assert.equal(propertyEvent.price, 0);
         assert.equal(propertyEvent.isSelled, false);
     })
@@ -57,7 +56,7 @@ contract('Properties', () => {
 
         assert.equal(property.isSelled, true);
         assert.equal(propertyEvent.isSelled, true);
-        assert.equal(propertyEvent.id.toNumber(), 1);
+        assert.equal(propertyEvent.index, 1);
         assert.equal(property.id, 1);
     })
 
