@@ -16,7 +16,7 @@ contract Properties {
     constructor() public
     {
         // owner = msg.sender;                      // who creates the current transaction
-        uploadProperty("Viladecans", 150000);
+        uploadProperty(msg.sender, "Viladecans", 150000);
     }
 
     // ----------------------- MAPPINGS -----------------------
@@ -40,31 +40,31 @@ contract Properties {
     event isPropertySelled (uint256 index, bool isSelled);
 
     // ----------------------- FUNCTIONS -----------------------
-    // Generates random number 
+    // Returns a generate random number 
     function getRandomId() private view returns (uint)
     { 
         return uint(keccak256(abi.encodePacked(block.difficulty, block.timestamp, msg.sender)))%20000;
     }
 
-    // Creates a new property
-    function uploadProperty(string _city, uint256 _price) public payable
+    // Creates a new property, emit PropertyCreated event
+    function uploadProperty(address _address, string _city, uint256 _price) public payable
     {
-        properties[propertyCounter] = Property(getRandomId(), msg.sender, _city, _price, false, block.timestamp);
+        properties[propertyCounter] = Property(getRandomId(), _address, _city, _price, false, block.timestamp);
         propertyCounter++;
-        emit PropertyCreated(getRandomId(), msg.sender, _city, _price, false, block.timestamp);
+        emit PropertyCreated(getRandomId(), _address, _city, _price, false, block.timestamp);
     }
 
-    // Get index from @
+    // Return the @ from index
     function getPropertyFromIndex(uint _index) public view returns (address)
     {
         if (_index <= propertyCounter) return properties[_index].owner;
         else return 0x0;
     }
 
-    // Get @ from index
+    // Returns an array with the indexs, from @
     function getPropertiesFromOwner(address _address) public view returns (uint[])
     {
-        uint[] propertiesMatch;
+        uint[] storage propertiesMatch;
         for (uint i = 0; i < propertyCounter; i++)
         {
             if (_address == properties[i].owner) propertiesMatch.push(i);
@@ -74,11 +74,8 @@ contract Properties {
     }
 
     // Marks the property as sold
-    function removeProperty(uint _i) public{
-        // Property memory _property = properties[_i];
-        // _property.isSelled = true;
-
-        properties[_i].isSelled = true;
-        emit isPropertySelled(_i, properties[_i].isSelled);
+    function removeProperty(uint _index) public{
+        properties[_index].isSelled = true;
+        emit isPropertySelled(_index, properties[_index].isSelled);
     }
 }

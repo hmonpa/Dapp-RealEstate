@@ -1,11 +1,16 @@
 const Web3 = require('web3');
 
 // https://www.trufflesuite.com/docs/truffle/advanced/build-processes
-var propertiesJson = require('./build/contracts/Properties.json');                          // Get a contract into the dapp
-var TruffleContract = require('@truffle/contract');                                 // Turn that contract into an abstraction I can use
-var Properties = TruffleContract(propertiesJson);
+var propertiesJson  = require('./build/contracts/Properties.json');                     // Get the contracts
+var authJson        = require('./build/contracts/Auth.json');
+var TruffleContract = require('@truffle/contract');                                     // Turn that contract into an abstraction I can use
 
-Properties.setProvider(new Web3.providers.HttpProvider("http://127.0.0.1:7545"));   // Provide the contract with a web3 provider
+var Properties      = TruffleContract(propertiesJson);
+var Auth            = TruffleContract(authJson);
+
+// Provide the contracts with a web3 provider
+Properties.setProvider(new Web3.providers.HttpProvider("http://127.0.0.1:7545"));           
+Auth.setProvider(new Web3.providers.HttpProvider("http://127.0.0.1:7545"));
 
 export const Dapp = {
     contracts: {},
@@ -43,10 +48,10 @@ export const Dapp = {
     // Load smart contracts
     loadContracts: async() => {
         // Variables of interest
-        const network       = await Dapp.Properties.detectNetwork();        // 5777
-        const networkType   = await Dapp.Properties.networkType;            // ethereum
-        const contractAddr  = await Dapp.Properties.address;                // contract address
-        const checkWeb3     = await Dapp.Properties.web3;
+        // const network       = await Dapp.Properties.detectNetwork();        // 5777
+        // const networkType   = await Dapp.Properties.networkType;            // ethereum
+        // const contractAddr  = await Dapp.Properties.address;                // contract address
+        // const checkWeb3     = await Dapp.Properties.web3;
 
         // Properties contract will be deployed...
         Dapp.Properties = await Properties.deployed();
@@ -62,26 +67,31 @@ export const Dapp = {
 
         let html = '';
         let properties = [];
-        for(let i = 1; i <= propertyCounter; i++){
+        for(let i = 0; i < propertyCounter; i++){
             const property = await Dapp.Properties.properties(i);
+            
             let id = property[0];
-            let city = property[1];
-            let price = property[2].toNumber();
-            let isSelled = property[3];
+            let address = property[1];
+            let city = property[2];
+            let price = property[3].toNumber();
+            let isSelled = property[4];
 
-            let dateUploading = new Date(property[4]*1000).toLocaleString();
+            let dateUploading = new Date(property[5]*1000).toLocaleString();
 
             let propertyElement = `
             <div>
+                <span>PropertyId: ${id}</span>
                 <br>
                 <span>Location: ${city}</span>
+                <br>
+                <span>Owner: ${address}</span>
                 <br>
                 <span>Price: ${price}</span>
                 <br>
                 <span>Upload date: ${dateUploading}</span>
                 <br>
                 <input data-id="${id}" type="checkbox" 
-                    ${isSelled && "checked"} onchange="Dapp.removeProperty(this)"/>
+                    ${isSelled && "checked"} onchange="removeProperty(this)"/>
                 <br><br>
             </div>
             `
@@ -94,12 +104,12 @@ export const Dapp = {
         document.querySelector('#propertyList').innerHTML = html;
 
     },
-    uploadProperty: async(city, price) => {
-        const res = await Dapp.Properties.uploadProperty(city, price, {
+    uploadProperty: async(account, city, price) => {
+        const res = await Dapp.Properties.uploadProperty(account, city, price, {
             from: Dapp.account
         })
         // console.log(res.logs[0].args)
-        window.location.reload()
+        // window.location.reload()
     },
     removeProperty: async(element) => {
         const propertyId = element.dataset.id;

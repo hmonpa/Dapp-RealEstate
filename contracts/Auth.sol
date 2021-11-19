@@ -50,6 +50,9 @@ contract Auth {
         string _password
     ) public returns (bool) 
     {
+        // uncomment in browser testings
+        // if(getIndexFromAddr(msg.sender) == 0) return false;
+
         address _address = msg.sender;
 
         users[usersCounter]     = User(_address, _name, _email, _password, false, block.timestamp);
@@ -78,7 +81,7 @@ contract Auth {
         }
     }
 
-    // Get index from @
+    // Returns index from @
     function getIndexFromAddr(address _address) public view returns (uint)
     {
         for (uint i = 0; i < usersCounter; i++)

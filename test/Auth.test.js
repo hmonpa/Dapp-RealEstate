@@ -21,7 +21,7 @@ contract('Auth', () => {
     it('get users list and individual', async() => {
         // Register a new user
         let signUp = await this.Auth.signUp("Example", "example@example.com", "pass12345");
-        
+
         // Total num of users
         const userCounter = await this.Auth.usersCounter();
         assert.equal(userCounter.toNumber(), 2);            
@@ -66,7 +66,7 @@ contract('Auth', () => {
         let UserAddr = UserExample.addr;
         let UserPwd = UserExample.password;
 
-        let signIn = await this.Auth.signIn(UserAddr, UserPwd);
+        await this.Auth.signIn(UserAddr, UserPwd);
         assert.equal(UserAddr, "0x627306090abaB3A6e1400e9345bC60c78a8BEf57");
         assert.equal(UserPwd, "pass12345");
 

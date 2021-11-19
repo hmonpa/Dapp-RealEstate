@@ -103,7 +103,7 @@ export default {
 
       await Dapp.init();
       // Testing
-      console.log(Dapp.allProperties);
+      console.log("YEEE", Dapp.Properties.propertyCounter());
     },
 
     // Upload data from the form
@@ -112,10 +112,16 @@ export default {
       propertyForm.addEventListener("submit", e => {
         e.preventDefault();
 
-        console.log(propertyForm["city"].value, propertyForm["price"].value)
+        console.log(Dapp.account, propertyForm["city"].value, propertyForm["price"].value)
 
-        Dapp.uploadProperty(propertyForm["city"].value, propertyForm["price"].value);
+        Dapp.uploadProperty(Dapp.account, propertyForm["city"].value, propertyForm["price"].value);
       });
+    },
+
+    // Call to removeProperty function
+    removeProperty(obj){
+      console.log(obj);
+      Dapp.removeProperty(obj);
     }
   },
   beforeMount(){
