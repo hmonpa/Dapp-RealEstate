@@ -1,6 +1,6 @@
 <template>
-    <!-- ======= Contact Section ======= -->
-    <section id="contact" class="contact">
+    <!-- ======= Publish Section ======= -->
+    <section id="publish" class="publish">
       <div class="container">
 
         <div class="section-title" data-aos="fade-up">
@@ -10,7 +10,7 @@
         <div class="row">
 
           <div class="col-lg-6 col-md-6" data-aos="fade-up" data-aos-delay="100">
-            <div class="contact-about">
+            <div class="publish-about">
               <div>
                 <p>Your current address is</p>
                 <p id="account"></p>
@@ -52,30 +52,39 @@
               <div class="form-group">
                 <input type="number" class="form-control" name="price" id="price" placeholder="Enter the price..." required>
               </div>
-              <!--<div class="form-group">
-                <input type="text" class="form-control" name="subject" id="subject" placeholder="Subject" required>
-              </div>
-              <div class="form-group">
-                <textarea class="form-control" name="message" rows="5" placeholder="Message" required></textarea>
-              </div>-->
-              <!--<div class="my-3">
-                <div class="loading">Loading</div>
-                <div class="error-message"></div>
-                <div class="sent-message">Your message has been sent. Thank you!</div>
-              </div>-->
               <div class="text-center">
-                <button type="submit" @click="uploadData">Upload</button>
+                <button type="submit" @click="uploadData">Publish</button>
               </div>
               <div id="cities"></div>
-              <div id="propertyList">
-              </div>
+              <!--<div v-for="(val, index) in properties"
+                :key="index"
+                class="col-md-6 d-flex align-items-stretch"
+              >
+                <div
+                  :id="`property_${index}`"
+                  class="card"
+                  data-aos="fade-up"
+                  data-aos-delay="100"
+                >
+                  <div class="card-body">
+                    <h5 class="card-title">
+                      <span>{{ val.city }}</span>
+                    </h5>
+                    <hr>
+                    <span class="card-description">
+                      {{ val.price }}
+                    </span>
+                    <br>
+                    
+                  </div>
+                </div>
+              </div>-->
             </form>
           </div>
         </div>
-
       </div>
     </section>
-    <!-- End Contact Section -->
+    <!-- End Publish Section -->
 </template>
 <script>
 import { Dapp } from '../../dapp';
@@ -102,32 +111,6 @@ export default {
       } */
 
       await Dapp.init();
-      await this.renderProperties();
-    },
-
-    // Catch the current created properties
-    async renderProperties(){
-      try {
-        let properties = [];
-        const invalidAddr = 0x0000000000000000000000000000000000000000;
-        let existingProp = true;
-        let i = 0;
-        while (existingProp)
-        {
-          let prop = await Dapp.Properties.properties(i);
-          let owner = prop.owner;
-          if (owner != invalidAddr)
-            properties.push(prop);
-          else
-            existingProp = false;               
-          
-          i++;
-        }
-        // console.log(properties[0].id.toNumber());
-      }
-      catch (err) {
-        console.log(err);
-      }
     },
 
     // Upload data from the upload properties form

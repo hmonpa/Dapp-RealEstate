@@ -579,7 +579,7 @@ section {
 /*--------------------------------------------------------------
 # Services
 --------------------------------------------------------------*/
-.services .icon-box {
+.properties .icon-box {
   padding: 30px;
   position: relative;
   overflow: hidden;
@@ -587,9 +587,11 @@ section {
   box-shadow: 0 0 29px 0 rgba(68, 88, 144, 0.12);
   transition: all 0.3s ease-in-out;
   border-radius: 8px;
+  height: 100%;
+  width: 100%;
   z-index: 1;
 }
-.services .icon-box::before {
+.properties .icon-box::before {
   content: "";
   position: absolute;
   background: #e1f0fa;
@@ -601,7 +603,7 @@ section {
   transition: all 0.3s;
   z-index: -1;
 }
-.services .icon-box:hover::before {
+.properties .icon-box:hover::before {
   background: #3498db;
   right: 0;
   top: 0;
@@ -609,7 +611,7 @@ section {
   height: 100%;
   border-radius: 0px;
 }
-.services .icon {
+.properties .icon {
   margin: 0 auto 20px auto;
   padding-top: 10px;
   display: inline-block;
@@ -620,31 +622,31 @@ section {
   background: #3498db;
   transition: all 0.3s ease-in-out;
 }
-.services .icon i {
+.properties .icon i {
   font-size: 36px;
   line-height: 1;
   color: #fff;
 }
-.services .title {
+.properties .title {
   font-weight: 700;
   margin-bottom: 15px;
   font-size: 18px;
 }
-.services .title a {
+.properties .title a {
   color: #111;
 }
-.services .description {
+.properties .description {
   font-size: 15px;
   line-height: 28px;
   margin-bottom: 0;
 }
-.services .icon-box:hover .title a, .services .icon-box:hover .description {
+.properties .icon-box:hover .title a, .properties .icon-box:hover .description {
   color: #fff;
 }
-.services .icon-box:hover .icon {
+.properties .icon-box:hover .icon {
   background: #fff;
 }
-.services .icon-box:hover .icon i {
+.properties .icon-box:hover .icon i {
   color: #3498db;
 }
 
@@ -1169,7 +1171,7 @@ section {
 /*--------------------------------------------------------------
 # Contact
 --------------------------------------------------------------*/
-.contact .contact-about h3 {
+.publish .publish-about h3 {
   font-size: 28px;
   margin: 0 0 10px 0;
   padding: 0;
@@ -1178,16 +1180,16 @@ section {
   letter-spacing: 1px;
   color: #222222;
 }
-.contact .contact-about p {
+.publish .publish-about p {
   font-size: 14px;
   line-height: 24px;
   font-family: "Raleway", sans-serif;
   color: #888;
 }
-.contact .social-links {
+.publish .social-links {
   padding-bottom: 20px;
 }
-.contact .social-links a {
+.publish .social-links a {
   font-size: 18px;
   display: inline-block;
   background: #fff;
@@ -1202,25 +1204,25 @@ section {
   transition: 0.3s;
   border: 1px solid #3498db;
 }
-.contact .social-links a:hover {
+.publish .social-links a:hover {
   background: #3498db;
   color: #fff;
 }
-.contact .info {
+.publish .info {
   color: #444444;
 }
-.contact .info i {
+.publish .info i {
   font-size: 32px;
   color: #3498db;
   float: left;
   line-height: 1;
 }
-.contact .info p {
+.publish .info p {
   padding: 0 0 10px 42px;
   line-height: 28px;
   font-size: 14px;
 }
-.contact .php-email-form .error-message {
+.publish .php-email-form .error-message {
   display: none;
   color: #fff;
   background: #ed3c0d;
@@ -1228,10 +1230,10 @@ section {
   padding: 15px;
   font-weight: 600;
 }
-.contact .php-email-form .error-message br + br {
+.publish .php-email-form .error-message br + br {
   margin-top: 25px;
 }
-.contact .php-email-form .sent-message {
+.publish .php-email-form .sent-message {
   display: none;
   color: #fff;
   background: #18d26e;
@@ -1239,13 +1241,13 @@ section {
   padding: 15px;
   font-weight: 600;
 }
-.contact .php-email-form .loading {
+.publish .php-email-form .loading {
   display: none;
   background: #fff;
   text-align: center;
   padding: 15px;
 }
-.contact .php-email-form .loading:before {
+.publish .php-email-form .loading:before {
   content: "";
   display: inline-block;
   border-radius: 50%;
@@ -1257,19 +1259,19 @@ section {
   -webkit-animation: animate-loading 1s linear infinite;
   animation: animate-loading 1s linear infinite;
 }
-.contact .php-email-form .form-group {
+.publish .php-email-form .form-group {
   margin-bottom: 20px;
 }
-.contact .php-email-form input, .contact .php-email-form textarea {
+.publish .php-email-form input, .publish .php-email-form textarea {
   border-radius: 0;
   box-shadow: none;
   font-size: 14px;
   padding: 10px 15px;
 }
-.contact .php-email-form input:focus, .contact .php-email-form textarea:focus {
+.publish .php-email-form input:focus, .publish .php-email-form textarea:focus {
   border-color: #3498db;
 }
-.contact .php-email-form button[type=submit] {
+.publish .php-email-form button[type=submit] {
   background: #3498db;
   border: 0;
   padding: 10px 24px;
@@ -1277,7 +1279,7 @@ section {
   transition: 0.4s;
   border-radius: 50px;
 }
-.contact .php-email-form button[type=submit]:hover {
+.publish .php-email-form button[type=submit]:hover {
   background: #2383c4;
 }
 @-webkit-keyframes animate-loading {
@@ -1374,4 +1376,48 @@ section {
 }
 #footer .footer-links a:hover {
   color: #3498db;
+}
+
+/*--------------------------------------------------------------
+# Modal
+--------------------------------------------------------------*/
+.modal {
+  margin-bottom: 30px;
+  z-index: 1;
+}
+
+.sr-only {
+  display: none;
+}
+
+/*--------------------------------------------------------------
+# Buy Tickets
+--------------------------------------------------------------*/
+.buy-tickets {
+  color: #fff;
+  background: #012970;
+  padding: 7px 22px;
+  margin: 0 0 0 15px;
+  border-radius: 50px;
+  border: 2px solid #012970;
+  transition: all ease-in-out 0.3s;
+  font-weight: 500;
+  line-height: 1;
+  font-size: 13px;
+  white-space: nowrap;
+}
+
+.buy-tickets:hover {
+  background: none;
+  color: #fff;
+}
+
+.buy-tickets:focus {
+  color: #fff;
+}
+
+@media (max-width: 992px) {
+  .buy-tickets {
+    margin: 0 15px 0 0;
+  }
 }

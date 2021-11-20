@@ -1,16 +1,16 @@
 <template>
   <main id="main">
     <Hero />
-    <MainClients />
-    <!--<MainAbout />
-    <MainCounts />
-    <MainServices />
-    <MainFeatures /> 
+    <!--<MainClients />
+    <MainAbout />
+    <MainCounts />-->
+    <!--<MainFeatures /> 
     <MainPortfolio /> 
     <MainTeam />
     <MainPricing />
     <MainFaq />-->
-    <MainContact />
+    <MainPublish />
+    <MainProperties />
   </main>
 </template>
 

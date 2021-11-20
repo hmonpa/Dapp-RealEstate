@@ -16,12 +16,11 @@ export const Dapp = {
     contracts: {},
     init: async() => {
         Dapp.Properties = Properties;
-        console.log('Dapp loaded');
         await Dapp.loadEthereum();
         await Dapp.checkAccount();
         await Dapp.loadContracts();
-        Dapp.render();
-        await Dapp.renderProperties();
+        await Dapp.render();
+        // await Dapp.renderProperties();
         // await Dapp.removeProperty();
     },
 
@@ -54,11 +53,14 @@ export const Dapp = {
 
         // Properties contract will be deployed...
         Dapp.Properties = await Properties.deployed();
-        console.log("Contract", Dapp.Properties.address, "is deployed done");
+        // console.log("Contract", Dapp.Properties.address, "is deployed done");
     },
 
-    render: () => {
-        document.getElementById('account').innerText = Dapp.account;
+    uploadProperty: async(address, city, price) => {
+        await Dapp.Properties.uploadProperty(address, city, price, {
+            from: Dapp.account
+        })
+        window.location.reload()
     },
 
     renderProperties: async() => {
@@ -102,6 +104,13 @@ export const Dapp = {
 
     },
 
+    render: async() => {
+        document.getElementById('account').innerText = Dapp.account;
+
+        // document.getElementById('properties').innerText = Dapp.properties;
+        // console.log(properties);
+    },
+
     // removeProperty: async(element) => {
     //     const propertyId = element.dataset.id;
     //     await Dapp.Properties.removeProperty(propertyId, {
@@ -111,12 +120,6 @@ export const Dapp = {
     //     window.location.reload()
     // },
 
-    uploadProperty: async(address, city, price) => {
-        await Dapp.Properties.uploadProperty(address, city, price, {
-            from: Dapp.account
-        })
-        window.location.reload()
-    },
 
 
 };
