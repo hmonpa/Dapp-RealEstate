@@ -6,3 +6,4 @@ artifacts
 node_modules/
 recursos/
 .nuxt/
+build/contracts/

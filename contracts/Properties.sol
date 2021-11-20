@@ -43,11 +43,11 @@ contract Properties {
     // Returns a generate random number 
     function getRandomId() private view returns (uint)
     { 
-        return uint(keccak256(abi.encodePacked(block.difficulty, block.timestamp, msg.sender)))%20000;
+        return uint(keccak256(abi.encodePacked(block.difficulty, block.timestamp, msg.sender)))%uint(now);
     }
 
     // Creates a new property, emit PropertyCreated event
-    function uploadProperty(address _address, string _city, uint256 _price) public payable
+    function uploadProperty(address _address, string _city, uint256 _price) public
     {
         properties[propertyCounter] = Property(getRandomId(), _address, _city, _price, false, block.timestamp);
         propertyCounter++;
@@ -73,7 +73,7 @@ contract Properties {
         return propertiesMatch;
     }
 
-    // Marks the property as sold
+    // Marks the property as sold, emit PropertySelled event
     function removeProperty(uint _index) public{
         properties[_index].isSelled = true;
         emit isPropertySelled(_index, properties[_index].isSelled);

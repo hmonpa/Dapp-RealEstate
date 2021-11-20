@@ -102,11 +102,35 @@ export default {
       } */
 
       await Dapp.init();
-      // Testing
-      console.log("YEEE", Dapp.Properties.propertyCounter());
+      await this.renderProperties();
     },
 
-    // Upload data from the form
+    // Catch the current created properties
+    async renderProperties(){
+      try {
+        let properties = [];
+        const invalidAddr = 0x0000000000000000000000000000000000000000;
+        let existingProp = true;
+        let i = 0;
+        while (existingProp)
+        {
+          let prop = await Dapp.Properties.properties(i);
+          let owner = prop.owner;
+          if (owner != invalidAddr)
+            properties.push(prop);
+          else
+            existingProp = false;               
+          
+          i++;
+        }
+        // console.log(properties[0].id.toNumber());
+      }
+      catch (err) {
+        console.log(err);
+      }
+    },
+
+    // Upload data from the upload properties form
     uploadData() {
       const propertyForm = document.querySelector("#propertyForm");
       propertyForm.addEventListener("submit", e => {
@@ -118,11 +142,11 @@ export default {
       });
     },
 
-    // Call to removeProperty function
-    removeProperty(obj){
-      console.log(obj);
-      Dapp.removeProperty(obj);
-    }
+    // // Call to removeProperty function
+    // removeProperty(obj){
+    //   console.log(obj);
+    //   Dapp.removeProperty(obj);
+    // }
   },
   beforeMount(){
     // Call to JS

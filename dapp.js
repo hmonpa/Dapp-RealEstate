@@ -22,8 +22,7 @@ export const Dapp = {
         await Dapp.loadContracts();
         Dapp.render();
         await Dapp.renderProperties();
-        await Dapp.uploadProperty();
-        await Dapp.removeProperty();
+        // await Dapp.removeProperty();
     },
 
     // Loading network
@@ -37,12 +36,12 @@ export const Dapp = {
         }
     },
 
-    // Save the first account from Ganache
+    // Save the account of the current wallet
     checkAccount: async() => {
         const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
         Dapp.account = accounts[0];
-        var account = Dapp.account;
-        console.log(account);
+        // var account = Dapp.account;
+        // console.log(account);
     },
 
     // Load smart contracts
@@ -55,18 +54,19 @@ export const Dapp = {
 
         // Properties contract will be deployed...
         Dapp.Properties = await Properties.deployed();
-        console.log("Deployed done");
+        console.log("Contract", Dapp.Properties.address, "is deployed done");
     },
+
     render: () => {
         document.getElementById('account').innerText = Dapp.account;
     },
+
     renderProperties: async() => {
         
         const propertyCounter = await Dapp.Properties.propertyCounter();
         const propertyCtrNum = propertyCounter.toNumber();
 
         let html = '';
-        let properties = [];
         for(let i = 0; i < propertyCounter; i++){
             const property = await Dapp.Properties.properties(i);
             
@@ -91,32 +91,32 @@ export const Dapp = {
                 <span>Upload date: ${dateUploading}</span>
                 <br>
                 <input data-id="${id}" type="checkbox" 
-                    ${isSelled && "checked"} onchange="removeProperty(this)"/>
+                    ${isSelled && "checked"} onchange="this.removeProperty(this)"/>
                 <br><br>
             </div>
             `
             html += propertyElement;
-            properties.push(city, price, isSelled, dateUploading);
 
         }
-        // console.log(properties);
-        Dapp.allProperties = properties;
         document.querySelector('#propertyList').innerHTML = html;
 
     },
-    uploadProperty: async(account, city, price) => {
-        const res = await Dapp.Properties.uploadProperty(account, city, price, {
-            from: Dapp.account
-        })
-        // console.log(res.logs[0].args)
-        // window.location.reload()
-    },
-    removeProperty: async(element) => {
-        const propertyId = element.dataset.id;
-        await Dapp.Properties.removeProperty(propertyId, {
-            from: Dapp.account
-        })
 
+    // removeProperty: async(element) => {
+    //     const propertyId = element.dataset.id;
+    //     await Dapp.Properties.removeProperty(propertyId, {
+    //         from: Dapp.account
+    //     })
+
+    //     window.location.reload()
+    // },
+
+    uploadProperty: async(address, city, price) => {
+        await Dapp.Properties.uploadProperty(address, city, price, {
+            from: Dapp.account
+        })
         window.location.reload()
-    }
+    },
+
+
 };
