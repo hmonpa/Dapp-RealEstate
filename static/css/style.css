@@ -577,7 +577,7 @@ section {
 }
 
 /*--------------------------------------------------------------
-# Services
+# Properties
 --------------------------------------------------------------*/
 .properties .icon-box {
   padding: 30px;
@@ -1170,7 +1170,7 @@ section {
 }
 
 /*--------------------------------------------------------------
-# Contact
+# Publish
 --------------------------------------------------------------*/
 .publish .publish-about h3 {
   font-size: 28px;
@@ -1185,7 +1185,10 @@ section {
   font-size: 14px;
   line-height: 24px;
   font-family: "Raleway", sans-serif;
-  color: #888;
+  color: rgb(0, 0, 0);
+}
+.publish #account {
+  font-weight: bold;
 }
 .publish .social-links {
   padding-bottom: 20px;
@@ -1405,12 +1408,11 @@ section {
   font-weight: 500;
   line-height: 1;
   font-size: 13px;
-  white-space: nowrap;
 }
 
 .buy-tickets:hover {
-  background: none;
-  color: #fff;
+  background-color: #035d99;
+  border: 2px solid #035d99;
 }
 
 .buy-tickets:focus {

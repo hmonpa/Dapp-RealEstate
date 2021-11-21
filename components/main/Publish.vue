@@ -12,7 +12,7 @@
           <div class="col-lg-6 col-md-6" data-aos="fade-up" data-aos-delay="100">
             <div class="publish-about">
               <div>
-                <p>Your current address is</p>
+                <p>Your current address is:</p>
                 <p id="account"></p>
               </div>
               <!--<div class="social-links">
