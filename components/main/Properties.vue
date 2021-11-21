@@ -14,13 +14,12 @@
             class="col-md-6 col-lg-3 d-flex align-items-stretch mb-5 mb-lg-0"
             style="margin:10px 0 10px 0"
           >
-            <div 
-              :id="`property_${index}`" 
+            <div
               class="icon-box" 
               data-aos="fade-up" 
               data-aos-delay="100"
               data-bs-toggle="modal"
-              data-bs-target="#modal"
+              :data-bs-target="'#property_' + index"
               style="cursor: pointer"
             >
               <div class="icon" style="background:url('/img/favicon.png') center;">
@@ -28,6 +27,8 @@
               </div>
               <h4 class="title"><a href="">{{ prop.city }}</a></h4>
               <p class="description">{{ prop.price }}€</p>
+              <br>
+              <p class="description">{{ new Date(prop.createdAt*1000).toLocaleDateString() }}</p>  
             </div>
           </div>
         </div>
@@ -36,17 +37,16 @@
       <!-- Modal -->
       <div
         v-for="(prop, index) in properties"
+        :id="'property_' + index"
         :key="index"
-        id="modal"
         :class="fade"
       >
         <div
-          :id="`property_${key}`" 
           class=" modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable"
         >
           <div class="modal-content">
             <div class="modal-header">
-              <h6>{{ prop.city }}</h6>
+              <h6 style="text-align:center">{{ prop.city }}</h6>
               <button
                 type="button"
                 class="btn-close"
@@ -57,12 +57,14 @@
             </div>
             <div class="modal-body" style="padding: 40px;text-align:center">
               <span class="line"></span>
-              <h6>{{ prop.price }}</h6>
+              <h6>Published by: {{ prop.owner }}</h6>
+              <p>Published on: {{ new Date(prop.createdAt*1000).toLocaleString() }}</p> 
+              <p>Price: {{ prop.price }}</p>
             </div>
             <div class="modal-footer">
               <button
                 type="button"
-                class="buy-tickets "
+                class="buy-tickets"
                 data-bs-dismiss="modal"
                 @click="pause()"
               >
@@ -83,7 +85,8 @@ export default {
     return {
       properties: [],
       fade: "modal fade",
-      autoplay: true
+      autoplay: true,
+      currentDate: Date.now()
     }
   },
   methods: {  

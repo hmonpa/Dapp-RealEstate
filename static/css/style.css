@@ -633,7 +633,8 @@ section {
   font-size: 18px;
 }
 .properties .title a {
-  color: #111;
+  color: #3498db;
+  text-decoration: none;
 }
 .properties .description {
   font-size: 15px;
@@ -1395,12 +1396,12 @@ section {
 --------------------------------------------------------------*/
 .buy-tickets {
   color: #fff;
-  background: #012970;
+  background: #3498db;
   padding: 7px 22px;
   margin: 0 0 0 15px;
   border-radius: 50px;
-  border: 2px solid #012970;
-  transition: all ease-in-out 0.3s;
+  border: 2px solid #3498db;
+  transition: 0.3s;
   font-weight: 500;
   line-height: 1;
   font-size: 13px;
