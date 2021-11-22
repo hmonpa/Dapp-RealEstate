@@ -3,12 +3,13 @@
     <Hero />
     <!--<MainClients />
     <MainAbout />
-    <MainCounts />-->
-    <!--<MainFeatures /> 
+    <MainCounts />-
+    <MainFeatures /> 
     <MainPortfolio /> 
     <MainTeam />
     <MainPricing />
     <MainFaq />-->
+    <!--<MainAccess />-->
     <MainPublish />
     <MainProperties />
   </main>

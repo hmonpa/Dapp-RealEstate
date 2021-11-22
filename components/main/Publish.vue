@@ -15,35 +15,8 @@
                 <p>Your current address is:</p>
                 <p id="account"></p>
               </div>
-              <!--<div class="social-links">
-                <a href="#" class="twitter"><i class="bi bi-twitter"></i></a>
-                <a href="#" class="facebook"><i class="bi bi-facebook"></i></a>
-                <a href="#" class="instagram"><i class="bi bi-instagram"></i></a>
-                <a href="#" class="linkedin"><i class="bi bi-linkedin"></i></a>
-              </div>-->
             </div>
           </div>
-
-          <!--<div class="col-lg-3 col-md-6 mt-4 mt-md-0" data-aos="fade-up" data-aos-delay="200">
-            <div class="info">
-              <div>
-                <i class="ri-map-pin-line"></i>
-                <p>A108 Adam Street<br>New York, NY 535022</p>
-              </div>
-
-              <div>
-                <i class="ri-mail-send-line"></i>
-                <p>info@example.com</p>
-              </div>
-
-              <div>
-                <i class="ri-phone-line"></i>
-                <p>+1 5589 55488 55s</p>
-              </div>
-
-            </div>
-          </div>-->
-
           <div class="col-lg-6 col-md-12" data-aos="fade-up" data-aos-delay="300">
             <form id="propertyForm" class="php-email-form">
               <div class="form-group">
@@ -55,30 +28,6 @@
               <div class="text-center">
                 <button type="submit" @click="uploadData">Publish</button>
               </div>
-              <div id="cities"></div>
-              <!--<div v-for="(val, index) in properties"
-                :key="index"
-                class="col-md-6 d-flex align-items-stretch"
-              >
-                <div
-                  :id="`property_${index}`"
-                  class="card"
-                  data-aos="fade-up"
-                  data-aos-delay="100"
-                >
-                  <div class="card-body">
-                    <h5 class="card-title">
-                      <span>{{ val.city }}</span>
-                    </h5>
-                    <hr>
-                    <span class="card-description">
-                      {{ val.price }}
-                    </span>
-                    <br>
-                    
-                  </div>
-                </div>
-              </div>-->
             </form>
           </div>
         </div>
@@ -110,7 +59,7 @@ export default {
         data += chunk.toString();
       } */
 
-      await Dapp.init();
+      await Dapp.checkAccount();
     },
 
     // Upload data from the upload properties form

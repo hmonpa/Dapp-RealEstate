@@ -40,6 +40,8 @@ export const Dapp = {
         Dapp.account = accounts[0];
 
         document.getElementById('account').innerText = Dapp.account;
+
+        return Dapp.account;
         // var account = Dapp.account;
         // console.log(Dapp.account);
     },
@@ -62,13 +64,27 @@ export const Dapp = {
         
         // console.log(Auth.users);
     },
-
+    // -------------- PROPERTIES FUNCTIONS --------------
     uploadProperty: async(address, city, price) => {
         await Dapp.Properties.uploadProperty(address, city, price, {
             from: Dapp.account
         })
         window.location.reload()
     },
+    // ----------------- AUTH FUNCTIONS -----------------
+    signIn: async(address, password) => {
+        let user0 = await Dapp.Auth.usersByAddr(address);
+
+        let login = await Dapp.Auth.signIn(address, password, {
+            from: Dapp.account
+        });
+
+        user0 = await Dapp.Auth.usersByAddr(address);
+        
+        return user0.isLoggedIn;
+        // window.location.reload()
+        // console.log(login.logs[0].args);
+    }
 
     // removeProperty: async(element) => {
     //     const propertyId = element.dataset.id;

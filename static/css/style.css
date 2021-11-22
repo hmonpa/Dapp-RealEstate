@@ -128,16 +128,37 @@ h1, h2, h3, h4, h5, h6 {
   color: #3498db;
 }
 .navbar .getstarted, .navbar .getstarted:focus {
-  background: #3498db;
+  border: 1px #3498db solid;
   padding: 8px 25px;
   margin-left: 30px;
   border-radius: 50px;
-  color: #fff;
+  color: #3498db;
+  text-decoration: none;
 }
-.navbar .getstarted:hover, .navbar .getstarted:focus:hover {
+.navbar .getstarted:hover {
+  background: #3498db;
   color: #fff;
-  background: #4aa3df;
+  border: 1px #4aa3df solid;
+  text-decoration: none;
 }
+
+.navbar .access, .navbar .access:focus {
+  border: 1px #3498db solid;
+  padding: 8px 25px;
+  margin-left: 30px;
+  border-radius: 50px;
+  background: #3498db;
+  color: #fff;
+  text-decoration: none;
+}
+
+.navbar .access:hover {
+  background: #fff;
+  color: #3498db;
+  border: 1px #3498db solid;
+  text-decoration: none;
+}
+
 .navbar .dropdown ul {
   display: block;
   position: absolute;
@@ -255,6 +276,11 @@ h1, h2, h3, h4, h5, h6 {
 .navbar-mobile .getstarted, .navbar-mobile .getstarted:focus {
   margin: 15px;
 }
+
+.navbar-mobile .access, .navbar-mobile .access:focus {
+  margin: 15px;
+}
+
 .navbar-mobile .dropdown ul {
   position: static;
   display: none;
@@ -1304,6 +1330,70 @@ section {
 }
 
 /*--------------------------------------------------------------
+# Access
+--------------------------------------------------------------*/
+.access .php-email-form .error-message {
+  display: none;
+  color: #fff;
+  background: #ed3c0d;
+  text-align: left;
+  padding: 15px;
+  font-weight: 600;
+}
+.access .php-email-form .error-message br + br {
+  margin-top: 25px;
+}
+.access .php-email-form .sent-message {
+  display: none;
+  color: #fff;
+  background: #18d26e;
+  text-align: center;
+  padding: 15px;
+  font-weight: 600;
+}
+.access .php-email-form .loading {
+  display: none;
+  background: #fff;
+  text-align: center;
+  padding: 15px;
+}
+.access .php-email-form .loading:before {
+  content: "";
+  display: inline-block;
+  border-radius: 50%;
+  width: 24px;
+  height: 24px;
+  margin: 0 10px -6px 0;
+  border: 3px solid #18d26e;
+  border-top-color: #eee;
+  -webkit-animation: animate-loading 1s linear infinite;
+  animation: animate-loading 1s linear infinite;
+}
+.access .php-email-form .form-group {
+  margin-bottom: 20px;
+}
+.access .php-email-form input, .access .php-email-form textarea {
+  border-radius: 0;
+  box-shadow: none;
+  font-size: 14px;
+  padding: 10px 15px;
+}
+.access .php-email-form input:focus, .access .php-email-form textarea:focus {
+  border-color: #3498db;
+}
+.access .php-email-form button[type=submit] {
+  background: #3498db;
+  border: 0;
+  padding: 10px 24px;
+  color: #fff;
+  transition: 0.4s;
+  border-radius: 50px;
+}
+.access .php-email-form button[type=submit]:hover {
+  background: #2383c4;
+}
+
+/*--------------------------------------------------------------
 # Breadcrumbs
 --------------------------------------------------------------*/
 .breadcrumbs {
@@ -1365,6 +1455,9 @@ section {
   padding: 30px 0;
   color: #222222;
   font-size: 14px;
+  height: 130px;
+  width: 100%;
+  bottom: 0;
 }
 #footer .credits {
   font-size: 13px;

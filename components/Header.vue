@@ -4,7 +4,7 @@
         <div class="container d-flex align-items-center justify-content-between">
 
         <div class="logo">
-            <h1><a href="#">Decentralized app</a></h1>
+            <h1><a href="/">Decentralized app</a></h1>
             <!-- Uncomment below if you prefer to use an image logo -->
             <!-- <a href="index.html"><img src="/img/logo.png" alt="" class="img-fluid"></a>-->
         </div>
@@ -18,7 +18,7 @@
             <li><a class="nav-link scrollto" href="#pricing">Pricing</a></li>
             <li><a class="nav-link scrollto" href="#properties">Properties</a></li>
             <li><a class="getstarted scrollto" href="#publish">Publish a new property</a></li>
-            <!--<li><a class="getstarted scrollto" href="#about">Get Started</a></li>-->
+            <li><a class="access scrollto" href="Access">Access</a></li>
             </ul>
             <i class="bi bi-list mobile-nav-toggle"></i>
         </nav><!-- .navbar -->
