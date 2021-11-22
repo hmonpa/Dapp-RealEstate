@@ -1,26 +1,25 @@
 const Web3 = require('web3');
 
 // https://www.trufflesuite.com/docs/truffle/advanced/build-processes
-var propertiesJson  = require('./build/contracts/Properties.json');                     // Get the contracts
 var authJson        = require('./build/contracts/Auth.json');
+var propertiesJson  = require('./build/contracts/Properties.json');                     // Get the contracts
 var TruffleContract = require('@truffle/contract');                                     // Turn that contract into an abstraction I can use
 
-var Properties      = TruffleContract(propertiesJson);
 var Auth            = TruffleContract(authJson);
+var Properties      = TruffleContract(propertiesJson);
 
 // Provide the contracts with a web3 provider
-Properties.setProvider(new Web3.providers.HttpProvider("http://127.0.0.1:7545"));           
 Auth.setProvider(new Web3.providers.HttpProvider("http://127.0.0.1:7545"));
+Properties.setProvider(new Web3.providers.HttpProvider("http://127.0.0.1:7545"));           
 
 export const Dapp = {
     contracts: {},
     init: async() => {
+        Dapp.Auth = Auth;
         Dapp.Properties = Properties;
         await Dapp.loadEthereum();
         await Dapp.checkAccount();
         await Dapp.loadContracts();
-        await Dapp.render();
-        // await Dapp.renderProperties();
         // await Dapp.removeProperty();
     },
 
@@ -39,8 +38,10 @@ export const Dapp = {
     checkAccount: async() => {
         const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
         Dapp.account = accounts[0];
+
+        document.getElementById('account').innerText = Dapp.account;
         // var account = Dapp.account;
-        // console.log(account);
+        // console.log(Dapp.account);
     },
 
     // Load smart contracts
@@ -51,9 +52,15 @@ export const Dapp = {
         // const contractAddr  = await Dapp.Properties.address;                // contract address
         // const checkWeb3     = await Dapp.Properties.web3;
 
+        // Auth contract will be deployed...
+        Dapp.Auth = await Auth.deployed();
+        console.log("Contract", Dapp.Auth.address, "is deployed done");
+
         // Properties contract will be deployed...
         Dapp.Properties = await Properties.deployed();
-        // console.log("Contract", Dapp.Properties.address, "is deployed done");
+        console.log("Contract", Dapp.Properties.address, "is deployed done");
+        
+        // console.log(Auth.users);
     },
 
     uploadProperty: async(address, city, price) => {
@@ -61,54 +68,6 @@ export const Dapp = {
             from: Dapp.account
         })
         window.location.reload()
-    },
-
-    renderProperties: async() => {
-        
-        const propertyCounter = await Dapp.Properties.propertyCounter();
-        const propertyCtrNum = propertyCounter.toNumber();
-
-        let html = '';
-        for(let i = 0; i < propertyCounter; i++){
-            const property = await Dapp.Properties.properties(i);
-            
-            let id = property[0];
-            let address = property[1];
-            let city = property[2];
-            let price = property[3].toNumber();
-            let isSelled = property[4];
-
-            let dateUploading = new Date(property[5]*1000).toLocaleString();
-
-            let propertyElement = `
-            <div>
-                <span>PropertyId: ${id}</span>
-                <br>
-                <span>Location: ${city}</span>
-                <br>
-                <span>Owner: ${address}</span>
-                <br>
-                <span>Price: ${price}</span>
-                <br>
-                <span>Upload date: ${dateUploading}</span>
-                <br>
-                <input data-id="${id}" type="checkbox" 
-                    ${isSelled && "checked"} onchange="this.removeProperty(this)"/>
-                <br><br>
-            </div>
-            `
-            html += propertyElement;
-
-        }
-        document.querySelector('#propertyList').innerHTML = html;
-
-    },
-
-    render: async() => {
-        document.getElementById('account').innerText = Dapp.account;
-
-        // document.getElementById('properties').innerText = Dapp.properties;
-        // console.log(properties);
     },
 
     // removeProperty: async(element) => {
