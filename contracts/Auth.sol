@@ -19,7 +19,7 @@ contract Auth {
     constructor() public 
     {
         // Register first user
-        signUp("Héctor", "hmonpa@gmail.com", "pass123456");
+        signUp(msg.sender, "Héctor", "hmonpa@gmail.com", "pass123456");
     }
 
     // ----------------------- MAPPINGS -----------------------
@@ -45,6 +45,7 @@ contract Auth {
     // ----------------------- FUNCTIONS -----------------------
     // Register a new user
     function signUp(
+        address _address,
         string _name,
         string _email,
         string _password
@@ -53,10 +54,10 @@ contract Auth {
         // uncomment in browser testings
         // if(getIndexFromAddr(msg.sender) == 0) return false;
 
-        address _address = msg.sender;
+        // address _address = msg.sender;
 
         users[usersCounter]     = User(_address, _name, _email, _password, false, block.timestamp);
-        usersByAddr[_address]   = User(_address, _name, _email, _password, false, block.timestamp);
+        usersByAddr[_address]  = User(_address, _name, _email, _password, false, block.timestamp);
         
         usersCounter++;
         emit newUser(_address, _name, _email, _password, false, block.timestamp);

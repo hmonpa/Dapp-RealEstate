@@ -37,6 +37,7 @@
     "nuxt": "^2.15.7",
     "save-dev": "^0.0.1-security",
     "sweetalert": "^2.1.2",
+    "sweetalert2": "^11.2.0",
     "truffle-contract": "^4.0.31"
   }
 }

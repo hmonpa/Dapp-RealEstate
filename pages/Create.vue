@@ -1,0 +1,101 @@
+<template>
+    <!-- ======= Access Section ======= -->
+    <section id="access" class="access">
+      <div class="container">
+
+        <div class="section-title" data-aos="fade-up" style="margin:100px 0 50px 0">
+          <h2>Sign up</h2>
+        </div>
+
+        <div class="row">
+          <div class="col-lg-3 col-md-12"></div>
+          <div class="col-lg-6 col-md-12" data-aos="fade-up" data-aos-delay="300">
+            <form id="createForm" class="php-email-form">
+              <p>Welcome to the dApp!</p>
+              <div class="form-group">
+                <input type="text" class="form-control" name="name" id="name" placeholder="Enter your name..." required>
+              </div>
+              <div class="form-group">
+                <input type="email" class="form-control" name="email" id="email" placeholder="Enter your email..." required>
+              </div>
+              <div class="form-group">
+                <input type="password" class="form-control" name="password" id="password" placeholder="Create a password..." required>
+              </div>
+              <div class="text-center" style="margin:50px 0 270px 0">
+                <button type="submit" @click="signUp">Access</button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </section>
+    <!-- End Access Section -->
+</template>
+<script>
+import { Dapp } from '../dapp';
+import swal from 'sweetalert';
+import Swal from 'sweetalert2';
+
+export default {
+  data(){
+    return {
+    }
+  },
+  methods: {
+    async start(){
+      await Dapp.init();
+      let account = await Dapp.checkAccount();
+    },
+    async signUp() {
+        const createForm = document.querySelector("#createForm");
+        createForm.addEventListener("submit", e => {
+            e.preventDefault();
+        });
+        const account = document.getElementById("account").innerText;
+        
+        if(account == null){
+          swal({
+            title: "Error!",
+            text: "Please connect your MetaMask wallet",
+            icon: "error",
+            dangerMode: true
+          }).then(function() {
+            window.location.reload();
+          });
+        } else { 
+          await Dapp.signUp(account, createForm["name"].value, createForm["email"].value, createForm["password"].value);
+          // console.log(res);
+          // if(res){
+          //   swal({
+          //     title: "Login successfully",
+          //     icon: "success"
+          //   }).then(function() {
+          //     window.location.href = "/";
+          //   });
+          // } else {
+          //   const res = await Dapp.checkExists(account);
+            
+          //   if(!res){ // Account doesn't exists
+          //     Swal.fire({
+          //       title: "Error!",
+          //       text: "This account doesn't exists",
+          //       icon: "error",
+          //       footer: '<a href="#">Create an account</a>',
+          //       dangerMode: true
+          //     })
+          //   }  
+          //   else
+          //     swal({
+          //       title: "Error!",
+          //       text: "Incorrect password!",
+          //       icon: "error"
+          //     });
+          // }
+        }
+    }
+  },
+  beforeMount(){
+    this.start();
+  } 
+}
+</script>

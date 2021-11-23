@@ -12,16 +12,18 @@
         <nav id="navbar" class="navbar">
             <ul>
             <li><a class="nav-link scrollto " href="#hero">Home</a></li>
-            <li><a class="nav-link scrollto" href="#about">About</a></li>
+            <!--<li><a class="nav-link scrollto" href="#about">About</a></li>
             <li><a class="nav-link scrollto " href="#portfolio">Portfolio</a></li>
             <li><a class="nav-link scrollto" href="#team">Team</a></li>
-            <li><a class="nav-link scrollto" href="#pricing">Pricing</a></li>
+            <li><a class="nav-link scrollto" href="#pricing">Pricing</a></li>-->
             <li><a class="nav-link scrollto" href="#properties">Properties</a></li>
             <li><a class="getstarted scrollto" href="#publish">Publish a new property</a></li>
             <li><a class="access scrollto" href="Access">Access</a></li>
+            <li id="account"><a class="metamask" @click="connectWallet"></a></li>
             </ul>
             <i class="bi bi-list mobile-nav-toggle"></i>
-        </nav><!-- .navbar -->
+        </nav>
+        <!-- .navbar -->
 
         </div>
     </header>
@@ -30,16 +32,18 @@
 
 <script>
 import { Dapp } from '../dapp';
+import swal from 'sweetalert';
 
 export default {
     data() {
+        const account = null;
         return {
             fade: "modal fade",
             autoplay: true,
         }
     },
     beforeMount(){
-        this.getAccount();
+        // this.getAccount();
     },
     mounted() {
         /**
@@ -193,10 +197,35 @@ export default {
         });
     },
     methods: {
+        async connectWallet() {
+            let res;
+            try{
+                res = await Dapp.loadEthereum();
+            } catch (err) {
+                swal({
+                    title: "Error",
+                    text: "Connect your MetaMask wallet",
+                    icon: "error",
+                    dangerMode: true
+                })
+            }
+            // MetaMask not installed
+            if (res == 0){ 
+                swal({
+                    title: "Error",
+                    text: "Try installing MetaMask",
+                    icon: "error",
+                    dangerMode: true
+                })
+            }   
+            this.account = await this.getAccount();
+            console.log(this.account);
+        },
         async getAccount(){
             await Dapp.init();
             let account = await Dapp.checkAccount();
-            console.log(account);
+            
+            return account;
         }
     },
 }

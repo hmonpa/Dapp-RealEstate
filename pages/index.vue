@@ -9,9 +9,9 @@
     <MainTeam />
     <MainPricing />
     <MainFaq />-->
-    <!--<MainAccess />-->
+    <!--<MainAccess />
     <MainPublish />
-    <MainProperties />
+    <MainProperties />-->
   </main>
 </template>
 

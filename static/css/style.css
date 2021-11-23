@@ -161,6 +161,19 @@ h1, h2, h3, h4, h5, h6 {
   text-decoration: none;
 }
 
+.navbar .metamask, .navbar .metamask:focus {
+  width: 55px;
+  height: 55px;
+  margin-left: 30px;
+  border-radius: 50px;
+  background: url("/img/metamask.png") no-repeat;
+  text-decoration: none;
+}
+
+.navbar #account {
+  margin-left: 20px;
+}
+
 .navbar .dropdown ul {
   display: block;
   position: absolute;

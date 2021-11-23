@@ -30,7 +30,8 @@ export const Dapp = {
             await window.ethereum.request({ method: 'eth_requestAccounts' });
         } 
         else {
-            console.log('There is no Ethereum wallet installed. Try installing MetaMask')
+            console.log('There is no Ethereum wallet installed. Try installing MetaMask');
+            return 0;
         }
     },
 
@@ -40,6 +41,7 @@ export const Dapp = {
         Dapp.account = accounts[0];
 
         document.getElementById('account').innerText = Dapp.account;
+        // document.querySelector('account').innerText = Dapp.account;
         
         return Dapp.account;
         // var account = Dapp.account;
@@ -82,8 +84,22 @@ export const Dapp = {
         user0 = await Dapp.Auth.usersByAddr(address);
         
         return user0.isLoggedIn;
-        // window.location.reload()
-        // console.log(login.logs[0].args);
+    },
+
+    signUp: async(address, name, email, password) => {
+        await Dapp.Auth.signUp(address, name, email, password, {
+            from: Dapp.account
+        })
+        let user = await Dapp.Auth.usersByAddr(address);
+        let users = await Dapp.Auth.users;
+        console.log(users);
+    },
+
+    checkExists: async(address) => {
+        let user = await Dapp.Auth.usersByAddr(address);
+        var res = (user.email) ? 1 : 0;
+        console.log(user.password);
+        return res; 
     }
 
     // removeProperty: async(element) => {
