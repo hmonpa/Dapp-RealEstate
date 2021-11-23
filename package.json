@@ -7,9 +7,7 @@
     "dev": "nuxt",
     "build": "nuxt build",
     "start": "nuxt start",
-    "generate": "nuxt generate",
-    "test": "mocha",
-    "lite-server": "lite-server"
+    "generate": "nuxt generate"
   },
   "repository": {
     "type": "git",
@@ -22,8 +20,6 @@
   },
   "homepage": "https://github.com/hmonpa/TFG#readme",
   "devDependencies": {
-    "chalk": "^4.1.2",
-    "mocha": "^7.2.0",
     "solc": "^0.4.24",
     "web3": "^1.0.0-beta.55"
   },
@@ -40,6 +36,7 @@
     "ipfs-core": "^0.11.1",
     "nuxt": "^2.15.7",
     "save-dev": "^0.0.1-security",
+    "sweetalert": "^2.1.2",
     "truffle-contract": "^4.0.31"
   }
 }

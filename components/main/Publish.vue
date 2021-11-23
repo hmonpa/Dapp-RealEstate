@@ -59,7 +59,7 @@ export default {
         data += chunk.toString();
       } */
 
-      await Dapp.checkAccount();
+      await Dapp.init();
     },
 
     // Upload data from the upload properties form

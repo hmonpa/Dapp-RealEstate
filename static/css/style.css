@@ -3,7 +3,9 @@
 --------------------------------------------------------------*/
 body {
   font-family: "Open Sans", sans-serif;
-  color: #444444;
+  color: #4444;
+  min-height: 100%;
+  position: relative;
 }
 
 a {
@@ -1340,6 +1342,19 @@ section {
   padding: 15px;
   font-weight: 600;
 }
+.access .php-email-form {
+  text-align: center;
+}
+
+.access .php-email-form p {
+  display: inline;
+  font-size: 20px;
+}
+
+.access #account {
+  font-weight: bold;
+}
+
 .access .php-email-form .error-message br + br {
   margin-top: 25px;
 }
@@ -1370,7 +1385,7 @@ section {
   animation: animate-loading 1s linear infinite;
 }
 .access .php-email-form .form-group {
-  margin-bottom: 20px;
+  margin: 20px 0 20px 0;
 }
 .access .php-email-form input, .access .php-email-form textarea {
   border-radius: 0;
@@ -1455,9 +1470,10 @@ section {
   padding: 30px 0;
   color: #222222;
   font-size: 14px;
-  height: 130px;
+  height: 100px;
   width: 100%;
   bottom: 0;
+  bottom: 0px;
 }
 #footer .credits {
   font-size: 13px;

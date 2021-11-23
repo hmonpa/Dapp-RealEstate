@@ -6,7 +6,7 @@
         <div class="logo">
             <h1><a href="/">Decentralized app</a></h1>
             <!-- Uncomment below if you prefer to use an image logo -->
-            <!-- <a href="index.html"><img src="/img/logo.png" alt="" class="img-fluid"></a>-->
+            <!--<img src="/img/logo.png" alt="" class="img-fluid">-->
         </div>
 
         <nav id="navbar" class="navbar">
@@ -29,12 +29,17 @@
 </template>
 
 <script>
+import { Dapp } from '../dapp';
+
 export default {
     data() {
         return {
-        fade: "modal fade",
-        autoplay: true,
+            fade: "modal fade",
+            autoplay: true,
         }
+    },
+    beforeMount(){
+        this.getAccount();
     },
     mounted() {
         /**
@@ -188,7 +193,11 @@ export default {
         });
     },
     methods: {
-        
-    }
+        async getAccount(){
+            await Dapp.init();
+            let account = await Dapp.checkAccount();
+            console.log(account);
+        }
+    },
 }
 </script>
