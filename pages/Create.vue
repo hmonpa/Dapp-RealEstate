@@ -65,13 +65,13 @@ export default {
         } else { 
           await Dapp.signUp(account, createForm["name"].value, createForm["email"].value, createForm["password"].value);
           // console.log(res);
-          // if(res){
-          //   swal({
-          //     title: "Login successfully",
-          //     icon: "success"
-          //   }).then(function() {
-          //     window.location.href = "/";
-          //   });
+          
+            swal({
+              title: "User create successfully",
+              icon: "success"
+            }).then(function() {
+              window.location.href = "/Access";
+            });
           // } else {
           //   const res = await Dapp.checkExists(account);
             

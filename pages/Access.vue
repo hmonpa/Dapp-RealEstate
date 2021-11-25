@@ -44,9 +44,10 @@ export default {
         loginForm.addEventListener("submit", e => {
             e.preventDefault();
         });
+
+        // Check if MetaMask is connected with account
         const account = document.getElementById("account").innerText;
-        
-        if(account == null){
+        if(!account) {
           swal({
             title: "Error!",
             text: "Please connect your MetaMask wallet",
@@ -56,33 +57,37 @@ export default {
             window.location.reload();
           });
         } else { 
-          const res = await Dapp.signIn(account, loginForm["password"].value);
-          // console.log(res);
-          if(res){
-            swal({
-              title: "Login successfully",
-              icon: "success"
-            }).then(function() {
-              window.location.href = "/";
+          // Check if the account already exists
+          const exists = await Dapp.checkExists(account);
+          
+          if (!exists)
+          {
+            Swal.fire({
+              title: "Error!",
+              text: "This account doesn't exists",
+              icon: "error",
+              footer: '<a href="Create">Create an account</a>'
             });
           } else {
-            const res = await Dapp.checkExists(account);
-            
-            if(!res){ // Account doesn't exists
-              Swal.fire({
-                title: "Error!",
-                text: "This account doesn't exists",
-                icon: "error",
-                footer: '<a href="Create">Create an account</a>',
-                dangerMode: true
-              })
-            }  
-            else
+            // Try to connect
+            const correctPass = await Dapp.tryToConnect(account, loginForm["password"].value);
+            if(!correctPass)
+            {
               swal({
-                title: "Error!",
-                text: "Incorrect password!",
-                icon: "error"
+                  title: "Error!",
+                  text: "Incorrect password!",
+                  icon: "error"
               });
+            } else {
+              // Connected 
+              await Dapp.signIn(account, loginForm["password"].value);
+              swal({
+                title: "Login successfully",
+                icon: "success"
+              }).then(function() {
+                window.location.href = "/";
+              });
+            }
           }
         }
     }

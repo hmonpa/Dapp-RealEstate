@@ -9,13 +9,7 @@
 
         <div class="row">
 
-          <div class="col-lg-6 col-md-6" data-aos="fade-up" data-aos-delay="100">
-            <div class="publish-about">
-              <div>
-                <p>Your current address is:</p>
-                <p id="account"></p>
-              </div>
-            </div>
+          <div class="col-lg-3 col-md-6" data-aos="fade-up" data-aos-delay="100">
           </div>
           <div class="col-lg-6 col-md-12" data-aos="fade-up" data-aos-delay="300">
             <form id="propertyForm" class="php-email-form">
@@ -65,20 +59,16 @@ export default {
     // Upload data from the upload properties form
     uploadData() {
       const propertyForm = document.querySelector("#propertyForm");
+      const account = document.getElementById("account").innerText;
+      
       propertyForm.addEventListener("submit", e => {
         e.preventDefault();
 
-        console.log(Dapp.account, propertyForm["city"].value, propertyForm["price"].value)
+        console.log(account, propertyForm["city"].value, propertyForm["price"].value)
 
-        Dapp.uploadProperty(Dapp.account, propertyForm["city"].value, propertyForm["price"].value);
+        Dapp.uploadProperty(account, propertyForm["city"].value, propertyForm["price"].value);
       });
     },
-
-    // // Call to removeProperty function
-    // removeProperty(obj){
-    //   console.log(obj);
-    //   Dapp.removeProperty(obj);
-    // }
   },
   beforeMount(){
     // Call to JS

@@ -40,6 +40,7 @@ export default {
         return {
             fade: "modal fade",
             autoplay: true,
+            account
         }
     },
     beforeMount(){
@@ -219,7 +220,7 @@ export default {
                 })
             }   
             this.account = await this.getAccount();
-            console.log(this.account);
+            
         },
         async getAccount(){
             await Dapp.init();

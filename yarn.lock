@@ -13749,6 +13749,11 @@
   "resolved" "https://registry.npmjs.org/shell-quote/-/shell-quote-1.7.3.tgz"
   "version" "1.7.3"
 
+"shvl@^2.0.3":
+  "integrity" "sha512-V7C6S9Hlol6SzOJPnQ7qzOVEWUQImt3BNmmzh40wObhla3XOYMe4gGiYzLrJd5TFa+cI2f9LKIRJTTKZSTbWgw=="
+  "resolved" "https://registry.npmjs.org/shvl/-/shvl-2.0.3.tgz"
+  "version" "2.0.3"
+
 "side-channel@^1.0.4":
   "integrity" "sha512-q5XPytqFEIKHkGdiMIrY10mvLRvnQh42/+GoBlFW3b2LXLE2xxJpZFdm94we0BaoV3RwJyGqg5wS7epxTv0Zvw=="
   "resolved" "https://registry.npmjs.org/side-channel/-/side-channel-1.0.4.tgz"
@@ -15470,7 +15475,15 @@
   "resolved" "https://registry.npmjs.org/vue/-/vue-2.6.14.tgz"
   "version" "2.6.14"
 
-"vuex@^3.6.2":
+"vuex-persistedstate@^4.1.0":
+  "integrity" "sha512-3SkEj4NqwM69ikJdFVw6gObeB0NHyspRYMYkR/EbhR0hbvAKyR5gksVhtAfY1UYuWUOCCA0QNGwv9pOwdj+XUQ=="
+  "resolved" "https://registry.npmjs.org/vuex-persistedstate/-/vuex-persistedstate-4.1.0.tgz"
+  "version" "4.1.0"
+  dependencies:
+    "deepmerge" "^4.2.2"
+    "shvl" "^2.0.3"
+
+"vuex@^3.0 || ^4.0.0-rc", "vuex@^3.6.2":
   "integrity" "sha512-ETW44IqCgBpVomy520DT5jf8n0zoCac+sxWnn+hMe/CzaSejb/eVw2YToiXYX+Ex/AuHHia28vWTq4goAexFbw=="
   "resolved" "https://registry.npmjs.org/vuex/-/vuex-3.6.2.tgz"
   "version" "3.6.2"

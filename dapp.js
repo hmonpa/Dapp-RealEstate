@@ -17,8 +17,8 @@ export const Dapp = {
     init: async() => {
         Dapp.Auth = Auth;
         Dapp.Properties = Properties;
-        await Dapp.loadEthereum();
-        await Dapp.checkAccount();
+        // await Dapp.loadEthereum();
+        // await Dapp.checkAccount();
         await Dapp.loadContracts();
         // await Dapp.removeProperty();
     },
@@ -68,9 +68,10 @@ export const Dapp = {
     },
     // -------------- PROPERTIES FUNCTIONS --------------
     uploadProperty: async(address, city, price) => {
-        await Dapp.Properties.uploadProperty(address, city, price, {
+        let res = await Dapp.Properties.uploadProperty(address, city, price, {
             from: Dapp.account
         })
+        console.log(res);
         window.location.reload()
     },
     // ----------------- AUTH FUNCTIONS -----------------
@@ -93,6 +94,12 @@ export const Dapp = {
         let user = await Dapp.Auth.usersByAddr(address);
         let users = await Dapp.Auth.users;
         console.log(users);
+    },
+
+    tryToConnect: async(address, password) => {
+       let user = await Dapp.Auth.usersByAddr(address);
+       
+       return user.password == password;
     },
 
     checkExists: async(address) => {
