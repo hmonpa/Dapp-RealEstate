@@ -30,7 +30,7 @@
     <!-- End Publish Section -->
 </template>
 <script>
-import { Dapp } from '../../dapp';
+import { Dapp } from '@/dapp';
 const IPFS = require('ipfs-core');
 
 export default {

@@ -23,8 +23,9 @@ contract Auth {
     }
 
     // ----------------------- MAPPINGS -----------------------
-    mapping(uint256 => User) public users;
     mapping(address => User) public usersByAddr;
+    // mapping(uint256 => User) public users;
+    User[] public users;
 
     // ----------------------- EVENTS -----------------------
     event newUser(
@@ -51,15 +52,11 @@ contract Auth {
         string _password
     ) public returns (bool) 
     {
-        // uncomment in browser testings
-        // if(getIndexFromAddr(msg.sender) == 0) return false;
-
-        // address _address = msg.sender;
-
-        users[usersCounter]     = User(_address, _name, _email, _password, false, block.timestamp);
-        usersByAddr[_address]  = User(_address, _name, _email, _password, false, block.timestamp);
+        users.push(User(_address, _name, _email, _password, false, block.timestamp));
+        usersByAddr[_address] = User(_address, _name, _email, _password, false, block.timestamp);
         
         usersCounter++;
+
         emit newUser(_address, _name, _email, _password, false, block.timestamp);
         return true;
     }
@@ -72,7 +69,7 @@ contract Auth {
             && 
             usersByAddr[_address].addr == _address)
         {
-            users[usersCounter].isLoggedIn      = true;
+            // users[usersCounter].isLoggedIn      = true;
             usersByAddr[_address].isLoggedIn   = true;
             emit userLogged(_address, usersByAddr[_address].name, usersByAddr[_address].isLoggedIn);
             
@@ -83,13 +80,18 @@ contract Auth {
     }
 
     // Returns index from @
-    function getIndexFromAddr(address _address) public view returns (uint)
+    // function getIndexFromAddr(address _address) public view returns (uint)
+    // {
+    //     for (uint i = 0; i < usersCounter; i++)
+    //     {
+    //         if (_address == users[usersCounter].addr) return i;
+    //     }
+    //     if (i == usersCounter) return 0;
+    // }
+
+    function getName(address _address) public view returns (string)
     {
-        for (uint i = 0; i < usersCounter; i++)
-        {
-            if (_address == users[usersCounter].addr) return i;
-        }
-        if (i == usersCounter) return 0;
+        return usersByAddr[_address].name;
     }
 
     // Get @ from index

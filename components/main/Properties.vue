@@ -78,8 +78,8 @@
   <!-- End Properties Section -->
 </template>
 <script>
-import { Dapp } from '../../dapp';
-import { account } from '../Header.vue';
+import { Dapp } from '@/dapp';
+import { account } from '@/components/Header.vue';
 export default {
   data(){
     // const currentAccount = account.innerText;

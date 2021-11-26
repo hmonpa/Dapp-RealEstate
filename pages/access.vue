@@ -12,7 +12,7 @@
           <div class="col-lg-6 col-md-12" data-aos="fade-up" data-aos-delay="300">
             <form id="loginForm" class="php-email-form">
               <div class="form-group">
-                <input type="password" class="form-control" name="password" id="password" placeholder="Password" required>
+                <input type="password" v-model="password" class="form-control" name="password" id="password" placeholder="Password" required>
               </div>
               <div class="text-center" style="margin:50px 0 270px 0">
                 <button type="submit" @click="signIn">Access</button>
@@ -25,22 +25,24 @@
     <!-- End Access Section -->
 </template>
 <script>
-import { Dapp } from '../dapp';
+import { Dapp } from '@/dapp';
+import auth from '@/src/auth';
 import swal from 'sweetalert';
 import Swal from 'sweetalert2';
 
 export default {
-  data(){
-    return {
-    }
-  },
+  data: () => ({
+    password: ""
+  }),
   methods: {
     async start(){
       await Dapp.init();
-      let account = await Dapp.checkAccount();
+      // let account = await Dapp.checkAccount();
     },
     async signIn() {
-        const loginForm = document.querySelector("#loginForm");
+        // const loginForm = document.querySelector("#loginForm");
+        console.log(this.password);
+
         loginForm.addEventListener("submit", e => {
             e.preventDefault();
         });
@@ -66,11 +68,11 @@ export default {
               title: "Error!",
               text: "This account doesn't exists",
               icon: "error",
-              footer: '<a href="Create">Create an account</a>'
+              footer: '<a href="create">Create an account</a>'
             });
           } else {
             // Try to connect
-            const correctPass = await Dapp.tryToConnect(account, loginForm["password"].value);
+            const correctPass = await Dapp.tryToConnect(account, this.password);
             if(!correctPass)
             {
               swal({
@@ -79,13 +81,16 @@ export default {
                   icon: "error"
               });
             } else {
-              // Connected 
-              await Dapp.signIn(account, loginForm["password"].value);
+              // Connect 
+              await Dapp.signIn(account, this.password);
+              let user = await Dapp.getName(account);
+              console.log(user);
+              auth.setUserLogged(user);
               swal({
                 title: "Login successfully",
                 icon: "success"
               }).then(function() {
-                window.location.href = "/";
+                // this.$router.push("/");
               });
             }
           }

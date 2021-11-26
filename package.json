@@ -34,11 +34,14 @@
     "go-ipfs": "^0.10.0",
     "ipfs": "^0.60.0",
     "ipfs-core": "^0.11.1",
+    "js-cookie": "^3.0.1",
     "nuxt": "^2.15.7",
     "save-dev": "^0.0.1-security",
     "sweetalert": "^2.1.2",
     "sweetalert2": "^11.2.0",
     "truffle-contract": "^4.0.31",
+    "vue": "^2.6.14",
+    "vue-router": "^3.5.3",
     "vuex-persistedstate": "^4.1.0"
   }
 }

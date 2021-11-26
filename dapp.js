@@ -77,13 +77,11 @@ export const Dapp = {
     // ----------------- AUTH FUNCTIONS -----------------
     signIn: async(address, password) => {
         let user0 = await Dapp.Auth.usersByAddr(address);
-
-        await Dapp.Auth.signIn(address, password, {
+        let res = await Dapp.Auth.signIn(address, password, {
             from: Dapp.account
         });
-
-        user0 = await Dapp.Auth.usersByAddr(address);
         
+        user0 = await Dapp.Auth.usersByAddr(address);
         return user0.isLoggedIn;
     },
 
@@ -104,9 +102,15 @@ export const Dapp = {
 
     checkExists: async(address) => {
         let user = await Dapp.Auth.usersByAddr(address);
-        var res = (user.email) ? 1 : 0;
-        console.log(user.password);
+        let res = (user.email) ? 1 : 0;
+        // console.log(user.password);
         return res; 
+    },
+
+    getName: async(address) => {
+        let name = await Dapp.Auth.getName(address);
+        
+        return name;
     }
 
     // removeProperty: async(element) => {

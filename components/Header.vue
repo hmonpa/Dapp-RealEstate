@@ -18,8 +18,8 @@
             <li><a class="nav-link scrollto" href="#pricing">Pricing</a></li>-->
             <li><a class="nav-link scrollto" href="#properties">Properties</a></li>
             <li><a class="getstarted scrollto" href="#publish">Publish a new property</a></li>
-            <li><a class="access scrollto" href="Access">Access</a></li>
-            <li id="account"><a class="metamask" @click="connectWallet"></a></li>
+            <li><a class="access scrollto" href="access">Access</a></li>
+            <li id="account"><a class="metamask" style="cursor: pointer" @click="connectWallet"></a></li>
             </ul>
             <i class="bi bi-list mobile-nav-toggle"></i>
         </nav>
@@ -31,7 +31,7 @@
 </template>
 
 <script>
-import { Dapp } from '../dapp';
+import { Dapp } from '@/dapp';
 import swal from 'sweetalert';
 
 export default {
