@@ -28,8 +28,8 @@ export const Dapp = {
         if (window.ethereum){
             try {
                 Dapp.web3Provider = window.ethereum
-                let res = await window.ethereum.request({ method: 'eth_requestAccounts' });
-                console.log(res);
+                return await window.ethereum.request({ method: 'eth_requestAccounts' });
+                
             } catch (err) {
                 console.log(err);
             }

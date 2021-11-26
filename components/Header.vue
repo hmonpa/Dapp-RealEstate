@@ -23,9 +23,9 @@
                 <a v-else class="access scrollto" href="access">Access</a>
             </li>
             <li>
-                <!--<a v-if="walletConnected" class="metamask" style="cursor: pointer">{{ walletConnected }}</a>
-                <a v-else class="metamask" style="cursor: pointer" @click="connectWallet"></a>-->
-                <a class="metamask" style="cursor: pointer" @click="connectWallet"></a>
+                <a v-if="walletConnected" class="metamask" style="cursor: pointer">{{ walletConnected }}</a>
+                <a v-else class="metamask" style="cursor: pointer" @click="connectWallet">AAA</a>
+                <!--<a class="metamask" style="cursor: pointer" @click="connectWallet"></a>-->
             </li>
             <li><a v-if="userLogged" class="nav-link scrollto" style="cursor: pointer" @click="logout">Logout</a></li>
             </ul>
@@ -218,9 +218,9 @@ export default {
     methods: {
         async connectWallet() {
             try {
-                let res = await Dapp.loadEthereum();
-
-                this.account = await this.getAccount();
+                this.account = await Dapp.loadEthereum();
+        
+                // await Dapp.checkAccount();
                 auth.setAccount(this.account);
                 Swal.fire({
                     title: "Great!",
@@ -232,11 +232,11 @@ export default {
             } catch (err) {
                 // MetaMask not installed or with errors
                 console.log(err);
-                Swal.fire({
-                    title: "Vinculation fails!",
-                    text: "Connect your MetaMask wallet or review your extension",
-                    icon: "error"
-                })
+                // Swal.fire({
+                //     title: "Vinculation fails!",
+                //     text: "Connect your MetaMask wallet or review your extension",
+                //     icon: "error"
+                // })
             }
 
         },
@@ -245,12 +245,12 @@ export default {
             auth.logoutUser(user);
             // window.location.reload();
         },
-        async getAccount(){
-            await Dapp.init();
-            let account = await Dapp.checkAccount();
+        // async getAccount(){
+        //     await Dapp.init();
+        //     let account = await Dapp.checkAccount();
             
-            return account;
-        }
+        //     return account;
+        // }
     },
 }
 </script>
