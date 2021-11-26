@@ -45,7 +45,6 @@ export default {
   methods: {
     async start(){
       await Dapp.init();
-      let account = await Dapp.checkAccount();
     },
     async signUp() {
       console.log(this.name);

@@ -11,15 +11,23 @@
 
         <nav id="navbar" class="navbar">
             <ul>
-            <li><a class="nav-link scrollto " href="#hero">Home</a></li>
+            <li><a class="nav-link scrollto" href="#hero">Home</a></li>
             <!--<li><a class="nav-link scrollto" href="#about">About</a></li>
             <li><a class="nav-link scrollto " href="#portfolio">Portfolio</a></li>
             <li><a class="nav-link scrollto" href="#team">Team</a></li>
             <li><a class="nav-link scrollto" href="#pricing">Pricing</a></li>-->
             <li><a class="nav-link scrollto" href="#properties">Properties</a></li>
             <li><a class="getstarted scrollto" href="#publish">Publish a new property</a></li>
-            <li><a class="access scrollto" href="access">Access</a></li>
-            <li id="account"><a class="metamask" style="cursor: pointer" @click="connectWallet"></a></li>
+            <li>
+                <a v-if="userLogged" class="access scrollto" >{{ userLogged }}</a>
+                <a v-else class="access scrollto" href="access">Access</a>
+            </li>
+            <li>
+                <!--<a v-if="walletConnected" class="metamask" style="cursor: pointer">{{ walletConnected }}</a>
+                <a v-else class="metamask" style="cursor: pointer" @click="connectWallet"></a>-->
+                <a class="metamask" style="cursor: pointer" @click="connectWallet"></a>
+            </li>
+            <li><a v-if="userLogged" class="nav-link scrollto" style="cursor: pointer" @click="logout">Logout</a></li>
             </ul>
             <i class="bi bi-list mobile-nav-toggle"></i>
         </nav>
@@ -32,9 +40,19 @@
 
 <script>
 import { Dapp } from '@/dapp';
+import auth from '@/src/auth';
 import swal from 'sweetalert';
+import Swal from 'sweetalert2';
 
 export default {
+    computed: {
+        userLogged() {
+            return auth.getUserLogged();
+        },
+        walletConnected() {
+            return auth.getCurrentWallet();
+        }
+    },
     data() {
         const account = null;
         return {
@@ -199,28 +217,33 @@ export default {
     },
     methods: {
         async connectWallet() {
-            let res;
-            try{
-                res = await Dapp.loadEthereum();
+            try {
+                let res = await Dapp.loadEthereum();
+
+                this.account = await this.getAccount();
+                auth.setAccount(this.account);
+                Swal.fire({
+                    title: "Great!",
+                    text: 'Your account ' + this.account + ' is already connected',
+                    icon: 'success'
+                })
+                
+
             } catch (err) {
-                swal({
-                    title: "Error",
-                    text: "Connect your MetaMask wallet",
-                    icon: "error",
-                    dangerMode: true
+                // MetaMask not installed or with errors
+                console.log(err);
+                Swal.fire({
+                    title: "Vinculation fails!",
+                    text: "Connect your MetaMask wallet or review your extension",
+                    icon: "error"
                 })
             }
-            // MetaMask not installed
-            if (res == 0){ 
-                swal({
-                    title: "Error",
-                    text: "Try installing MetaMask",
-                    icon: "error",
-                    dangerMode: true
-                })
-            }   
-            this.account = await this.getAccount();
-            
+
+        },
+        async logout() {
+            let user = auth.getUserLogged();
+            auth.logoutUser(user);
+            // window.location.reload();
         },
         async getAccount(){
             await Dapp.init();

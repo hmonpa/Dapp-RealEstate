@@ -1,6 +1,6 @@
 <template>
     <!-- ======= Publish Section ======= -->
-    <section id="publish" class="publish">
+    <section v-if="userLogged" id="publish" class="publish">
       <div class="container">
 
         <div class="section-title" data-aos="fade-up">
@@ -29,11 +29,18 @@
     </section>
     <!-- End Publish Section -->
 </template>
+
 <script>
 import { Dapp } from '@/dapp';
+import auth from '@/src/auth';
 const IPFS = require('ipfs-core');
 
 export default {
+  computed: {
+    userLogged() {
+        return auth.getUserLogged();
+    }
+  },
   data(){
     return {}
   },

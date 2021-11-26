@@ -26,8 +26,13 @@ export const Dapp = {
     // Loading network
     loadEthereum: async() => {
         if (window.ethereum){
-            Dapp.web3Provider = window.ethereum
-            await window.ethereum.request({ method: 'eth_requestAccounts' });
+            try {
+                Dapp.web3Provider = window.ethereum
+                let res = await window.ethereum.request({ method: 'eth_requestAccounts' });
+                console.log(res);
+            } catch (err) {
+                console.log(err);
+            }
         } 
         else {
             console.log('There is no Ethereum wallet installed. Try installing MetaMask');
