@@ -23,8 +23,8 @@
                 <a v-else class="access scrollto" href="access">Access</a>
             </li>
             <li>
-                <a v-if="walletConnected" class="metamask" style="cursor: pointer">{{ walletConnected }}</a>
-                <a v-else class="metamask" style="cursor: pointer" @click="connectWallet">AAA</a>
+                <a v-if="walletConnected == null" class="metamask" style="cursor: pointer" @click="connectWallet"></a>
+                <a v-else>{{ walletConnected }}</a>
                 <!--<a class="metamask" style="cursor: pointer" @click="connectWallet"></a>-->
             </li>
             <li><a v-if="userLogged" class="nav-link scrollto" style="cursor: pointer" @click="logout">Logout</a></li>
@@ -61,8 +61,14 @@ export default {
             account
         }
     },
-    beforeMount(){
-        // this.getAccount();
+    async beforeMount(){
+        // console.log(this.walletConnected);
+        await Dapp.checkStatus();
+    //    console.log(this.account);
+    //    if(!this.account){
+    //        console.log("no hay cuentas")
+    //        auth.removeWallet();
+    //    }
     },
     mounted() {
         /**
@@ -219,24 +225,24 @@ export default {
         async connectWallet() {
             try {
                 this.account = await Dapp.loadEthereum();
-        
-                // await Dapp.checkAccount();
                 auth.setAccount(this.account);
                 Swal.fire({
                     title: "Great!",
                     text: 'Your account ' + this.account + ' is already connected',
                     icon: 'success'
+                }).then(function() {
+                    window.location.reload();
                 })
                 
 
             } catch (err) {
                 // MetaMask not installed or with errors
-                console.log(err);
-                // Swal.fire({
-                //     title: "Vinculation fails!",
-                //     text: "Connect your MetaMask wallet or review your extension",
-                //     icon: "error"
-                // })
+                // console.log(err);
+                Swal.fire({
+                    title: "Vinculation fails!",
+                    text: "Connect your MetaMask wallet or review your extension",
+                    icon: "error"
+                })
             }
 
         },

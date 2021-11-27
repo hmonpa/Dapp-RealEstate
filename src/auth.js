@@ -20,5 +20,10 @@ export default {
     // Get current wallet
     getCurrentWallet() {
       return Cookies.get("walletConnected");
+    },
+    // Remove wallet
+    removeWallet(){
+      return Cookies.remove("walletConnected");
     }
+
 };

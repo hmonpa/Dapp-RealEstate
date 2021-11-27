@@ -1,4 +1,5 @@
 const Web3 = require('web3');
+const auth = require('./src/auth');
 
 // https://www.trufflesuite.com/docs/truffle/advanced/build-processes
 var authJson        = require('./build/contracts/Auth.json');
@@ -17,18 +18,37 @@ export const Dapp = {
     init: async() => {
         Dapp.Auth = Auth;
         Dapp.Properties = Properties;
+        Dapp.account;
         // await Dapp.loadEthereum();
         // await Dapp.checkAccount();
         await Dapp.loadContracts();
         // await Dapp.removeProperty();
+    },
+    // ----------------- WALLET & ACCOUNT FUNCTIONS -----------------
+    checkStatus: async() => {
+        if (window.ethereum){
+            Dapp.web3Provider = window.ethereum;
+            Dapp.account = window.ethereum.selectedAddress;
+            console.log(Dapp.account);
+                // return Dapp.account;
+            var accountInterval = setInterval(function() {
+                Dapp.account = window.ethereum.selectedAddress;
+                if (Dapp.account == null){
+                    // auth.removeWallet();
+                }
+            }, 1000);
+        }
     },
 
     // Loading network
     loadEthereum: async() => {
         if (window.ethereum){
             try {
-                Dapp.web3Provider = window.ethereum
-                return await window.ethereum.request({ method: 'eth_requestAccounts' });
+                Dapp.web3Provider = window.ethereum;
+                
+                let accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
+                Dapp.account = accounts[0];
+                return Dapp.account;
                 
             } catch (err) {
                 console.log(err);
@@ -41,17 +61,17 @@ export const Dapp = {
     },
 
     // Save the account of the current wallet
-    checkAccount: async() => {
-        const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
-        Dapp.account = accounts[0];
+    // checkAccount: async() => {
+    //     const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
+    //     Dapp.account = accounts[0];
 
-        document.getElementById('account').innerText = Dapp.account;
-        // document.querySelector('account').innerText = Dapp.account;
+    //     document.getElementById('account').innerText = Dapp.account;
+    //     // document.querySelector('account').innerText = Dapp.account;
         
-        return Dapp.account;
-        // var account = Dapp.account;
-        // console.log(Dapp.account);
-    },
+    //     return Dapp.account;
+    //     // var account = Dapp.account;
+    //     // console.log(Dapp.account);
+    // },
 
     // Load smart contracts
     loadContracts: async() => {
