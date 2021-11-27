@@ -1,5 +1,6 @@
 const Web3 = require('web3');
 const auth = require('./src/auth');
+const Vue = require('vue');
 
 // https://www.trufflesuite.com/docs/truffle/advanced/build-processes
 var authJson        = require('./build/contracts/Auth.json');
@@ -25,11 +26,13 @@ export const Dapp = {
         // await Dapp.removeProperty();
     },
     // ----------------- WALLET & ACCOUNT FUNCTIONS -----------------
+    
+    // Return the @ connected in MetaMask
     checkStatus: async() => {
         return window.ethereum.selectedAddress;
     },
 
-    // Loading network
+    // Open MetaMask to choose an @
     loadEthereum: async() => {
         if (window.ethereum){
             try {
@@ -37,6 +40,8 @@ export const Dapp = {
                 
                 let accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
                 Dapp.account = accounts[0];
+                // Vue.prototype.$account = Dapp.account;
+                // console.log(Vue.prototype.$account);
                 return Dapp.account;
                 
             } catch (err) {
@@ -62,7 +67,7 @@ export const Dapp = {
     //     // console.log(Dapp.account);
     // },
 
-    // Load smart contracts
+    // Load the smart contracts
     loadContracts: async() => {
         // Variables of interest
         // const network       = await Dapp.Properties.detectNetwork();        // 5777
@@ -92,7 +97,7 @@ export const Dapp = {
     signIn: async(address, password) => {
         let user0 = await Dapp.Auth.usersByAddr(address);
         let res = await Dapp.Auth.signIn(address, password, {
-            from: Dapp.account
+            from: address
         });
         
         user0 = await Dapp.Auth.usersByAddr(address);
@@ -135,7 +140,4 @@ export const Dapp = {
 
     //     window.location.reload()
     // },
-
-
-
 };

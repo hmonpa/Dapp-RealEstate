@@ -8,14 +8,9 @@
     <MainPortfolio /> 
     <MainTeam />
     <MainPricing />
-    <MainFaq />-->
-    <!--<MainAccess />-->
+    <MainFaq />
+    <MainAccess />-->
     <MainPublish />
     <MainProperties />
   </main>
 </template>
-
-<script>
-export default {
-}
-</script>

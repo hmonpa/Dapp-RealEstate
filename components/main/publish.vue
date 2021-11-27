@@ -38,7 +38,7 @@ const IPFS = require('ipfs-core');
 export default {
   computed: {
     userLogged() {
-        return auth.getUserLogged();
+      return auth.getUserLogged();
     }
   },
   data(){

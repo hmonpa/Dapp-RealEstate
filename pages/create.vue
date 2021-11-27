@@ -32,31 +32,32 @@
     <!-- End Access Section -->
 </template>
 <script>
+import Vue from 'vue';
 import { Dapp } from '@/dapp';
 import swal from 'sweetalert';
 import Swal from 'sweetalert2';
 
 export default {
+  beforeMount(){
+    this.start();
+  },
   data: () => ({
     name: "",
     email: "",
     password: ""
   }),
   methods: {
+    // Load the contracts
     async start(){
       await Dapp.init();
     },
     async signUp() {
-      console.log(this.name);
-      console.log(this.email);
-      console.log(this.password);
-      // const createForm = document.querySelector("#createForm");
       createForm.addEventListener("submit", e => {
           e.preventDefault();
       });
       const account = document.getElementById("account").innerText;
-      
-      if(account == null){
+
+      if(!account){
         swal({
           title: "Error!",
           text: "Please connect your MetaMask wallet",
@@ -66,39 +67,26 @@ export default {
           window.location.reload();
         });
       } else { 
-        await Dapp.signUp(account, createForm["name"].value, createForm["email"].value, createForm["password"].value);
-        // console.log(res);
-        
-          swal({
-            title: "User create successfully",
+        let exists = await Dapp.checkExists(account);
+
+        if (exists) {
+          Swal.fire({
+              title: "Error!",
+              text: "An account already exists with this address",
+              icon: "error"
+            })
+        } else {
+          await Dapp.signUp(account, createForm["name"].value, createForm["email"].value, createForm["password"].value);
+          
+          Swal.fire({
+            title: "User created successfully",
             icon: "success"
           }).then(function() {
-            window.location.href = "/Access";
+            window.location.href = "/access";
           });
-        // } else {
-        //   const res = await Dapp.checkExists(account);
-          
-        //   if(!res){ // Account doesn't exists
-        //     Swal.fire({
-        //       title: "Error!",
-        //       text: "This account doesn't exists",
-        //       icon: "error",
-        //       footer: '<a href="#">Create an account</a>',
-        //       dangerMode: true
-        //     })
-        //   }  
-        //   else
-        //     swal({
-        //       title: "Error!",
-        //       text: "Incorrect password!",
-        //       icon: "error"
-        //     });
-        // }
+        }
       }
     }
-  },
-  beforeMount(){
-    this.start();
-  } 
+  }
 }
 </script>

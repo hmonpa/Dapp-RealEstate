@@ -29,39 +29,43 @@
 </template>
 <script>
 import { Dapp } from '@/dapp';
+import Vue from 'vue';
 import auth from '@/src/auth';
 import swal from 'sweetalert';
 import Swal from 'sweetalert2';
 
+
+
 export default {
+  beforeMount(){
+    this.start();
+  },
   data: () => ({
     password: ""
   }),
   methods: {
+    // Load the contracts
     async start(){
       await Dapp.init();
-      // let account = await Dapp.checkAccount();
     },
     async signIn() {
-        // const loginForm = document.querySelector("#loginForm");
         loginForm.addEventListener("submit", e => {
             e.preventDefault();
         });
 
-        // Check if MetaMask is connected with account
         const account = document.getElementById("account").innerText;
+
+        // Check if MetaMask is connected with account
         if(!account) {
-          swal({
+          Swal.fire({
             title: "Error!",
             text: "Please connect your MetaMask wallet",
-            icon: "error",
-            dangerMode: true
+            icon: "error"
           });
         } else { 
           // Check if the account already exists
           const exists = await Dapp.checkExists(account);
           
-          // ADAPT TO TRY CATCH
           if (!exists)
           {
             Swal.fire({
@@ -73,6 +77,7 @@ export default {
           } else {
             // Try to connect
             const correctPass = await Dapp.tryToConnect(account, this.password);
+
             if(!correctPass)
             {
               swal({
@@ -81,25 +86,22 @@ export default {
                   icon: "error"
               });
             } else {
-              // Connect 
+              // Connection
               await Dapp.signIn(account, this.password);
               let user = await Dapp.getName(account);
               auth.setUserLogged(user);
 
-              swal({
+              Swal.fire({
                 title: "Login successfully",
                 icon: "success"
               }).then(function() {
-                // SOLVE REDIRECT
-                this.$router.push("/");
+                // SOLVE REDIRECT WITH ROUTES
+                window.location.href = "/";
               });
             }
           }
         }
     }
-  },
-  beforeMount(){
-    this.start();
-  } 
+  }
 }
 </script>

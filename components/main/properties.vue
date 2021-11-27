@@ -79,16 +79,18 @@
 </template>
 <script>
 import { Dapp } from '@/dapp';
-import { account } from '@/components/Header.vue';
+
 export default {
+  // Load the contracts
+  beforeMount(){
+    this.start();
+  },
   data(){
-    // const currentAccount = account.innerText;
     return {
       properties: [],
       fade: "modal fade",
       autoplay: true,
       currentDate: Date.now(),
-      // currentAccount
     }
   },
   methods: {  
@@ -131,10 +133,6 @@ export default {
         element.src = newSrc;
       });
     }
-  },
-  beforeMount(){
-    // Call to JS
-    this.start();
   }
 }
 </script>

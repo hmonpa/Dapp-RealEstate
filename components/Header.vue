@@ -12,22 +12,21 @@
         <nav id="navbar" class="navbar">
             <ul>
             <li><a class="nav-link scrollto" href="#hero">Home</a></li>
-            <!--<li><a class="nav-link scrollto" href="#about">About</a></li>
-            <li><a class="nav-link scrollto " href="#portfolio">Portfolio</a></li>
-            <li><a class="nav-link scrollto" href="#team">Team</a></li>
-            <li><a class="nav-link scrollto" href="#pricing">Pricing</a></li>-->
             <li><a class="nav-link scrollto" href="#properties">Properties</a></li>
-            <li><a class="getstarted scrollto" href="#publish">Publish a new property</a></li>
             <li>
-                <a v-if="userLogged" class="access scrollto" >{{ userLogged }}</a>
+                <a v-if="userLogged" class="getstarted scrollto" href="#publish">Publish a new property</a>
+            </li>
+            <li>
+                <a v-if="userLogged" class="access scrollto">{{ userLogged }}</a>
                 <a v-else class="access scrollto" href="access">Access</a>
             </li>
             <li>
-                <a v-if="account">{{ account }}</a>
-                <a v-else class="metamask" style="cursor: pointer" @click="connectWallet"></a>
-                <!--<a v-if="account" class="metamask" style="cursor: pointer" @click="connectWallet"></a>-->
+                <a v-if="!account" class="metamask" style="cursor: pointer" @click="connectWallet"></a>
+                <a v-if="account && !userLogged" id="account">{{ account }}</a>
             </li>
-            <li><a v-if="userLogged" class="nav-link scrollto" style="cursor: pointer" @click="logout">Logout</a></li>
+            <li>
+                <a v-if="userLogged" class="nav-link scrollto" style="cursor: pointer" @click="logout">Logout</a>
+            </li>
             </ul>
             <i class="bi bi-list mobile-nav-toggle"></i>
         </nav>
@@ -39,19 +38,18 @@
 </template>
 
 <script>
+import Vue from 'vue';
 import { Dapp } from '@/dapp';
 import auth from '@/src/auth';
 import swal from 'sweetalert';
 import Swal from 'sweetalert2';
 
+
 export default {
     computed: {
         userLogged() {
             return auth.getUserLogged();
-        },
-        // walletConnected() {
-        //     return auth.getCurrentWallet();
-        // }
+        }
     },
     data() {
         const account = null;
@@ -62,17 +60,46 @@ export default {
         }
     },
     async beforeMount(){
-        // console.log(this.walletConnected);
-         var accountInterval = setInterval(async() => {
-                this.account = await Dapp.checkStatus();
-            }, 1000);
-        // this.account = await Dapp.checkStatus();
-    //    console.log(this.account);
-    //    if(!this.account){
-    //        console.log("no hay cuentas")
-    //        auth.removeWallet();
-    //    }
+        // Checking every second if MetaMask have an account
+        var accountInterval = setInterval(async() => {
+            this.account = await Dapp.checkStatus();
+        }, 1000);
     },
+        methods: {
+        async connectWallet() {
+            this.account = await Dapp.loadEthereum();            
+            if (!this.account)
+            {
+                Swal.fire({
+                    title: "Vinculation fails!",
+                    text: "Connect your MetaMask wallet or review your extension",
+                    icon: "error"
+                })
+            } else {
+                // Vue.prototype.$account = this.account;
+                Swal.fire({
+                    title: "Great!",
+                    text: 'Your account ' + this.account + ' is already connected',
+                    icon: 'success'
+                });
+            }
+        },
+        async logout() {
+            Swal.fire({
+                title: 'Are you sure you wan\'t to exit?',
+                icon: 'warning',
+                showDenyButton: true,
+                confirmButtonText: 'Yes, I wan\'t to go out',
+                denyButtonText: 'No, I wan\'t to stay'
+            }).then((res) => {
+                if(res.isConfirmed) {
+                    let user = auth.getUserLogged();
+                    auth.logoutUser(user);
+                    window.location.reload();
+                }
+            });
+        }
+    }, 
     mounted() {
         /**
         * Easy selector helper function
@@ -223,37 +250,6 @@ export default {
             }
         }
         });
-    },
-    methods: {
-        async connectWallet() {
-            this.account = await Dapp.loadEthereum();
-
-            if (!this.account)
-            {
-                Swal.fire({
-                    title: "Vinculation fails!",
-                    text: "Connect your MetaMask wallet or review your extension",
-                    icon: "error"
-                })
-            } else {
-                Swal.fire({
-                    title: "Great!",
-                    text: 'Your account ' + this.account + ' is already connected',
-                    icon: 'success'
-                });
-            }
-        },
-        async logout() {
-            let user = auth.getUserLogged();
-            auth.logoutUser(user);
-            // window.location.reload();
-        },
-        // async getAccount(){
-        //     await Dapp.init();
-        //     let account = await Dapp.checkAccount();
-            
-        //     return account;
-        // }
-    },
+    }
 }
 </script>
