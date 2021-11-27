@@ -26,18 +26,7 @@ export const Dapp = {
     },
     // ----------------- WALLET & ACCOUNT FUNCTIONS -----------------
     checkStatus: async() => {
-        if (window.ethereum){
-            Dapp.web3Provider = window.ethereum;
-            Dapp.account = window.ethereum.selectedAddress;
-            console.log(Dapp.account);
-                // return Dapp.account;
-            var accountInterval = setInterval(function() {
-                Dapp.account = window.ethereum.selectedAddress;
-                if (Dapp.account == null){
-                    // auth.removeWallet();
-                }
-            }, 1000);
-        }
+        return window.ethereum.selectedAddress;
     },
 
     // Loading network

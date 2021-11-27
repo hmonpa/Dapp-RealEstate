@@ -23,9 +23,9 @@
                 <a v-else class="access scrollto" href="access">Access</a>
             </li>
             <li>
-                <a v-if="walletConnected == null" class="metamask" style="cursor: pointer" @click="connectWallet"></a>
-                <a v-else>{{ walletConnected }}</a>
-                <!--<a class="metamask" style="cursor: pointer" @click="connectWallet"></a>-->
+                <a v-if="account">{{ account }}</a>
+                <a v-else class="metamask" style="cursor: pointer" @click="connectWallet"></a>
+                <!--<a v-if="account" class="metamask" style="cursor: pointer" @click="connectWallet"></a>-->
             </li>
             <li><a v-if="userLogged" class="nav-link scrollto" style="cursor: pointer" @click="logout">Logout</a></li>
             </ul>
@@ -49,9 +49,9 @@ export default {
         userLogged() {
             return auth.getUserLogged();
         },
-        walletConnected() {
-            return auth.getCurrentWallet();
-        }
+        // walletConnected() {
+        //     return auth.getCurrentWallet();
+        // }
     },
     data() {
         const account = null;
@@ -63,7 +63,10 @@ export default {
     },
     async beforeMount(){
         // console.log(this.walletConnected);
-        await Dapp.checkStatus();
+         var accountInterval = setInterval(async() => {
+                this.account = await Dapp.checkStatus();
+            }, 1000);
+        // this.account = await Dapp.checkStatus();
     //    console.log(this.account);
     //    if(!this.account){
     //        console.log("no hay cuentas")
@@ -223,28 +226,22 @@ export default {
     },
     methods: {
         async connectWallet() {
-            try {
-                this.account = await Dapp.loadEthereum();
-                auth.setAccount(this.account);
-                Swal.fire({
-                    title: "Great!",
-                    text: 'Your account ' + this.account + ' is already connected',
-                    icon: 'success'
-                }).then(function() {
-                    window.location.reload();
-                })
-                
+            this.account = await Dapp.loadEthereum();
 
-            } catch (err) {
-                // MetaMask not installed or with errors
-                // console.log(err);
+            if (!this.account)
+            {
                 Swal.fire({
                     title: "Vinculation fails!",
                     text: "Connect your MetaMask wallet or review your extension",
                     icon: "error"
                 })
+            } else {
+                Swal.fire({
+                    title: "Great!",
+                    text: 'Your account ' + this.account + ' is already connected',
+                    icon: 'success'
+                });
             }
-
         },
         async logout() {
             let user = auth.getUserLogged();
