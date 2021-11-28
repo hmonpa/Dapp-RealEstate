@@ -4,7 +4,7 @@
       <div class="container">
 
         <div class="section-title" data-aos="fade-up">
-          <h2>About Us</h2>
+          <h2>Permission denied</h2>
         </div>
 
         <div class="row content">

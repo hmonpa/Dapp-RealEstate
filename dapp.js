@@ -54,19 +54,6 @@ export const Dapp = {
         }
     },
 
-    // Save the account of the current wallet
-    // checkAccount: async() => {
-    //     const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
-    //     Dapp.account = accounts[0];
-
-    //     document.getElementById('account').innerText = Dapp.account;
-    //     // document.querySelector('account').innerText = Dapp.account;
-        
-    //     return Dapp.account;
-    //     // var account = Dapp.account;
-    //     // console.log(Dapp.account);
-    // },
-
     // Load the smart contracts
     loadContracts: async() => {
         // Variables of interest
@@ -83,20 +70,20 @@ export const Dapp = {
         Dapp.Properties = await Properties.deployed();
         console.log("Contract", Dapp.Properties.address, "is deployed done");
         
-        // console.log(Auth.users);
     },
     // -------------- PROPERTIES FUNCTIONS --------------
     uploadProperty: async(address, city, price) => {
         let res = await Dapp.Properties.uploadProperty(address, city, price, {
             from: Dapp.account
         })
-        console.log(res);
+        // console.log(res);
         window.location.reload()
     },
     // ----------------- AUTH FUNCTIONS -----------------
     signIn: async(address, password) => {
         let user0 = await Dapp.Auth.usersByAddr(address);
-        let res = await Dapp.Auth.signIn(address, password, {
+        
+        await Dapp.Auth.signIn(address, password, {
             from: address
         });
         
@@ -107,7 +94,8 @@ export const Dapp = {
     signUp: async(address, name, email, password) => {
         await Dapp.Auth.signUp(address, name, email, password, {
             from: Dapp.account
-        })
+        });
+
         let user = await Dapp.Auth.usersByAddr(address);
         let users = await Dapp.Auth.users;
         console.log(users);
@@ -122,7 +110,7 @@ export const Dapp = {
     checkExists: async(address) => {
         let user = await Dapp.Auth.usersByAddr(address);
         let res = (user.email) ? 1 : 0;
-        // console.log(user.password);
+
         return res; 
     },
 
@@ -131,13 +119,4 @@ export const Dapp = {
         
         return name;
     }
-
-    // removeProperty: async(element) => {
-    //     const propertyId = element.dataset.id;
-    //     await Dapp.Properties.removeProperty(propertyId, {
-    //         from: Dapp.account
-    //     })
-
-    //     window.location.reload()
-    // },
 };

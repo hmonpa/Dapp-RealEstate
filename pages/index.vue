@@ -3,14 +3,12 @@
     <Hero />
     <!--<MainClients />
     <MainAbout />
-    <MainCounts />-
+    <MainCounts />
     <MainFeatures /> 
     <MainPortfolio /> 
     <MainTeam />
     <MainPricing />
-    <MainFaq />
-    <MainAccess />-->
-    <MainPublish />
+    <MainFaq />-->
     <MainProperties />
   </main>
 </template>

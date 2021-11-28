@@ -14,11 +14,11 @@
             <li><a class="nav-link scrollto" href="#hero">Home</a></li>
             <li><a class="nav-link scrollto" href="#properties">Properties</a></li>
             <li>
-                <a v-if="userLogged" class="getstarted scrollto" href="#publish">Publish a new property</a>
+                <NuxtLink v-if="userLogged" class="getstarted scrollto" to="publish">Publish a new property</NuxtLink>
             </li>
             <li>
                 <a v-if="userLogged" class="access scrollto">{{ userLogged }}</a>
-                <a v-else class="access scrollto" href="access">Access</a>
+                <NuxtLink v-else class="access scrollto" to="access">Access</NuxtLink>
             </li>
             <li>
                 <a v-if="!account" class="metamask" style="cursor: pointer" @click="connectWallet"></a>

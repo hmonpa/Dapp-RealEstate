@@ -93,6 +93,9 @@ export default {
   plugins: [
   ],
 
+  // Disable server-side rendering: https://go.nuxtjs.dev/ssr-mode
+  ssr: false,
+
   // Auto import components: https://go.nuxtjs.dev/config-components
   components: true,
 
