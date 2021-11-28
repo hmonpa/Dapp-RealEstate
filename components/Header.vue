@@ -3,35 +3,83 @@
     <header id="header" class="fixed-top d-flex align-items-center">
         <div class="container d-flex align-items-center justify-content-between">
 
-        <div class="logo">
-            <h1><a href="/">Decentralized app</a></h1>
-            <!-- Uncomment below if you prefer to use an image logo -->
-            <!--<img src="/img/logo.png" alt="" class="img-fluid">-->
+            <div class="logo">
+                <h1><a href="/">Decentralized app</a></h1>
+                <!-- Uncomment below if you prefer to use an image logo -->
+                <!--<img src="/img/logo.png" alt="" class="img-fluid">-->
+            </div>
+
+            <nav id="navbar" class="navbar">
+                <ul>
+                <li><a class="nav-link scrollto" href="/#hero">Home</a></li>
+                <li><a class="nav-link scrollto" href="/#properties">Properties</a></li>
+                <li>
+                    <NuxtLink v-if="userLogged" class="getstarted scrollto" to="publish">Publish a new property</NuxtLink>
+                </li>
+                <li>
+                    <!-- Modal -->
+                    <a 
+                        v-if="userLogged"
+                        class="access scrollto"
+                        data-aos="fade-up" 
+                        data-aos-delay="100"
+                        data-bs-toggle="modal"
+                        :data-bs-target="'#account_' + account"
+                        style="cursor: pointer"
+                    >
+                        {{ userLogged }}
+                    </a>
+                    <!-- End Modal -->
+                    <NuxtLink v-else class="access scrollto" to="access">Access</NuxtLink>
+                </li>
+                <li>
+                    <a v-if="!account" class="metamask" style="cursor: pointer" @click="connectWallet"></a>
+                    <a v-if="account && !userLogged" id="account">{{ account }}</a>
+                </li>
+                <li>
+                    <a v-if="userLogged" class="nav-link scrollto" style="cursor: pointer" @click="logout">Logout</a>
+                </li>
+                </ul>
+                <i class="bi bi-list mobile-nav-toggle"></i>
+            </nav>
+            <!-- .navbar -->
+
         </div>
-
-        <nav id="navbar" class="navbar">
-            <ul>
-            <li><a class="nav-link scrollto" href="#hero">Home</a></li>
-            <li><a class="nav-link scrollto" href="#properties">Properties</a></li>
-            <li>
-                <NuxtLink v-if="userLogged" class="getstarted scrollto" to="publish">Publish a new property</NuxtLink>
-            </li>
-            <li>
-                <a v-if="userLogged" class="access scrollto">{{ userLogged }}</a>
-                <NuxtLink v-else class="access scrollto" to="access">Access</NuxtLink>
-            </li>
-            <li>
-                <a v-if="!account" class="metamask" style="cursor: pointer" @click="connectWallet"></a>
-                <a v-if="account && !userLogged" id="account">{{ account }}</a>
-            </li>
-            <li>
-                <a v-if="userLogged" class="nav-link scrollto" style="cursor: pointer" @click="logout">Logout</a>
-            </li>
-            </ul>
-            <i class="bi bi-list mobile-nav-toggle"></i>
-        </nav>
-        <!-- .navbar -->
-
+        <!-- Modal -->
+        <div
+            :id="'account_' + account"
+            :class="fade"
+        >
+            <div
+                class=" modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable"
+            >
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h6 style="text-align:center">{{ account }}</h6>
+                        <button
+                            type="button"
+                            class="btn-close"
+                            data-bs-dismiss="modal"
+                            aria-label="Close"
+                            @click="pause"
+                        ></button>
+                    </div>
+                    <div class="modal-body" style="padding: 40px;text-align:center">
+                        <span class="line"></span>
+                        <h6>User: {{ userLogged }}</h6>
+                    </div>
+                    <div class="modal-footer">
+                    <button
+                        type="button"
+                        class="buy-tickets"
+                        data-bs-dismiss="modal"
+                        @click="pause()"
+                    >
+                        Close
+                    </button>
+                    </div>
+                </div>
+            </div>
         </div>
     </header>
     <!-- End Header -->
@@ -65,7 +113,7 @@ export default {
             this.account = await Dapp.checkStatus();
         }, 1000);
     },
-        methods: {
+    methods: {
         async connectWallet() {
             this.account = await Dapp.loadEthereum();            
             if (!this.account)
@@ -86,11 +134,11 @@ export default {
         },
         async logout() {
             Swal.fire({
-                title: 'Are you sure you wan\'t to exit?',
+                title: 'Are you sure you want to exit?',
                 icon: 'warning',
                 showDenyButton: true,
-                confirmButtonText: 'Yes, I wan\'t to go out',
-                denyButtonText: 'No, I wan\'t to stay'
+                confirmButtonText: 'Yes, I want to go out',
+                denyButtonText: 'No, I want to stay'
             }).then((res) => {
                 if(res.isConfirmed) {
                     let user = auth.getUserLogged();

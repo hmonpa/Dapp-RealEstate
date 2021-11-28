@@ -1,7 +1,7 @@
 <template>
     <!-- ======= Publish Section ======= -->
     <section v-if="userLogged" id="publish" class="publish">
-      <div class="container">
+      <div class="container" style="margin-bottom:270px">
 
         <div class="section-title" data-aos="fade-up">
           <h2>Upload properties</h2>

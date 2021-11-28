@@ -1,7 +1,7 @@
 <template>
     <!-- ======= Access Section ======= -->
     <section v-if="!userLogged" id="access" class="access">
-      <div class="container">
+      <div class="container" style="margin-bottom: 250px">
 
         <div class="section-title" data-aos="fade-up" style="margin:100px 0 50px 0">
           <h2>Sign in</h2>
@@ -26,17 +26,16 @@
       </div>
     </section>
     <section v-else>
-      <h1>{{ error }}</h1>
+      <MainError />
     </section>
     <!-- End Access Section -->
 </template>
 <script>
-import { Dapp } from '@/dapp';
 import Vue from 'vue';
+import { Dapp } from '@/dapp';
 import auth from '@/src/auth';
 import swal from 'sweetalert';
 import Swal from 'sweetalert2';
-import Features from '@/components/main/Features'
 
 
 export default {
@@ -46,10 +45,6 @@ export default {
   computed: {
     userLogged() {
       return auth.getUserLogged();
-    },
-    error(){
-      return 'You are not allowed to access';
-      // return this.$nuxt.error({ statusCode: 404, message: 'err message' })
     }
   },
   data: () => ({

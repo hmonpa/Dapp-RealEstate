@@ -22,6 +22,10 @@ h1, h2, h3, h4, h5, h6 {
   font-family: "Raleway", sans-serif;
 }
 
+body .modal-backdrop {
+  z-index: 1;
+}
+
 /*--------------------------------------------------------------
 # Back to top button
 --------------------------------------------------------------*/
@@ -64,15 +68,16 @@ h1, h2, h3, h4, h5, h6 {
 # Header
 --------------------------------------------------------------*/
 #header {
-  z-index: 997;
   transition: all 0.5s;
   padding: 22px 0;
   background: #fff;
 }
+
 #header.header-scrolled {
   box-shadow: 0px 2px 15px rgba(0, 0, 0, 0.1);
   padding: 12px 0;
 }
+
 #header .logo h1 {
   font-size: 30px;
   margin: 0;
@@ -81,10 +86,12 @@ h1, h2, h3, h4, h5, h6 {
   font-weight: 700;
   letter-spacing: 1px;
 }
+
 #header .logo h1 a, #header .logo h1 a:hover {
   color: #222222;
   text-decoration: none;
 }
+
 #header .logo img {
   padding: 0;
   margin: 0;
@@ -620,6 +627,10 @@ section {
 /*--------------------------------------------------------------
 # Properties
 --------------------------------------------------------------*/
+.properties .container {
+  margin-bottom: 150px;
+}
+
 .properties .icon-box {
   padding: 30px;
   position: relative;
@@ -1489,8 +1500,9 @@ section {
   font-size: 14px;
   height: 100px;
   width: 100%;
+  position: absolute;
+  left: 0;
   bottom: 0;
-  bottom: 0px;
 }
 #footer .credits {
   font-size: 13px;

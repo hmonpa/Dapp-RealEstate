@@ -1,7 +1,7 @@
 <template>
     <!-- ======= Properties Section ======= -->
     <section id="properties" class="properties">
-      <div class="container" >
+      <div class="container">
 
         <div class="section-title" data-aos="fade-up">
           <h2>Properties</h2>
