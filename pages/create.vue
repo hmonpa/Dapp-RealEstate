@@ -1,7 +1,7 @@
 <template>
     <!-- ======= Access Section ======= -->
     <section v-if="!userLogged" id="access" class="access">
-      <div class="container" style="margin-bottom:240px">
+      <div class="container" style="margin-top: 100px; margin-bottom: 290px">
         <div class="section-title" data-aos="fade-up" style="margin-top:50px">
           <h2>Sign up</h2>
         </div>

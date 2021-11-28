@@ -20,6 +20,7 @@
                     <!-- Modal -->
                     <a 
                         v-if="userLogged"
+                        id="account"
                         class="access scrollto"
                         data-aos="fade-up" 
                         data-aos-delay="100"
@@ -27,7 +28,7 @@
                         :data-bs-target="'#account_' + account"
                         style="cursor: pointer"
                     >
-                        {{ userLogged }}
+                        {{ account }}
                     </a>
                     <!-- End Modal -->
                     <NuxtLink v-else class="access scrollto" to="access">Access</NuxtLink>
@@ -47,6 +48,7 @@
         </div>
         <!-- Modal -->
         <div
+            v-if="userLogged"
             :id="'account_' + account"
             :class="fade"
         >
@@ -66,7 +68,9 @@
                     </div>
                     <div class="modal-body" style="padding: 40px;text-align:center">
                         <span class="line"></span>
-                        <h6>User: {{ userLogged }}</h6>
+                        <h6>Name: {{ userLogged[1] }}</h6>
+                        <h6>Email: {{ userLogged[2] }}</h6> 
+                        <h6>User since: {{ new Date(userLogged[3]*1000).toLocaleString() }}</h6> 
                     </div>
                     <div class="modal-footer">
                     <button
@@ -96,7 +100,15 @@ import Swal from 'sweetalert2';
 export default {
     computed: {
         userLogged() {
-            return auth.getUserLogged();
+            let user = auth.getUserLogged();
+            let data = "";
+            if(user) data = user.split(",");
+            // console.log(Object.entries(user));
+            // let addr = user[0];
+            // let name = user[1];
+            // let email = user[2];
+            // let dateCreation = user[3];
+            return data;
         }
     },
     data() {
@@ -145,6 +157,15 @@ export default {
                     auth.logoutUser(user);
                     window.location.reload();
                 }
+            });
+        },
+        pause() {
+            const iframes = document.querySelectorAll("#modal iframe");
+            iframes.forEach(element => {
+                const srcArray = element.src.split("");
+                srcArray[srcArray.length - 1] = "0";
+                const newSrc = srcArray.join("");
+                element.src = newSrc;
             });
         }
     }, 

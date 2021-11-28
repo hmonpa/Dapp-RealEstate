@@ -1,7 +1,7 @@
 <template>
     <!-- ======= Access Section ======= -->
     <section v-if="!userLogged" id="access" class="access">
-      <div class="container" style="margin-bottom: 250px">
+      <div class="container" style="margin-bottom: 135px">
 
         <div class="section-title" data-aos="fade-up" style="margin:100px 0 50px 0">
           <h2>Sign in</h2>
@@ -95,8 +95,8 @@ export default {
             } else {
               // Connection
               await Dapp.signIn(account, this.password);
-              let user = await Dapp.getName(account);
-              auth.setUserLogged(user);
+              let user = await Dapp.getUserData(account);
+              auth.setUserLogged(Object.values(user));
 
               Swal.fire({
                 title: "Login successfully",

@@ -74,7 +74,7 @@ export const Dapp = {
     // -------------- PROPERTIES FUNCTIONS --------------
     uploadProperty: async(address, city, price) => {
         let res = await Dapp.Properties.uploadProperty(address, city, price, {
-            from: Dapp.account
+            from: address
         })
         // console.log(res);
         window.location.reload()
@@ -93,12 +93,12 @@ export const Dapp = {
 
     signUp: async(address, name, email, password) => {
         await Dapp.Auth.signUp(address, name, email, password, {
-            from: Dapp.account
+            from: address
         });
 
         let user = await Dapp.Auth.usersByAddr(address);
         let users = await Dapp.Auth.users;
-        console.log(users);
+        // console.log(users);
     },
 
     tryToConnect: async(address, password) => {
@@ -114,9 +114,7 @@ export const Dapp = {
         return res; 
     },
 
-    getName: async(address) => {
-        let name = await Dapp.Auth.getName(address);
-        
-        return name;
+    getUserData: async(address) => {
+        return await Dapp.Auth.getUser(address);
     }
 };

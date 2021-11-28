@@ -15,6 +15,7 @@
             style="margin:10px 0 10px 0"
           >
             <div
+              v-if="!prop.isSelled"
               class="icon-box" 
               data-aos="fade-up" 
               data-aos-delay="100"
@@ -42,7 +43,7 @@
         :class="fade"
       >
         <div
-          class=" modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable"
+          class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable"
         >
           <div class="modal-content">
             <div class="modal-header">

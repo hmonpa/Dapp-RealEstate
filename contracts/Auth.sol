@@ -79,19 +79,9 @@ contract Auth {
         }
     }
 
-    // Returns index from @
-    // function getIndexFromAddr(address _address) public view returns (uint)
-    // {
-    //     for (uint i = 0; i < usersCounter; i++)
-    //     {
-    //         if (_address == users[usersCounter].addr) return i;
-    //     }
-    //     if (i == usersCounter) return 0;
-    // }
-
-    function getName(address _address) public view returns (string)
+    function getUser(address _address) public view returns (address, string, string, uint256)
     {
-        return usersByAddr[_address].name;
+        return (usersByAddr[_address].addr, usersByAddr[_address].name, usersByAddr[_address].email, usersByAddr[_address].createdAt);
     }
 
     // Get @ from index

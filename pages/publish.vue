@@ -1,7 +1,7 @@
 <template>
     <!-- ======= Publish Section ======= -->
     <section v-if="userLogged" id="publish" class="publish">
-      <div class="container" style="margin-bottom:270px">
+      <div class="container" style="margin-top:100px;margin-bottom:290px">
 
         <div class="section-title" data-aos="fade-up">
           <h2>Upload properties</h2>
@@ -64,17 +64,19 @@ export default {
     },
 
     // Upload data from the upload properties form
-    uploadData() {
+    async uploadData() {
       const propertyForm = document.querySelector("#propertyForm");
       const account = document.getElementById("account").innerText;
-      
+      console.log(account);
       propertyForm.addEventListener("submit", e => {
-        e.preventDefault();
+        e.preventDefault(); 
 
         console.log(account, propertyForm["city"].value, propertyForm["price"].value)
 
-        Dapp.uploadProperty(account, propertyForm["city"].value, propertyForm["price"].value);
       });
+      
+      await Dapp.uploadProperty(account, propertyForm["city"].value, propertyForm["price"].value);
+      window.location.href = "/#properties";
     },
   },
   beforeMount(){
