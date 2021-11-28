@@ -103,11 +103,7 @@ export default {
             let user = auth.getUserLogged();
             let data = "";
             if(user) data = user.split(",");
-            // console.log(Object.entries(user));
-            // let addr = user[0];
-            // let name = user[1];
-            // let email = user[2];
-            // let dateCreation = user[3];
+
             return data;
         }
     },
