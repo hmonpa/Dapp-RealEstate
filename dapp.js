@@ -73,12 +73,21 @@ export const Dapp = {
     },
     // -------------- PROPERTIES FUNCTIONS --------------
     uploadProperty: async(address, city, price) => {
-        let res = await Dapp.Properties.uploadProperty(address, city, price, {
+        await Dapp.Properties.uploadProperty(address, city, price, {
             from: address
-        })
-        // console.log(res);
+        });
+
         window.location.reload()
     },
+
+    buyProperty: async(address) => {
+        console.log(address);
+        let res = await Dapp.Properties.buyProperty(address, {
+            from: address
+        })
+        console.log(await Dapp.Properties.getProperty(address));
+    },
+
     // ----------------- AUTH FUNCTIONS -----------------
     signIn: async(address, password) => {
         let user0 = await Dapp.Auth.usersByAddr(address);

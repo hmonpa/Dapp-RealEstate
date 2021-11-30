@@ -20,6 +20,7 @@ contract Properties {
 
     // ----------------------- MAPPINGS -----------------------
     mapping (uint256 => Property) public properties;
+    mapping (address => Property) public propertiesByAddr;
     Property[] public props;
 
     // ----------------------- EVENTS -----------------------
@@ -34,6 +35,7 @@ contract Properties {
         // uint256 area,                // Area in m²
         // uint256 rooms,               // Num of rooms
         // uint256 bathrooms,           // Num of bathrooms
+        // uint256 selledAt,
         uint256 createdAt
     );
 
@@ -49,6 +51,7 @@ contract Properties {
     // Creates a new property, emit PropertyCreated event
     function uploadProperty(address _address, string _city, uint256 _price) public
     {
+        propertiesByAddr[_address] = Property(getRandomId(), _address, _city, _price, false, block.timestamp);
         properties[propertyCounter] = Property(getRandomId(), _address, _city, _price, false, block.timestamp);
         props.push(Property(getRandomId(), _address, _city, _price, false, block.timestamp));
         propertyCounter++;
@@ -60,29 +63,27 @@ contract Properties {
         return propertyCounter;
     }
 
-    // Return the @ from index
-    function getOwnerFromIndex(uint _index) public view returns (address)
+    // Get property from owner @
+    function getProperty(address _address) public view returns (uint256, address, bool)
     {
-        if (_index <= propertyCounter) return properties[_index].owner;
-        else return 0x0;
+       return (propertiesByAddr[_address].id, propertiesByAddr[_address].owner, propertiesByAddr[_address].isSelled);
     }
 
-    // Returns an array with the indexs, from @
-    // TO BE REVIEWED
-    // function getPropertiesFromOwner(address _address) public view returns (uint[])
-    // {
-    //     uint[] storage propertiesMatch;
-    //     for (uint i = 0; i < propertyCounter; i++)
-    //     {
-    //         if (_address == properties[i].owner) propertiesMatch.push(i);
-    //     }
+    function buyProperty(address _address) public payable 
+    {
+        // PENDING 1: Pass the value in Eth
+        // require(msg.value == 3 ether);
 
-    //     return propertiesMatch;
-    // }
+        // PENDING 2: Change the owner after sell the property
+        // It maybe can be filter the properties by ID
 
-    // Marks the property as sold, emit PropertySelled event
-    function removeProperty(uint _index) public{
-        properties[_index].isSelled = true;
-        emit isPropertySelled(_index, properties[_index].isSelled);
+        // propertiesByAddr[_address].owner = _address; 
+        propertiesByAddr[_address].isSelled = true;
+
+        // PENDING 3: Replace the property from the mapping properties...
+        // for show a correct status in the platform
+
+        // PENDING 4: Emit an event
     }
+
 }

@@ -60,7 +60,14 @@
               <span class="line"></span>
               <h6>Published by: {{ prop.owner }}</h6>
               <p>Published on: {{ new Date(prop.createdAt*1000).toLocaleString() }}</p> 
-              <p>Price: {{ prop.price }}</p>
+              <p>Price: {{ (prop.price / fakeEth).toFixed(2) }} ETH </p>
+              <p>Selled: {{ prop.isSelled }}</p>
+              <button
+                type="button"
+                class="buy-property"
+                @click="buyProperty(prop.owner)"
+              >Buy property
+              </button>
             </div>
             <div class="modal-footer">
               <button
@@ -92,6 +99,9 @@ export default {
       fade: "modal fade",
       autoplay: true,
       currentDate: Date.now(),
+
+      // PENDING: Show this until having the oracle / API:
+      fakeEth: 3500
     }
   },
   methods: {  
@@ -123,6 +133,10 @@ export default {
       catch (err) {
         console.log(err);
       }
+    },
+
+    async buyProperty(owner){
+      await Dapp.buyProperty(owner);
     },
 
     pause() {

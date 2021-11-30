@@ -79,6 +79,7 @@ contract Auth {
         }
     }
 
+    // Get user from @
     function getUser(address _address) public view returns (address, string, string, uint256)
     {
         return (usersByAddr[_address].addr, usersByAddr[_address].name, usersByAddr[_address].email, usersByAddr[_address].createdAt);
