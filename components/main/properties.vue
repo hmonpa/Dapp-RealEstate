@@ -62,11 +62,13 @@
               <p>Published on: {{ new Date(prop.createdAt*1000).toLocaleString() }}</p> 
               <p>Price: {{ (prop.price / fakeEth).toFixed(2) }} ETH </p>
               <p>Selled: {{ prop.isSelled }}</p>
+              <!-- !! Only visible for users logged -->
               <button
                 type="button"
                 class="buy-property"
                 @click="buyProperty(prop.owner)"
-              >Buy property
+              >
+              Buy property
               </button>
             </div>
             <div class="modal-footer">
