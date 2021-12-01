@@ -20,7 +20,7 @@ contract Properties {
 
     // ----------------------- MAPPINGS -----------------------
     mapping (uint256 => Property) public properties;
-    mapping (address => Property) public propertiesByAddr;
+    // mapping (address => Property) public propertiesByAddr;
     Property[] public props;
 
     // ----------------------- EVENTS -----------------------
@@ -39,7 +39,7 @@ contract Properties {
         uint256 createdAt
     );
 
-    event isPropertySelled (uint256 index, bool isSelled);
+    event isPropertySelled (address addr, bool isSelled, uint256 price);
 
     // ----------------------- FUNCTIONS -----------------------
     // Returns a generate random number 
@@ -48,14 +48,19 @@ contract Properties {
         return uint(keccak256(abi.encodePacked(block.difficulty, block.timestamp, msg.sender)))%uint(now);
     }
 
+    function eurToWei(uint256 _price) public pure returns (uint)
+    {
+        return _price*243739092347530; 
+    }
+
     // Creates a new property, emit PropertyCreated event
     function uploadProperty(address _address, string _city, uint256 _price) public
     {
-        propertiesByAddr[_address] = Property(getRandomId(), _address, _city, _price, false, block.timestamp);
-        properties[propertyCounter] = Property(getRandomId(), _address, _city, _price, false, block.timestamp);
-        props.push(Property(getRandomId(), _address, _city, _price, false, block.timestamp));
+        // propertiesByAddr[_address] = Property(getRandomId(), _address, _city, _price, false, block.timestamp);
+        properties[propertyCounter] = Property(getRandomId(), _address, _city, eurToWei(_price), false, block.timestamp);
+        props.push(Property(getRandomId(), _address, _city, eurToWei(_price), false, block.timestamp));
         propertyCounter++;
-        emit PropertyCreated(getRandomId(), _address, _city, _price, false, block.timestamp);
+        emit PropertyCreated(getRandomId(), _address, _city,eurToWei(_price), false, block.timestamp);
     }
 
     function getAllProperties() public view returns (uint)
@@ -63,23 +68,47 @@ contract Properties {
         return propertyCounter;
     }
 
-    // Get property from owner @
-    function getProperty(address _address) public view returns (uint256, address, bool)
+    
+    function getPropertyById(uint256 _id) public view returns (uint)
     {
-       return (propertiesByAddr[_address].id, propertiesByAddr[_address].owner, propertiesByAddr[_address].isSelled);
+        for (uint i = 0; i < propertyCounter; i++)
+        {
+            if (_id == props[i].id) return i;
+        }
+        if (i == propertyCounter) return 0;
     }
 
-    function buyProperty(address _address) public payable 
+    // Get property from owner @
+    // function getPropertyByAddr(address _address) public view returns (uint256, address, bool)
+    // {
+    //    return (propertiesByAddr[_address].id, propertiesByAddr[_address].owner, propertiesByAddr[_address].isSelled);
+    // }
+
+    function buyProperty(address _address, uint256 _id) public payable
     {
+        uint index = this.getPropertyById(_id);
+        require(msg.value == props[index].price);
+        
+        address addr = props[index].owner;
+
+        // Changes the value of the boolean 
+        props[index].isSelled = true;
+        properties[index].isSelled = true;
+
+        // Changes the owner
+        props[index].owner = _address;
+        properties[index].owner = _address;
+
+        // Emit an event
+        emit isPropertySelled(addr, props[index].isSelled, props[index].price);
+
         // PENDING 1: Pass the value in Eth
         // require(msg.value == 3 ether);
 
         // PENDING 2: Change the owner after sell the property
         // It maybe can be filter the properties by ID
 
-        // propertiesByAddr[_address].owner = _address; 
-        propertiesByAddr[_address].isSelled = true;
-
+        // propertiesByAddr[_address].owner = _address;
         // PENDING 3: Replace the property from the mapping properties...
         // for show a correct status in the platform
 

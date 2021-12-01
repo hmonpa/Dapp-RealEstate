@@ -1,6 +1,8 @@
 const Web3 = require('web3');
 const auth = require('./src/auth');
 const Vue = require('vue');
+const Metamask = require('@metamask/legacy-web3');
+
 
 // https://www.trufflesuite.com/docs/truffle/advanced/build-processes
 var authJson        = require('./build/contracts/Auth.json');
@@ -20,10 +22,8 @@ export const Dapp = {
         Dapp.Auth = Auth;
         Dapp.Properties = Properties;
         Dapp.account;
-        // await Dapp.loadEthereum();
-        // await Dapp.checkAccount();
+
         await Dapp.loadContracts();
-        // await Dapp.removeProperty();
     },
     // ----------------- WALLET & ACCOUNT FUNCTIONS -----------------
     
@@ -34,6 +34,7 @@ export const Dapp = {
 
     // Open MetaMask to choose an @
     loadEthereum: async() => {
+        // console.log("PRUEBA:" , window.ethereum.isMetaMask);
         if (window.ethereum){
             try {
                 Dapp.web3Provider = window.ethereum;
@@ -73,6 +74,7 @@ export const Dapp = {
     },
     // -------------- PROPERTIES FUNCTIONS --------------
     uploadProperty: async(address, city, price) => {
+        
         await Dapp.Properties.uploadProperty(address, city, price, {
             from: address
         });
@@ -80,12 +82,20 @@ export const Dapp = {
         window.location.reload()
     },
 
-    buyProperty: async(address) => {
-        console.log(address);
-        let res = await Dapp.Properties.buyProperty(address, {
-            from: address
-        })
-        console.log(await Dapp.Properties.getProperty(address));
+    buyProperty: async(from, to, id, value) => {
+        try {
+            console.log("Price: ", value)
+            // let priceInEther = Web3.utils.fromWei(price.toString(), 'ether');
+            // console.log("Price in Ether: ", priceInEther)
+            return await Dapp.Properties.buyProperty(from, id, {
+                from: from, 
+                to: to, 
+                value: value
+            });
+        } catch (err) {
+            console.log(err);
+        }
+        // console.log(await Dapp.Properties.getPropertyByAddr(address));
     },
 
     // ----------------- AUTH FUNCTIONS -----------------

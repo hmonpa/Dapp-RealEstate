@@ -1696,6 +1696,11 @@
     "semver" "^7.3.5"
     "tar" "^6.1.11"
 
+"@metamask/legacy-web3@^2.0.0":
+  "integrity" "sha512-hR5sbVR0wU3sXMXx2btRBKYzzTkBNTYoZbPHqqB7UARwxm9yEe9C/Y79YyciyzC9cnKetNV6s6VAwNQp5LNpLw=="
+  "resolved" "https://registry.npmjs.org/@metamask/legacy-web3/-/legacy-web3-2.0.0.tgz"
+  "version" "2.0.0"
+
 "@motrix/nat-api@^0.3.1":
   "integrity" "sha512-T3LSHnEUULbSU1o1zCZZ1ul8l8Jm98f0fz/0BeF7DhNvrV63YllLCD4vUR9hFZWu/+WTIVPnbH8dBK5Ckuveuw=="
   "resolved" "https://registry.npmjs.org/@motrix/nat-api/-/nat-api-0.3.2.tgz"

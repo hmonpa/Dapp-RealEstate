@@ -113,6 +113,7 @@ contract Auth {
     function logoutByAddr(address _address) public 
     {
         usersByAddr[_address].isLoggedIn = false;
+        // PENDING: Event for logout
     }
 
 

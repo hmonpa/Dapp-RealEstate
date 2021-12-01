@@ -143,19 +143,22 @@ export default {
             }
         },
         async logout() {
-            Swal.fire({
-                title: 'Are you sure you want to exit?',
-                icon: 'warning',
-                showDenyButton: true,
-                confirmButtonText: 'Yes, I want to go out',
-                denyButtonText: 'No, I want to stay'
-            }).then((res) => {
-                if(res.isConfirmed) {
-                    let user = auth.getUserLogged();
-                    auth.logoutUser(user);
-                    window.location.reload();
-                }
-            });
+            // Swal.fire({
+            //     title: 'Are you sure you want to exit?',
+            //     icon: 'warning',
+            //     showDenyButton: true,
+            //     confirmButtonText: 'Yes, I want to go out',
+            //     denyButtonText: 'No, I want to stay'
+            // }).then((res) => {
+            //     if(res.isConfirmed) {
+            //         let user = auth.getUserLogged();
+            //         auth.logoutUser(user);
+            //         window.location.reload();
+            //     }
+            // });
+            let user = auth.getUserLogged();
+            auth.logoutUser(user);
+            window.location.reload();
         },
         pause() {
             const iframes = document.querySelectorAll("#modal iframe");

@@ -15,7 +15,6 @@
             style="margin:10px 0 10px 0"
           >
             <div
-              v-if="!prop.isSelled"
               class="icon-box" 
               data-aos="fade-up" 
               data-aos-delay="100"
@@ -27,7 +26,7 @@
                 <i class="bx bxl-dribbble" ></i>
               </div>
               <h4 class="title"><a href="">{{ prop.city }}</a></h4>
-              <p class="description">{{ prop.price }}€</p>
+              <p class="description">{{ weiToEur(prop.price) }}€ ({{ weiToEth(prop.price) }} ETH)</p>
               <br>
               <p class="description">{{ new Date(prop.createdAt*1000).toLocaleDateString() }}</p>  
             </div>
@@ -60,13 +59,13 @@
               <span class="line"></span>
               <h6>Published by: {{ prop.owner }}</h6>
               <p>Published on: {{ new Date(prop.createdAt*1000).toLocaleString() }}</p> 
-              <p>Price: {{ (prop.price / fakeEth).toFixed(2) }} ETH </p>
+              <p>Price: {{ weiToEur(prop.price) }} € </p>
               <p>Selled: {{ prop.isSelled }}</p>
               <!-- !! Only visible for users logged -->
               <button
                 type="button"
                 class="buy-property"
-                @click="buyProperty(prop.owner)"
+                @click="buyProperty(prop.owner, prop.id, prop.price)"
               >
               Buy property
               </button>
@@ -103,7 +102,7 @@ export default {
       currentDate: Date.now(),
 
       // PENDING: Show this until having the oracle / API:
-      fakeEth: 3500
+      // fakeEth: 3500
     }
   },
   methods: {  
@@ -137,8 +136,19 @@ export default {
       }
     },
 
-    async buyProperty(owner){
-      await Dapp.buyProperty(owner);
+    async buyProperty(to, id, price){
+      let from = await Dapp.loadEthereum();
+      await Dapp.buyProperty(from, to, id.toNumber(), price);
+
+      await this.renderProperties();
+    },
+
+    weiToEur(price){
+      return price/243739092347530;
+    },
+
+    weiToEth(price){
+      return (price/(10**18)).toFixed(2);
     },
 
     pause() {
