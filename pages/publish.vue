@@ -1,8 +1,7 @@
 <template>
     <!-- ======= Publish Section ======= -->
     <section v-if="userLogged" id="publish" class="publish">
-      <div class="container" style="margin-top:100px;margin-bottom:290px">
-
+      <div class="container" style="margin-top:100px;margin-bottom:175px">
         <div class="section-title" data-aos="fade-up">
           <h2>Upload properties</h2>
         </div>
@@ -22,7 +21,7 @@
               <div class="form-group text-center">
                 <div class="toggle-container">
                   <div id="toggle" class="switch-toggle well">
-                    <input id="sell" @click="function1" name="term" type="radio" value="sell">
+                    <input id="sell" @click="function1" name="term" type="radio" value="sell" checked>
                     <label for="sell" >Sell</label>
                     <input id="rent" @click="function2" name="term" type="radio" value="rent">
                     <label for="rent" >Rent</label>
@@ -113,15 +112,14 @@ export default {
 
 .toggle-container {
   border: 1px solid #cecece;
-  padding: 3px 3px 3px 3px;
   border-radius: 30px;
-  margin-bottom: 30px;
+  margin: 50px 0 50px 0;
+  padding: 3px;
+  width: 100%;
 }
 
 .toggle-container .btn-primary {
-  background: #046CA7;
-  background: -webkit-linear-gradient(-150deg, rgb(2, 179, 226), rgb(4, 108, 167));
-  background: linear-gradient(-150deg, rgb(2, 179, 226), rgb(4, 108, 167));
+  background: #3498db;
 }
 
 .switch-toggle a {
@@ -129,8 +127,7 @@ export default {
 }
 
 @media only screen {
-  /* Radio Switch
- */
+  /* Radio Switch */
   .switch-toggle {
     position: relative;
     display: block;
@@ -163,7 +160,6 @@ export default {
   .switch-toggle input:focus + label {
     outline-width: 2px;
     outline-style: solid;
-    outline-color: Highlight;
     outline: none;
    }
   .switch-toggle input:checked + label {
@@ -276,23 +272,6 @@ export default {
   }
   .switch-toggle label:nth-child(2):nth-last-child(12) ~ input:checked:nth-child(11) + label ~ a {
     left: 83%;
-  }
-  /* Bugfix for older Webkit, including mobile Webkit. Adapted from
- * https://css-tricks.com/webkit-sibling-bug/
- */
-  @media only screen and (-webkit-max-device-pixel-ratio: 2) and (max-device-width: 80em) {
-    .switch-light,
-    .switch-toggle {
-      -webkit-animation: webkitSiblingBugfix infinite 1s;
-    }
-  }
-  @-webkit-keyframes webkitSiblingBugfix {
-    from {
-      -webkit-transform: translate3d(0, 0, 0);
-    }
-    to {
-      -webkit-transform: translate3d(0, 0, 0);
-    }
   }
 }
  
