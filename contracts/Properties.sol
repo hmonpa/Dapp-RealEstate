@@ -11,32 +11,34 @@ contract Properties {
         string city;
         uint256 price;
         bool isSold;
+        uint256 sellOrRent;
         uint256 createdAt;
+        uint256 soldAt;
     }
     constructor() public
     {
-        uploadProperty(msg.sender, "Viladecans", 5000);
+        uploadProperty(msg.sender, "Viladecans", 5000, 1);
     }
 
     // ----------------------- MAPPINGS -----------------------
     mapping (uint256 => Property) public properties;
-    // mapping (address => Property) public propertiesByAddr;
     Property[] public props;
 
     // ----------------------- EVENTS -----------------------
     event PropertyCreated(
-        uint256 id,                     // ID
+        uint256 id,                     
         address owner,
-        // string prAddress,            // City address
+        // string prAddress,            
         string city,
         uint256 price,
-        bool isSold,                  // Vendida?
-        // bool sellOrRent,             // Sell? Rent?
+        bool isSold,                    
+        uint sellOrRent,                // 1 = SELL / 0 = RENT     
         // uint256 area,                // Area in m²
         // uint256 rooms,               // Num of rooms
         // uint256 bathrooms,           // Num of bathrooms
         // uint256 soldAt,
-        uint256 createdAt
+        uint256 createdAt,
+        uint256 soldAt
     );
 
     event isPropertySold (address addr, bool isSold, uint256 price);
@@ -56,12 +58,12 @@ contract Properties {
     }
 
     // Creates a new property, emit PropertyCreated event
-    function uploadProperty(address _address, string _city, uint256 _price) public
+    function uploadProperty(address _address, string _city, uint256 _price, uint256 _sellOrRent) public
     {
-        properties[propertyCounter] = Property(getRandomId(), _address, _city, eurToWei(_price), false, block.timestamp);
-        props.push(Property(getRandomId(), _address, _city, eurToWei(_price), false, block.timestamp));
+        properties[propertyCounter] = Property(getRandomId(), _address, _city, eurToWei(_price), false, _sellOrRent, block.timestamp, 0);
+        props.push(Property(getRandomId(), _address, _city, eurToWei(_price), false, _sellOrRent, block.timestamp, 0));
         propertyCounter++;
-        emit PropertyCreated(getRandomId(), _address, _city,eurToWei(_price), false, block.timestamp);
+        emit PropertyCreated(getRandomId(), _address, _city,eurToWei(_price), false,  _sellOrRent, block.timestamp, 0);
     }
 
     // Returns the number of properties already created
@@ -77,7 +79,7 @@ contract Properties {
         {
             if (_id == props[i].id) return i;
         }
-        if (i == propertyCounter) return 0;
+        revert('Not found');
     }
 
     // Send balance to account

@@ -23,9 +23,16 @@
               style="cursor: pointer"
             >
               <div class="icon" style="background:url('/img/favicon.png') center;">
-                <i class="bx bxl-dribbble" ></i>
+                <i class="bx bxl-dribbble"></i>
               </div>
-              <h4 class="title"><a href="">{{ prop.city }}</a></h4>
+              <h4 class="title">
+                <a href="">
+                  {{ prop.city }}
+                </a>
+                <a v-if="prop.sellOrRent">
+                  {{ prop.sellOrRent }}
+                </a>
+              </h4>
               <div v-if="prop.isSold" class="col-md-12" style="left:0;right:0;width:100%">
                 <p class="description">SOLD!</p>
               </div>
