@@ -26,9 +26,14 @@
                 <i class="bx bxl-dribbble" ></i>
               </div>
               <h4 class="title"><a href="">{{ prop.city }}</a></h4>
-              <p class="description">{{ weiToEur(prop.price) }}€ ({{ weiToEth(prop.price) }} ETH)</p>
-              <br>
-              <p class="description">{{ new Date(prop.createdAt*1000).toLocaleDateString() }}</p>  
+              <div v-if="prop.isSold" class="col-md-12" style="left:0;right:0;width:100%">
+                <p class="description">SOLD!</p>
+              </div>
+              <div v-else>
+                <p class="description">{{ weiToEur(prop.price) }}€ ({{ weiToEth(prop.price) }} ETH)</p>
+                <br>
+                <p class="description">{{ new Date(prop.createdAt*1000).toLocaleDateString() }}</p>  
+              </div>
             </div>
           </div>
         </div>
@@ -60,14 +65,22 @@
               <h6>Published by: {{ prop.owner }}</h6>
               <p>Published on: {{ new Date(prop.createdAt*1000).toLocaleString() }}</p> 
               <p>Price: {{ weiToEur(prop.price) }} € </p>
-              <p>Selled: {{ prop.isSelled }}</p>
+              <p>Sold: {{ prop.isSold }}</p>
               <!-- !! Only visible for users logged -->
               <button
+                v-if="!prop.isSold"
                 type="button"
                 class="buy-property"
-                @click="buyProperty(prop.owner, prop.id, prop.price)"
+                @click="buyProperty(prop.id, prop.price)"
               >
               Buy property
+              </button>
+              <button
+                v-else
+                type="button"
+                class="property-sold"
+              >
+              Sold
               </button>
             </div>
             <div class="modal-footer">
@@ -136,9 +149,9 @@ export default {
       }
     },
 
-    async buyProperty(to, id, price){
+    async buyProperty(id, price){
       let from = await Dapp.loadEthereum();
-      await Dapp.buyProperty(from, to, id.toNumber(), price);
+      await Dapp.buyProperty(from, id.toNumber(), price);
 
       await this.renderProperties();
     },

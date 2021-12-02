@@ -1589,3 +1589,32 @@ section {
     margin: 0 15px 0 0;
   }
 }
+
+/*--------------------------------------------------------------
+# Property Sold Class
+--------------------------------------------------------------*/
+.property-sold {
+  color: #fff;
+  background: #c40101;
+  padding: 10px 30px;
+  margin: 10px 0 10px 15px;
+  border-radius: 50px;
+  border: 2px solid #c40101;
+  transition: 0.3s;
+  font-weight: 500;
+  line-height: 1;
+  font-size: 13px;
+  cursor: none;
+}
+
+.property-sold:hover {
+  background-color: #c40101;
+  border: 2px solid #c40101;
+  cursor: none;
+}
+
+@media (max-width: 992px) {
+  .buy-property {
+    margin: 0 15px 0 0;
+  }
+}

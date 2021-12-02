@@ -82,21 +82,20 @@ export const Dapp = {
         window.location.reload()
     },
 
-    buyProperty: async(from, to, id, value) => {
+    buyProperty: async(from, id, value) => {
         try {
             console.log("Price: ", value)
-            // let priceInEther = Web3.utils.fromWei(price.toString(), 'ether');
-            // console.log("Price in Ether: ", priceInEther)
+
             return await Dapp.Properties.buyProperty(from, id, {
                 from: from, 
-                to: to, 
                 value: value
             });
+
         } catch (err) {
             console.log(err);
         }
-        // console.log(await Dapp.Properties.getPropertyByAddr(address));
     },
+
 
     // ----------------- AUTH FUNCTIONS -----------------
     signIn: async(address, password) => {

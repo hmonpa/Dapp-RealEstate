@@ -10,12 +10,12 @@ contract Properties {
         address owner;
         string city;
         uint256 price;
-        bool isSelled;
+        bool isSold;
         uint256 createdAt;
     }
     constructor() public
     {
-        uploadProperty(msg.sender, "Viladecans", 150000);
+        uploadProperty(msg.sender, "Viladecans", 5000);
     }
 
     // ----------------------- MAPPINGS -----------------------
@@ -30,16 +30,16 @@ contract Properties {
         // string prAddress,            // City address
         string city,
         uint256 price,
-        bool isSelled,                  // Vendida?
+        bool isSold,                  // Vendida?
         // bool sellOrRent,             // Sell? Rent?
         // uint256 area,                // Area in m²
         // uint256 rooms,               // Num of rooms
         // uint256 bathrooms,           // Num of bathrooms
-        // uint256 selledAt,
+        // uint256 soldAt,
         uint256 createdAt
     );
 
-    event isPropertySelled (address addr, bool isSelled, uint256 price);
+    event isPropertySold (address addr, bool isSold, uint256 price);
 
     // ----------------------- FUNCTIONS -----------------------
     // Returns a generate random number 
@@ -81,8 +81,12 @@ contract Properties {
     // Get property from owner @
     // function getPropertyByAddr(address _address) public view returns (uint256, address, bool)
     // {
-    //    return (propertiesByAddr[_address].id, propertiesByAddr[_address].owner, propertiesByAddr[_address].isSelled);
+    //    return (propertiesByAddr[_address].id, propertiesByAddr[_address].owner, propertiesByAddr[_address].isSold);
     // }
+
+    function sendBalance(address _receiver, uint256 _amount) payable external {
+        _receiver.transfer(_amount);
+    }
 
     function buyProperty(address _address, uint256 _id) public payable
     {
@@ -90,18 +94,20 @@ contract Properties {
         require(msg.value == props[index].price);
         
         address addr = props[index].owner;
+        this.sendBalance(addr, msg.value);
 
         // Changes the value of the boolean 
-        props[index].isSelled = true;
-        properties[index].isSelled = true;
+        props[index].isSold = true;
+        properties[index].isSold = true;
 
+        emit isPropertySold(addr, props[index].isSold, props[index].price);
+        
         // Changes the owner
         props[index].owner = _address;
         properties[index].owner = _address;
 
         // Emit an event
-        emit isPropertySelled(addr, props[index].isSelled, props[index].price);
-
+        // uint256 balance = getBalance(addr);
         // PENDING 1: Pass the value in Eth
         // require(msg.value == 3 ether);
 
@@ -113,6 +119,10 @@ contract Properties {
         // for show a correct status in the platform
 
         // PENDING 4: Emit an event
+    }
+
+    function getBalance() public view returns (uint256) {
+        return address(this).balance;
     }
 
 }

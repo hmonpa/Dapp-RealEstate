@@ -46,7 +46,7 @@ contract('Properties', () => {
 
         assert.equal(propertyEvent.city, "City example 2");
         assert.equal(propertyEvent.price, 0);
-        assert.equal(propertyEvent.isSelled, false);
+        assert.equal(propertyEvent.isSold, false);
     });
 
     it('property removed successfully', async() => {
@@ -58,8 +58,8 @@ contract('Properties', () => {
         const propertyEvent = res.logs[0].args;
         const property = await this.Properties.properties(newPropAddr);
 
-        assert.equal(property.isSelled, true);
-        assert.equal(propertyEvent.isSelled, true);
+        assert.equal(property.isSold, true);
+        assert.equal(propertyEvent.isSold, true);
 
         
         // assert.equal(propertyEvent.index, 1);
