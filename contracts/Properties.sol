@@ -42,12 +42,14 @@ contract Properties {
     event isPropertySold (address addr, bool isSold, uint256 price);
 
     // ----------------------- FUNCTIONS -----------------------
+    
     // Returns a generate random number 
     function getRandomId() private view returns (uint)
     { 
         return uint(keccak256(abi.encodePacked(block.difficulty, block.timestamp, msg.sender)))%uint(now);
     }
 
+    // Converts EUR to Wei (10^18 ETH)
     function eurToWei(uint256 _price) public pure returns (uint)
     {
         return _price*243739092347530; 
@@ -56,19 +58,19 @@ contract Properties {
     // Creates a new property, emit PropertyCreated event
     function uploadProperty(address _address, string _city, uint256 _price) public
     {
-        // propertiesByAddr[_address] = Property(getRandomId(), _address, _city, _price, false, block.timestamp);
         properties[propertyCounter] = Property(getRandomId(), _address, _city, eurToWei(_price), false, block.timestamp);
         props.push(Property(getRandomId(), _address, _city, eurToWei(_price), false, block.timestamp));
         propertyCounter++;
         emit PropertyCreated(getRandomId(), _address, _city,eurToWei(_price), false, block.timestamp);
     }
 
+    // Returns the number of properties already created
     function getAllProperties() public view returns (uint)
     {
         return propertyCounter;
     }
 
-    
+    // Get a property by their ID
     function getPropertyById(uint256 _id) public view returns (uint)
     {
         for (uint i = 0; i < propertyCounter; i++)
@@ -78,21 +80,18 @@ contract Properties {
         if (i == propertyCounter) return 0;
     }
 
-    // Get property from owner @
-    // function getPropertyByAddr(address _address) public view returns (uint256, address, bool)
-    // {
-    //    return (propertiesByAddr[_address].id, propertiesByAddr[_address].owner, propertiesByAddr[_address].isSold);
-    // }
-
+    // Send balance to account
     function sendBalance(address _receiver, uint256 _amount) payable external {
         _receiver.transfer(_amount);
     }
 
+    // Buy property
     function buyProperty(address _address, uint256 _id) public payable
     {
         uint index = this.getPropertyById(_id);
         require(msg.value == props[index].price);
         
+        // Send the value in Eth to the original owner
         address addr = props[index].owner;
         this.sendBalance(addr, msg.value);
 
@@ -100,29 +99,12 @@ contract Properties {
         props[index].isSold = true;
         properties[index].isSold = true;
 
+        // Emit an event
         emit isPropertySold(addr, props[index].isSold, props[index].price);
         
-        // Changes the owner
+        // Changes the owner after sell the property and
+        // replace the property status from mapping and array
         props[index].owner = _address;
         properties[index].owner = _address;
-
-        // Emit an event
-        // uint256 balance = getBalance(addr);
-        // PENDING 1: Pass the value in Eth
-        // require(msg.value == 3 ether);
-
-        // PENDING 2: Change the owner after sell the property
-        // It maybe can be filter the properties by ID
-
-        // propertiesByAddr[_address].owner = _address;
-        // PENDING 3: Replace the property from the mapping properties...
-        // for show a correct status in the platform
-
-        // PENDING 4: Emit an event
     }
-
-    function getBalance() public view returns (uint256) {
-        return address(this).balance;
-    }
-
 }
