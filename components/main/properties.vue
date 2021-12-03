@@ -22,15 +22,16 @@
               :data-bs-target="'#property_' + index"
               style="cursor: pointer"
             >
+              <div class="col-md-12 type-property">
+                <b v-if="prop.sellOrRent == 1">FOR SALE</b>
+                <b v-else>FOR RENT</b>
+              </div>
               <div class="icon" style="background:url('/img/favicon.png') center;">
                 <i class="bx bxl-dribbble"></i>
               </div>
               <h4 class="title">
                 <a href="">
                   {{ prop.city }}
-                </a>
-                <a v-if="prop.sellOrRent">
-                  {{ prop.sellOrRent }}
                 </a>
               </h4>
               <div v-if="prop.isSold" class="col-md-12" style="left:0;right:0;width:100%">

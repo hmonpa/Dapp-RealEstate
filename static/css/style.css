@@ -663,6 +663,11 @@ section {
   height: 100%;
   border-radius: 0px;
 }
+.properties .type-property {
+  text-align: center;
+  margin: -30px 0 10px 0;
+}
+
 .properties .icon {
   margin: 0 auto 20px auto;
   padding-top: 10px;
@@ -1228,6 +1233,14 @@ section {
   margin-top:120px;
 }
 
+.publish .container {
+  border:1px #2383c4 solid;
+  border-radius:20px;
+  width: 60%;
+  padding:60px 0 60px 0;
+  margin-top:50px;
+  margin-bottom:175px;
+}
 .publish .publish-about h3 {
   font-size: 28px;
   margin: 0 0 10px 0;
@@ -1282,6 +1295,35 @@ section {
   line-height: 28px;
   font-size: 14px;
 }
+
+/* Room chooser buttons */
+.publish .container-rooms {
+	display: flex;
+	border-radius: 45px;
+  border: 1px solid #cecece;
+  width: 56.5%;
+  text-align: center;
+}
+
+.publish .container-rooms #input-rooms,
+.publish .container-rooms #input-bathrooms {
+	text-align: center;
+	font-size: 14px;
+	border: none;
+	outline: none;
+	color: #202030;
+}
+
+.publish .container-rooms label {
+  color: #3498db;
+	font-size: 13px;
+  font-weight: 30px;
+	border: none;
+	background-color: #ffffff;
+	cursor: pointer;
+	outline: none;
+}
+
 .publish .php-email-form .error-message {
   display: none;
   color: #fff;

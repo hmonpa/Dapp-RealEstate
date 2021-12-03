@@ -1,7 +1,7 @@
 <template>
     <!-- ======= Publish Section ======= -->
     <section v-if="userLogged" id="publish" class="publish">
-      <div class="container" style="margin-top:100px;margin-bottom:175px">
+      <div class="container">
         <div class="section-title" data-aos="fade-up">
           <h2>Upload properties</h2>
         </div>
@@ -13,21 +13,50 @@
           <div class="col-lg-6 col-md-12" data-aos="fade-up" data-aos-delay="300">
             <form id="propertyForm" class="php-email-form">
               <div class="form-group">
-                <input type="text" name="city" class="form-control" id="city" placeholder="Enter the city..." required>
+                <span>City:</span>
+                <input type="text" name="city" class="form-control" id="city" placeholder="Barcelona">
               </div>
               <div class="form-group">
-                <input type="number" class="form-control" name="price" id="price" placeholder="Enter the price..." required>
+                <span>Address:</span>
+                <input type="text" id="pac-input" name="address" class="form-control" placeholder="Plaça Sant Jaume, 1">
+              </div>
+              <div class="form-group">
+                  <span>Price in EUR:</span>
+                  <input type="number" step="5000" min="0" class="form-control" name="price" id="price" placeholder="150000">
+              </div>
+              <div class="form-group">
+                <span>Rooms:</span>
+                <div class="container-rooms">
+                  <label id="minus" @click="decrement">-</label>
+                  <input id="input-bathrooms" type="number" min="1" value="1" readonly>
+                  <label id="plus" @click="increment">+</label>
+                </div>
+              </div>
+              <div class="form-group">
+                  <span>Area in m²:</span>
+                  <input type="number" style="width:56.5%; border-radius:45px" min="40" class="form-control" name="area" id="area" placeholder="80">
+              </div>
+              <div class="form-group">
+                <span>Bathrooms:</span>
+                <div class="container-rooms">
+                  <label id="minus" @click="decrement">-</label>
+                  <input id="input-rooms" type="number" min="1" value="1" readonly>
+                  <label id="plus" @click="increment">+</label>
+                </div>
               </div>
               <div class="form-group text-center">
                 <div class="toggle-container">
                   <div id="toggle" class="switch-toggle well">
-                    <input id="sell" @click="function1" name="term" type="radio" value="sell" checked>
+                    <input id="sell" @click="toSell" name="term" type="radio" value="sell" checked>
                     <label for="sell" >Sell</label>
-                    <input id="rent" @click="function2" name="term" type="radio" value="rent">
+                    <input id="rent" @click="toRent" name="term" type="radio" value="rent">
                     <label for="rent" >Rent</label>
                     <a class="btn btn-primary"></a>
                   </div>
                 </div>
+              </div>
+              <div v-if="this.typeOfProperty == 1">
+                <a>TOKENIZADO</a>
               </div>
               <div class="text-center">
                 <button type="submit" @click="uploadData">Publish</button>
@@ -40,6 +69,7 @@
     <!-- End Publish Section -->
 </template>
 
+<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCdfmCPJspBduUb4Y8WpPhBdh_S1bGlATc&libraries=places"></script>
 <script>
 import $ from 'jquery';
 import { Dapp } from '@/dapp';
@@ -53,18 +83,26 @@ export default {
     }
   },
   data(){
+    let typeOfProperty;
+    let rooms;
     return {}
   },
   methods: {  
-    function1() {
-      var sol = document.getElementById("sell").checked = true;
-      var sol2 = document.getElementById("rent").checked = false;
-      console.log("SELL: ", sol);
+    initMap(){
+      const input = document.getElementById("pac-input");
+      const autocomplete = new window.google.maps.places.Autocomplete(input, {
+        types: ['geocode'],
+        componentRestrictions: {
+          country: "USA"
+        }
+      });
+
     },
-    function2(){
-      var sol = document.getElementById("rent").checked = true;
-      var sol2 = document.getElementById("sell").checked = false;
-      console.log("RENT: ", sol, " and SELL ", sol2);
+    toSell() {
+      this.typeOfProperty = 1;
+    },
+    toRent(){
+      this.typeOfProperty = 0;
     },
 
     // Starts the dApp 
@@ -93,29 +131,59 @@ export default {
       propertyForm.addEventListener("submit", e => {
         e.preventDefault(); 
 
-        console.log(account, propertyForm["city"].value, propertyForm["price"].value)
+        console.log(account, propertyForm["city"].value, propertyForm["price"].value, this.typeOfProperty)
 
       });
-      
-      await Dapp.uploadProperty(account, propertyForm["city"].value, propertyForm["price"].value);
+
+      if(!this.typeOfProperty) this.typeOfProperty = 1;
+      await Dapp.uploadProperty(account, propertyForm["city"].value, propertyForm["price"].value, this.typeOfProperty);
       window.location.href = "/#properties";
     },
+
+
+    // Buttons functions
+    increment() {
+      var inputrooms = document.getElementById('input-rooms');
+      var value = inputrooms.value;
+      if(value < 10) value++;
+      inputrooms.value = value;
+      this.rooms = value;
+    },
+
+    decrement(){
+      var inputrooms = document.getElementById('input-rooms');
+      var value = this.inputrooms.value;
+      if(value > 1) value--;
+      inputrooms.value = value;
+      this.rooms = value;
+    }
+
   },
   beforeMount(){
     // Call to JS
     this.start();
+    this.initMap();
   }
 }
 </script>
 
 <style>
+#plus {
+	padding: 15px 25px 15px 5px;
+	border-radius: 0 45px 45px 0;
+}
+
+#minus {
+	padding: 15px 5px 15px 25px;
+	border-radius: 45px 0 0 45px;
+}
 
 .toggle-container {
   border: 1px solid #cecece;
   border-radius: 30px;
-  margin: 50px 0 50px 0;
+  margin: 50px 0 50px 50px;
   padding: 3px;
-  width: 100%;
+  width: 80%;
 }
 
 .toggle-container .btn-primary {
@@ -190,9 +258,8 @@ export default {
     padding: 5px;
     margin: 0;
     text-align: center;
-    font-size: 20px;
-    text-transform: uppercase;
-    font-weight: 500;
+    font-size: 18px;
+    font-weight: 400;
   }
   .switch-toggle a {
     position: absolute;
