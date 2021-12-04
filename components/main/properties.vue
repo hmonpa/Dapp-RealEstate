@@ -72,10 +72,9 @@
               <h6>Published by: {{ prop.owner }}</h6>
               <p>Published on: {{ new Date(prop.createdAt*1000).toLocaleString() }}</p> 
               <p>Price: {{ weiToEur(prop.price) }} € </p>
-              <p>Sold: {{ prop.isSold }}</p>
-              <!-- !! Only visible for users logged -->
+              <!-- !! PENDING: Only visible for users logged -->
               <button
-                v-if="!prop.isSold"
+                v-if="prop.soldAt == 0"
                 type="button"
                 class="buy-property"
                 @click="buyProperty(prop.id, prop.price)"

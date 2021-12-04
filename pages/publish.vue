@@ -46,15 +46,31 @@
               <div class="form-group text-center">
                 <div class="toggle-container">
                   <div id="toggle" class="switch-toggle well">
-                    <input id="sell" v-on:click="typeOfProperty = 1" name="term" type="radio" value="sell" checked>
+                    <input id="sell" v-on:click="typeOfProperty = 1 && (tokenized = true)" name="term" type="radio" value="sell" checked>
                     <label for="sell" >Sell</label>
-                    <input id="rent" v-on:click="typeOfProperty = 0" name="term" type="radio" value="rent">
+                    <input id="rent" v-on:click="typeOfProperty = 0 && (tokens == 1)" name="term" type="radio" value="rent">
                     <label for="rent" >Rent</label>
                     <a class="btn btn-primary"></a>
                   </div>
                 </div>
               </div>
               <div v-if="typeOfProperty == 0">
+                <div v-if="rooms > 1">
+                  <div class="form-group">
+                    <span>Is it tokenized?</span>
+                    <div id="switch" class="hover" v-on:click="tokenized = !tokenized" onclick="this.classList.toggle('hover')">
+                      <div id="toggleswitch" @click="calculateTokens"></div>
+                    </div>
+                  </div>
+                  <div v-if="tokenized" class="num-tokenizations">
+                    <span>Number of tokens:</span>
+                    <div class="container-rooms">
+                      <label id="minus" @click="decrement(2)">-</label>
+                      <input id="input-tokens" type="number" min="1" value="1" readonly>
+                      <label id="plus" @click="increment(2)">+</label>
+                    </div>
+                  </div>
+                </div>
                 <div class="form-group">
                   <span>Rental end date:</span>
                   <input type="date" id="date-end" name="date-end" class="form-control" value="2022-08-08" required>
@@ -77,20 +93,28 @@ import auth from '@/src/auth';
 const IPFS = require('ipfs-core');
 
 export default {
+  async beforeMount(){
+    // Call to the contracts
+    this.start();
+  },
   computed: {
     userLogged() {
       return auth.getUserLogged();
     }
   },
   data(){
-    // Vars
-    let rooms;
-    let bathrooms;
     return {
-      typeOfProperty: 1
+      typeOfProperty: 1,
+      tokenized: 1,
+      rooms: 1,
+      bathrooms: 1,
+      tokens: 1
     }
   },
   methods: {  
+    calculateTokens() {
+      this.tokens >= 1 ? this.tokens = 0 : this.tokens = 1; 
+    },
     // Starts the dApp 
     async start(){
       // Testing with InterPlanetary File System Protocol
@@ -109,26 +133,7 @@ export default {
       await Dapp.init();
     },
 
-    // Upload data from the upload properties form
-    async uploadData() {
-      propertyForm.addEventListener("submit", e => {
-        e.preventDefault(); 
-        // console.log(account, propertyForm["city"].value, propertyForm["price"].value, this.typeOfProperty)
-      });
-
-      try {
-        console.log(typeOfProperty);
-        const propertyForm = document.querySelector("#propertyForm");
-        const account = document.getElementById("account").innerText;
-        console.log(account);
-        await Dapp.uploadProperty(account, propertyForm["city"].value, propertyForm["price"].value, this.typeOfProperty);
-        window.location.href = "/#properties";
-      } catch (err) {
-        console.log(err);
-      }
-    },
-
-    // Buttons functions
+    // ----------------------- Buttons functions -----------------------
     increment(i) {
       if (i == 0){
         // Rooms
@@ -137,6 +142,7 @@ export default {
         if(value < 10) value++;
         inputrooms.value = value;
         this.rooms = value;
+        console.log(this.rooms);
       } else if(i == 1){
         // Bathrooms
         var inputBathrooms = document.getElementById('input-bathrooms');
@@ -144,6 +150,13 @@ export default {
         if(value < 10) value++;
         inputBathrooms.value = value;
         this.bathrooms = value;
+      } else if (i == 2){
+        // Tokens
+        var inputTokens = document.getElementById('input-tokens');
+        var value = inputTokens.value;
+        if(value < this.rooms) value++;
+        inputTokens.value = value;
+        this.tokens = value;
       }
     },
     decrement(i){
@@ -161,13 +174,39 @@ export default {
         if(value > 1) value--;
         inputBathrooms.value = value;
         this.bathrooms = value;
+      } else if(i == 2) {
+        // Tokens
+        var inputTokens = document.getElementById('input-tokens');
+        var value = inputTokens.value;
+        if(value > 2) value--;
+        inputTokens.value = value;
+        this.tokens = value;
       }
-    }
+    },
 
-  },
-  async beforeMount(){
-    // Call to JS
-    this.start();
+    // Upload data from the upload properties form
+    async uploadData() {
+      const account = await Dapp.checkStatus();
+
+      propertyForm.addEventListener("submit", e => {
+        e.preventDefault(); 
+        console.log(this.tokens);
+        console.log(propertyForm["date-end"].value);
+      });
+
+      // try {
+      //   const propertyForm = document.querySelector("#propertyForm");
+      //   this.typeOfProperty == 0 ? 
+      //     await Dapp.uploadProperty(account, propertyForm["city"].value, propertyForm["address"].value, propertyForm["price"].value, this.rooms, propertyForm["area"].value, this.bathrooms, this.typeOfProperty, this.tokens, propertyForm["date-end"].value) 
+      //     : 
+      //     await Dapp.uploadProperty(account, propertyForm["city"].value, propertyForm["address"].value, propertyForm["price"].value, this.rooms, propertyForm["area"].value, this.bathrooms, this.typeOfProperty, 0, 0);
+        
+      //   window.location.href = "/#properties";
+      // } catch (err) {
+      //   console.log(err);
+      // }
+    },
+
   }
 }
 </script>
@@ -347,5 +386,38 @@ export default {
     left: 83%;
   }
 }
- 
+
+/* Switch of tokenization */
+#switch {
+  width: 100px;
+  padding: 5px;
+  border: 2px solid #3498db;
+  box-sizing: border-box;
+  opacity: 0.5;
+  -webkit-filter: grayscale(100%);
+  -webkit-transition: all 03s;
+  transition: all 0.3s;
+  border-radius: 540px;
+  cursor: pointer;
+}
+
+#toggleswitch {
+  width: 40px;
+  height: 40px;
+  background: #3498db;
+  border-radius: 100%;
+  position: relative;
+  transition: all 0.3s;
+  left: 0;
+  -webkit-transition: all 0.3s;
+}
+
+#switch.hover #toggleswitch {
+  left: 45px;
+}
+
+#switch.hover {
+  -webkit-filter: none;
+  opacity:1
+}
 </style>

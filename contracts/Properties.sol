@@ -6,18 +6,39 @@ contract Properties {
     uint public propertyCounter = 0;
     struct Property 
     {
-        uint256 id;
+        uint256 id;                     // Catastro?               
         address owner;
         string city;
+        string physicalAddr;            
         uint256 price;
-        bool isSold;
-        uint256 sellOrRent;
+        uint256 rooms;
+        uint256 area;
+        uint256 bathrooms;
+        uint sellOrRent;   
+
+        // Rental attributes
+        uint256 tokens;
+        uint256 rentalEndDate;           // ! If sellOrRent == 0
+        
+        // Dates
         uint256 createdAt;
-        uint256 soldAt;
+        uint256 soldAt;              
     }
+    
     constructor() public
     {
-        uploadProperty(msg.sender, "Viladecans", 5000, 1);
+        uploadProperty(
+            msg.sender,                         // Owner
+            "Sant Boi de Llobregat",            // City
+            "C/ Mossèn Antoni Solanes, 105",    // Physical address
+            5000,                               // Price in EUR
+            3,                                  // Num of rooms 
+            80,                                 // Area in m²
+            1,                                  // Num of bathrooms
+            1,                                  // Sell --> 1
+            0,                                  // Tokens
+            0                                   // Rental end date
+        );
     }
 
     // ----------------------- MAPPINGS -----------------------
@@ -26,22 +47,16 @@ contract Properties {
 
     // ----------------------- EVENTS -----------------------
     event PropertyCreated(
-        uint256 id,                     
+        uint256 id,             
         address owner,
-        // string prAddress,            
         string city,
+        string physicalAddr,            
         uint256 price,
-        bool isSold,                    
-        uint sellOrRent,                // 1 = SELL / 0 = RENT     
-        // uint256 area,                // Area in m²
-        // uint256 rooms,               // Num of rooms
-        // uint256 bathrooms,           // Num of bathrooms
-        // uint256 soldAt,
-        uint256 createdAt,
-        uint256 soldAt
+        uint sellOrRent,
+        uint256 createdAt
     );
 
-    event isPropertySold (address addr, bool isSold, uint256 price);
+    event isPropertySold (address addr, uint256 price, uint256 soldAt);
 
     // ----------------------- FUNCTIONS -----------------------
     
@@ -58,12 +73,13 @@ contract Properties {
     }
 
     // Creates a new property, emit PropertyCreated event
-    function uploadProperty(address _address, string _city, uint256 _price, uint256 _sellOrRent) public
+    function uploadProperty(address _owner, string _city, string _physicalAddr, uint256 _price, uint256 _numRooms, uint256 _area, uint256 _numBathrooms, uint256 _sellOrRent, uint256 _tokens, uint256 _rentalEndDate) public
     {
-        properties[propertyCounter] = Property(getRandomId(), _address, _city, eurToWei(_price), false, _sellOrRent, block.timestamp, 0);
-        props.push(Property(getRandomId(), _address, _city, eurToWei(_price), false, _sellOrRent, block.timestamp, 0));
+        Property memory newProperty = Property(getRandomId(), _owner, _city, _physicalAddr, eurToWei(_price), _numRooms, _area, _numBathrooms, _sellOrRent,  _tokens, _rentalEndDate, block.timestamp, 0);
+        properties[propertyCounter] = newProperty;
+        props.push(newProperty);
         propertyCounter++;
-        emit PropertyCreated(getRandomId(), _address, _city,eurToWei(_price), false,  _sellOrRent, block.timestamp, 0);
+        emit PropertyCreated(getRandomId(), _owner, _city, _physicalAddr, eurToWei(_price), _sellOrRent, block.timestamp);
     }
 
     // Returns the number of properties already created
@@ -98,11 +114,11 @@ contract Properties {
         this.sendBalance(addr, msg.value);
 
         // Changes the value of the boolean 
-        props[index].isSold = true;
-        properties[index].isSold = true;
+        props[index].soldAt         = block.timestamp;
+        properties[index].soldAt    = block.timestamp;
 
         // Emit an event
-        emit isPropertySold(addr, props[index].isSold, props[index].price);
+        emit isPropertySold(addr, props[index].price, props[index].soldAt);
         
         // Changes the owner after sell the property and
         // replace the property status from mapping and array

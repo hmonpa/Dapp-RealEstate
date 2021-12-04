@@ -73,10 +73,10 @@ export const Dapp = {
         
     },
     // -------------- PROPERTIES FUNCTIONS --------------
-    uploadProperty: async(address, city, price, sellOrRent) => {
+    uploadProperty: async(owner, city, addr, price, rooms, area, bathrooms, sellOrRent, tokens, rentalEndDate) => {
         
-        await Dapp.Properties.uploadProperty(address, city, price, sellOrRent, {
-            from: address
+        await Dapp.Properties.uploadProperty(owner, city, addr, price, rooms, area, bathrooms, sellOrRent, tokens, rentalEndDate, {
+            from: owner
         });
 
         window.location.reload()

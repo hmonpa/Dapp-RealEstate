@@ -1306,7 +1306,8 @@ section {
 }
 
 .publish .container-rooms #input-rooms,
-.publish .container-rooms #input-bathrooms {
+.publish .container-rooms #input-bathrooms,
+.publish .container-rooms #input-tokens {
 	text-align: center;
 	font-size: 14px;
 	border: none;
