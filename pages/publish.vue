@@ -7,7 +7,6 @@
         </div>
 
         <div class="row">
-
           <div class="col-lg-3 col-md-6" data-aos="fade-up" data-aos-delay="100">
           </div>
           <div class="col-lg-6 col-md-12" data-aos="fade-up" data-aos-delay="300">
@@ -27,9 +26,9 @@
               <div class="form-group">
                 <span>Rooms:</span>
                 <div class="container-rooms">
-                  <label id="minus" @click="decrement">-</label>
-                  <input id="input-bathrooms" type="number" min="1" value="1" readonly>
-                  <label id="plus" @click="increment">+</label>
+                  <label id="minus" @click="decrement(0)">-</label>
+                  <input id="input-rooms" type="number" min="1" value="1" readonly>
+                  <label id="plus" @click="increment(0)">+</label>
                 </div>
               </div>
               <div class="form-group">
@@ -39,24 +38,27 @@
               <div class="form-group">
                 <span>Bathrooms:</span>
                 <div class="container-rooms">
-                  <label id="minus" @click="decrement">-</label>
-                  <input id="input-rooms" type="number" min="1" value="1" readonly>
-                  <label id="plus" @click="increment">+</label>
+                  <label id="minus" @click="decrement(1)">-</label>
+                  <input id="input-bathrooms" type="number" min="1" value="1" readonly>
+                  <label id="plus" @click="increment(1)">+</label>
                 </div>
               </div>
               <div class="form-group text-center">
                 <div class="toggle-container">
                   <div id="toggle" class="switch-toggle well">
-                    <input id="sell" @click="toSell" name="term" type="radio" value="sell" checked>
+                    <input id="sell" v-on:click="typeOfProperty = 1" name="term" type="radio" value="sell" checked>
                     <label for="sell" >Sell</label>
-                    <input id="rent" @click="toRent" name="term" type="radio" value="rent">
+                    <input id="rent" v-on:click="typeOfProperty = 0" name="term" type="radio" value="rent">
                     <label for="rent" >Rent</label>
                     <a class="btn btn-primary"></a>
                   </div>
                 </div>
               </div>
-              <div v-if="this.typeOfProperty == 1">
-                <a>TOKENIZADO</a>
+              <div v-if="typeOfProperty == 0">
+                <div class="form-group">
+                  <span>Rental end date:</span>
+                  <input type="date" id="date-end" name="date-end" class="form-control" value="2022-08-08" required>
+                </div>
               </div>
               <div class="text-center">
                 <button type="submit" @click="uploadData">Publish</button>
@@ -69,9 +71,7 @@
     <!-- End Publish Section -->
 </template>
 
-<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCdfmCPJspBduUb4Y8WpPhBdh_S1bGlATc&libraries=places"></script>
 <script>
-import $ from 'jquery';
 import { Dapp } from '@/dapp';
 import auth from '@/src/auth';
 const IPFS = require('ipfs-core');
@@ -83,28 +83,14 @@ export default {
     }
   },
   data(){
-    let typeOfProperty;
+    // Vars
     let rooms;
-    return {}
+    let bathrooms;
+    return {
+      typeOfProperty: 1
+    }
   },
   methods: {  
-    initMap(){
-      const input = document.getElementById("pac-input");
-      const autocomplete = new window.google.maps.places.Autocomplete(input, {
-        types: ['geocode'],
-        componentRestrictions: {
-          country: "USA"
-        }
-      });
-
-    },
-    toSell() {
-      this.typeOfProperty = 1;
-    },
-    toRent(){
-      this.typeOfProperty = 0;
-    },
-
     // Starts the dApp 
     async start(){
       // Testing with InterPlanetary File System Protocol
@@ -125,49 +111,69 @@ export default {
 
     // Upload data from the upload properties form
     async uploadData() {
-      const propertyForm = document.querySelector("#propertyForm");
-      const account = document.getElementById("account").innerText;
-      console.log(account);
       propertyForm.addEventListener("submit", e => {
         e.preventDefault(); 
-
-        console.log(account, propertyForm["city"].value, propertyForm["price"].value, this.typeOfProperty)
-
+        // console.log(account, propertyForm["city"].value, propertyForm["price"].value, this.typeOfProperty)
       });
 
-      if(!this.typeOfProperty) this.typeOfProperty = 1;
-      await Dapp.uploadProperty(account, propertyForm["city"].value, propertyForm["price"].value, this.typeOfProperty);
-      window.location.href = "/#properties";
+      try {
+        console.log(typeOfProperty);
+        const propertyForm = document.querySelector("#propertyForm");
+        const account = document.getElementById("account").innerText;
+        console.log(account);
+        await Dapp.uploadProperty(account, propertyForm["city"].value, propertyForm["price"].value, this.typeOfProperty);
+        window.location.href = "/#properties";
+      } catch (err) {
+        console.log(err);
+      }
     },
-
 
     // Buttons functions
-    increment() {
-      var inputrooms = document.getElementById('input-rooms');
-      var value = inputrooms.value;
-      if(value < 10) value++;
-      inputrooms.value = value;
-      this.rooms = value;
+    increment(i) {
+      if (i == 0){
+        // Rooms
+        var inputrooms = document.getElementById('input-rooms');
+        var value = inputrooms.value;
+        if(value < 10) value++;
+        inputrooms.value = value;
+        this.rooms = value;
+      } else if(i == 1){
+        // Bathrooms
+        var inputBathrooms = document.getElementById('input-bathrooms');
+        var value = inputBathrooms.value;
+        if(value < 10) value++;
+        inputBathrooms.value = value;
+        this.bathrooms = value;
+      }
     },
-
-    decrement(){
-      var inputrooms = document.getElementById('input-rooms');
-      var value = this.inputrooms.value;
-      if(value > 1) value--;
-      inputrooms.value = value;
-      this.rooms = value;
+    decrement(i){
+      if(i == 0){
+        // Rooms
+        var inputrooms = document.getElementById('input-rooms');
+        var value = inputrooms.value;
+        if(value > 1) value--;
+        inputrooms.value = value;
+        this.rooms = value;
+      } else if(i == 1) {
+        // Bathrooms
+        var inputBathrooms = document.getElementById('input-bathrooms');
+        var value = inputBathrooms.value;
+        if(value > 1) value--;
+        inputBathrooms.value = value;
+        this.bathrooms = value;
+      }
     }
 
   },
-  beforeMount(){
+  async beforeMount(){
     // Call to JS
     this.start();
-    this.initMap();
   }
 }
 </script>
 
 <style>
+/* Sell or rent style */
 #plus {
 	padding: 15px 25px 15px 5px;
 	border-radius: 0 45px 45px 0;

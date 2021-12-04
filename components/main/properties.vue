@@ -7,7 +7,6 @@
           <h2>Properties</h2>
           <p>Check the current properties uploaded at the platform!</p>
         </div>
-
         <div class="row">
           <div v-for="(prop, index) in properties"
             :key="index"
