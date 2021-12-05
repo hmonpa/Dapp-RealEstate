@@ -83,9 +83,8 @@ export const Dapp = {
     },
 
     buyProperty: async(from, id, value) => {
-        try {
-            console.log("Price: ", value)
-
+        try
+        {
             return await Dapp.Properties.buyProperty(from, id, {
                 from: from, 
                 value: value
@@ -96,6 +95,30 @@ export const Dapp = {
         }
     },
 
+    rentProperty: async(from, id, rentalEndDate, value) => {
+        try
+        {
+            return await Dapp.Properties.rentProperty(from, id, rentalEndDate, {
+                from: from, 
+                value: value
+            });
+
+        } catch (err) {
+            console.log(err);
+        }
+    },
+
+    buyTokens: async(from, id, tokensToBuy, priceToPay) => {
+        try
+        {
+            return await Dapp.Properties.buyTokens(from, tokensToBuy, id, {
+                from: from,
+                value: priceToPay
+            })
+        } catch (err) {
+            console.log(err);
+        }
+    },
 
     // ----------------- AUTH FUNCTIONS -----------------
     signIn: async(address, password) => {

@@ -1296,7 +1296,7 @@ section {
   font-size: 14px;
 }
 
-/* Room chooser buttons */
+/* Rooms, bathrooms and tokens chooser buttons */
 .publish .container-rooms {
 	display: flex;
 	border-radius: 45px;
@@ -1647,13 +1647,11 @@ section {
   font-weight: 500;
   line-height: 1;
   font-size: 13px;
-  cursor: none;
 }
 
 .property-sold:hover {
   background-color: #c40101;
   border: 2px solid #c40101;
-  cursor: none;
 }
 
 @media (max-width: 992px) {

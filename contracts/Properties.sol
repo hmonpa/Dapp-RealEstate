@@ -22,7 +22,7 @@ contract Properties {
         
         // Dates
         uint256 createdAt;
-        uint256 soldAt;              
+        uint256 soldOn;              
     }
     
     constructor() public
@@ -56,7 +56,9 @@ contract Properties {
         uint256 createdAt
     );
 
-    event isPropertySold (address addr, uint256 price, uint256 soldAt);
+    event isPropertySold (address addr, uint256 price, uint256 soldOn);
+    event isPropertyRent (address addr, uint256 price, uint256 rentalEndDate);
+    event propertyTokenPurchased (address from, uint256 idProperty, uint256 numberOfTokens, uint256 pricePerToken);
 
     // ----------------------- FUNCTIONS -----------------------
     
@@ -83,25 +85,13 @@ contract Properties {
     }
 
     // Update number of tokens
-    function updateTokens(uint256 _id, uint256 _num) public
-    {
-        uint index = getPropertyById(_id);
-        uint256 currentTokens = props[index].tokens;
-        currentTokens = currentTokens - _num;
-        props[index].tokens = currentTokens;
-    }
-
-    // Buy token (or tokens) of a property
-    function buyToken(address _from, uint256 _numTokens, uint256 _id) public payable
-    {
-        uint index = getPropertyById(_id);
-        uint256 currentTokens = props[index].tokens;
-        this.sendBalance(props[index].owner, msg.value); // Msg value is price / numTokens
-        currentTokens = currentTokens - _numTokens;
-        props[index].tokens = currentTokens;
-
-        if(currentTokens == 0) this.propertySettled(index);
-    }   
+    // function updateTokens(uint256 _id, uint256 _num) public
+    // {
+    //     uint index = getPropertyById(_id);
+    //     uint256 currentTokens = props[index].tokens;
+    //     currentTokens = currentTokens - _num;
+    //     props[index].tokens = currentTokens;
+    // }
 
     // Returns the number of properties already created
     function getAllProperties() public view returns (uint)
@@ -138,7 +128,7 @@ contract Properties {
         this.propertySettled(index);
 
         // Emit an event
-        emit isPropertySold(addr, props[index].price, props[index].soldAt);
+        emit isPropertySold(_address, props[index].price, props[index].soldOn);
         
         // Changes the owner after sell the property and
         // replace the property status from mapping and array
@@ -146,11 +136,41 @@ contract Properties {
         properties[index].owner = _address;
     }
 
+    // Rent property
+    function rentProperty(address _address, uint256 _id, uint256 _rentalEndDate) public payable
+    {
+        uint index = this.getPropertyById(_id);
+        require(msg.value == props[index].price);
+
+        // Send the value in Eth to the original owner
+        address addr = props[index].owner;
+        this.sendBalance(addr, msg.value);
+
+        // Changes the value of the boolean 
+        this.propertySettled(index);
+        
+        // Emit an event
+        emit isPropertyRent(_address, props[index].price, _rentalEndDate);
+    }
+
+    // Buy token (or tokens) of a property
+    function buyTokens(address _from, uint256 _numTokens, uint256 _id) public payable
+    {
+        uint index = getPropertyById(_id);
+        uint256 currentTokens = props[index].tokens;
+        this.sendBalance(props[index].owner, msg.value); // Msg value is price / numTokens
+        currentTokens = currentTokens - _numTokens;
+        props[index].tokens = currentTokens;
+
+        if(currentTokens == 0) this.propertySettled(index);
+
+        emit propertyTokenPurchased(_from, _id, _numTokens, (props[index].price/_numTokens));
+    }   
 
     function propertySettled(uint256 _index) public 
     {
-        props[_index].soldAt         = block.timestamp;
-        properties[_index].soldAt    = block.timestamp;
+        props[_index].soldOn         = block.timestamp;
+        properties[_index].soldOn    = block.timestamp;
     }
 
 }

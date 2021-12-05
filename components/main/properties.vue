@@ -5,7 +5,7 @@
 
         <div class="section-title" data-aos="fade-up">
           <h2>Properties</h2>
-          <p>Check the current properties uploaded at the platform!</p>
+          <p>Check out the current properties uploaded to the platform!</p>
         </div>
         <div class="row">
           <div v-for="(prop, index) in properties"
@@ -33,13 +33,16 @@
                   {{ prop.city }}
                 </a>
               </h4>
-              <div v-if="prop.isSold" class="col-md-12" style="left:0;right:0;width:100%">
+              <div v-if="prop.soldOn != 0  && prop.rentalEndDate == 0" class="col-md-12" style="left:0;right:0;width:100%">
                 <p class="description">SOLD!</p>
               </div>
-              <div v-else>
+              <div v-if="prop.soldOn != 0 && prop.rentalEndDate != 0" class="col-md-12" style="left:0;right:0;width:100%">
+                <p class="description">RENTED!</p>
+              </div>
+              <div v-else-if="prop.soldOn == 0">
                 <p class="description">{{ weiToEur(prop.price) }}€ ({{ weiToEth(prop.price) }} ETH)</p>
                 <br>
-                <p class="description">{{ new Date(prop.createdAt*1000).toLocaleDateString() }}</p>  
+                <p class="description">{{ getStringDate(prop.createdAt) }}</p>  
               </div>
             </div>
           </div>
@@ -58,7 +61,7 @@
         >
           <div class="modal-content">
             <div class="modal-header">
-              <h6 style="text-align:center">{{ prop.city }}</h6>
+              <h6 style="text-align:center">{{ prop.physicalAddr }} ({{ prop.city }})</h6>
               <button
                 type="button"
                 class="btn-close"
@@ -68,25 +71,76 @@
               ></button>
             </div>
             <div class="modal-body" style="padding: 40px;text-align:center">
+              <div v-if="prop.sellOrRent == 0 && prop.tokens > 0" style="background-color:yellow;width:100%">
+                <p class="description">TOKENIZED PROPERTY</p>
+              </div>
               <span class="line"></span>
-              <h6>Published by: {{ prop.owner }}</h6>
-              <p>Published on: {{ new Date(prop.createdAt*1000).toLocaleString() }}</p> 
-              <p>Price: {{ weiToEur(prop.price) }} € </p>
+              <h6>Owner: {{ prop.owner }}</h6>
+              <p>Published on: {{ getStringDate(prop.createdAt) }}</p> 
+              <p>Price: {{ weiToEur(prop.price) }}€ ({{ weiToEth(prop.price) }}ETH)</p>
+              <p>Rooms: {{ prop.rooms }}</p>
+              <p>Bathrooms: {{ prop.bathrooms}}</p>
+              <p>Area: {{ prop.area }}m²</p>
               <!-- !! PENDING: Only visible for users logged -->
+              <!-- For selling -->
               <button
-                v-if="prop.soldAt == 0"
+                v-if="prop.sellOrRent == 1 && prop.soldOn == 0"
                 type="button"
                 class="buy-property"
                 @click="buyProperty(prop.id, prop.price)"
               >
               Buy property
               </button>
+              <!-- For renting -->
+              <div v-if="prop.sellOrRent == 0 && prop.soldOn == 0 && prop.tokens == 0">
+                <p>Rental end date: {{ getStringDate(prop.rentalEndDate) }}</p>
+                <button
+                  type="button"
+                  class="buy-property"
+                  @click="rentProperty(prop.id, prop.price, prop.rentalEndDate)"
+                >
+                Rent property
+                </button>
+              </div>
+              <!-- For renting a tokenized property -->
+              <div v-if="prop.sellOrRent == 0 && prop.tokens > 0 && prop.soldOn == 0">
+                <p>Rental end date: {{ getStringDate(prop.rentalEndDate) }}</p>
+                <p>Available tokens: {{ prop.tokens }}</p>
+                <p>Price per token: {{ (weiToEur(prop.price) / prop.tokens).toFixed(2) }}€ ({{ (weiToEth(prop.price) / prop.tokens).toFixed(2) }} ETH)</p>
+
+                <span>Number of tokens:</span>
+                <div class="container-rooms">
+                  <label id="minus" @click="decrement()">-</label>
+                  <input id="input-tokens" name="input-tokens" type="number" min="1" value="1" readonly>
+                  <label id="plus" @click="increment(prop.tokens)">+</label>
+                </div>
+                
+                <button
+                  type="button"
+                  class="buy-property"
+                  @click="buyTokens(prop.id, tokens, (prop.price/prop.tokens)*tokens)"
+                >
+                Buy tokens
+                </button>
+              </div> 
+              <!-- #################### DIFFERENT CASES OF LIQUIDATED PROPERTY #################### -->
+              <!-- Button for notice of sold -->
               <button
-                v-else
+                v-else-if="prop.soldOn != 0 && prop.rentalEndDate == 0"
                 type="button"
                 class="property-sold"
+                style="cursor:text"
               >
-              Sold
+              Sold on {{ getStringDate(prop.soldOn) }}
+              </button>
+              <!-- Button for notice of rented -->
+              <button
+                v-else-if="prop.soldOn != 0 && prop.rentalEndDate != 0"
+                type="button"
+                class="property-sold"
+                style="cursor:text"
+              >
+              Rented on {{ getStringDate(prop.soldOn) }}
               </button>
             </div>
             <div class="modal-footer">
@@ -118,8 +172,7 @@ export default {
       properties: [],
       fade: "modal fade",
       autoplay: true,
-      currentDate: Date.now(),
-
+      tokens: 1
       // PENDING: Show this until having the oracle / API:
       // fakeEth: 3500
     }
@@ -155,13 +208,39 @@ export default {
       }
     },
 
+    // Buy property
     async buyProperty(id, price){
       let from = await Dapp.loadEthereum();
       await Dapp.buyProperty(from, id.toNumber(), price);
 
+      // Update the status of properties
       await this.renderProperties();
     },
 
+    // Rent property
+    async rentProperty(id, price, rentalEndDate){
+      let from = await Dapp.loadEthereum();
+      await Dapp.rentProperty(from, id.toNumber(), rentalEndDate, price);
+
+      // Update the status of properties
+      await this.renderProperties();
+    },
+
+    // Buy tokens
+    async buyTokens(id, tokens, priceToPay){
+      let from = await Dapp.loadEthereum();
+      await Dapp.buyTokens(from, id.toNumber(), tokens, priceToPay);
+
+      // Update the status of properties
+      await this.renderProperties();
+    },
+
+    // Get dates in human format
+    getStringDate(date){
+      return new Date(date*1000).toLocaleString();
+    },
+
+    // Currencies conversion
     weiToEur(price){
       return price/243739092347530;
     },
@@ -169,6 +248,9 @@ export default {
     weiToEth(price){
       return (price/(10**18)).toFixed(2);
     },
+
+    // Select number of tokens
+
 
     pause() {
       const iframes = document.querySelectorAll("#modal iframe");
@@ -178,7 +260,51 @@ export default {
         const newSrc = srcArray.join("");
         element.src = newSrc;
       });
-    }
+    },
+
+    // ----------------------- Buttons functions -----------------------
+    increment(maxTokens) {
+      var inputTokens = document.getElementById('input-tokens');
+      var value = inputTokens.value;
+      if(value < maxTokens) value++;
+      inputTokens.value = value;
+      this.tokens = value;
+    },
+    decrement() {
+      var inputTokens = document.getElementById('input-tokens');
+      var value = inputTokens.value;
+      if(value > 1) value--;
+      inputTokens.value = value;
+      this.tokens = value;
+  }
   }
 }
 </script>
+
+<style scoped>
+  .properties .container-rooms {
+    display: flex;
+    border-radius: 45px;
+    border: 1px solid #cecece;
+    width: 40.5%;
+    margin-left: 220px;
+  }
+
+  .properties .container-rooms #input-tokens {
+    text-align: center;
+    font-size: 14px;
+    border: none;
+    outline: none;
+    color: #202030;
+  }
+
+  .properties .container-rooms label {
+    color: #3498db;
+    font-size: 13px;
+    font-weight: 20px;
+    border: none;
+    background-color: #ffffff;
+    cursor: pointer;
+    outline: none;
+  }
+</style>
