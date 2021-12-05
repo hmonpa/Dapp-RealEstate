@@ -59,14 +59,14 @@
                   <div class="form-group">
                     <span>Is it tokenized?</span>
                     <div id="switch" class="hover" v-on:click="tokenized = !tokenized" onclick="this.classList.toggle('hover')">
-                      <div id="toggleswitch" @click="calculateTokens"></div>
+                      <div id="toggleswitch"></div>
                     </div>
                   </div>
                   <div v-if="tokenized" class="num-tokenizations">
                     <span>Number of tokens:</span>
                     <div class="container-rooms">
                       <label id="minus" @click="decrement(2)">-</label>
-                      <input id="input-tokens" type="number" min="1" value="1" readonly>
+                      <input id="input-tokens" name="input-tokens" type="number" min="2" value="2" readonly>
                       <label id="plus" @click="increment(2)">+</label>
                     </div>
                   </div>
@@ -108,13 +108,11 @@ export default {
       tokenized: 1,
       rooms: 1,
       bathrooms: 1,
-      tokens: 1
+      tokens: 0,
+      rentalEndDate: 0
     }
   },
   methods: {  
-    calculateTokens() {
-      this.tokens >= 1 ? this.tokens = 0 : this.tokens = 1; 
-    },
     // Starts the dApp 
     async start(){
       // Testing with InterPlanetary File System Protocol
@@ -142,7 +140,6 @@ export default {
         if(value < 10) value++;
         inputrooms.value = value;
         this.rooms = value;
-        console.log(this.rooms);
       } else if(i == 1){
         // Bathrooms
         var inputBathrooms = document.getElementById('input-bathrooms');
@@ -171,7 +168,7 @@ export default {
         // Bathrooms
         var inputBathrooms = document.getElementById('input-bathrooms');
         var value = inputBathrooms.value;
-        if(value > 1) value--;
+        if(value > 2) value--;
         inputBathrooms.value = value;
         this.bathrooms = value;
       } else if(i == 2) {
@@ -188,23 +185,34 @@ export default {
     async uploadData() {
       const account = await Dapp.checkStatus();
 
+      const propertyForm = document.querySelector("#propertyForm");
       propertyForm.addEventListener("submit", e => {
         e.preventDefault(); 
-        console.log(this.tokens);
-        console.log(propertyForm["date-end"].value);
       });
 
-      // try {
-      //   const propertyForm = document.querySelector("#propertyForm");
-      //   this.typeOfProperty == 0 ? 
-      //     await Dapp.uploadProperty(account, propertyForm["city"].value, propertyForm["address"].value, propertyForm["price"].value, this.rooms, propertyForm["area"].value, this.bathrooms, this.typeOfProperty, this.tokens, propertyForm["date-end"].value) 
-      //     : 
-      //     await Dapp.uploadProperty(account, propertyForm["city"].value, propertyForm["address"].value, propertyForm["price"].value, this.rooms, propertyForm["area"].value, this.bathrooms, this.typeOfProperty, 0, 0);
+      try {
+        if (propertyForm["input-tokens"] == null){
+          this.tokens = 0;
+        } else {
+          this.tokens = propertyForm["input-tokens"].value;
+        }
+
+        if(this.typeOfProperty == 0){
+          let date = propertyForm["date-end"].value;
+          date = date.split("-");
+          this.rentalEndDate = new Date(date[2], date[1] - 1, date[0]);
+          console.log(this.rentalEndDate.getTime());
+        }
+
+        this.typeOfProperty == 0 && this.rooms > 1 ? 
+          await Dapp.uploadProperty(account, propertyForm["city"].value, propertyForm["address"].value, propertyForm["price"].value, this.rooms, propertyForm["area"].value, this.bathrooms, this.typeOfProperty, this.tokens, this.rentalEndDate) 
+          : 
+          await Dapp.uploadProperty(account, propertyForm["city"].value, propertyForm["address"].value, propertyForm["price"].value, this.rooms, propertyForm["area"].value, this.bathrooms, this.typeOfProperty, 0, 0);
         
       //   window.location.href = "/#properties";
-      // } catch (err) {
-      //   console.log(err);
-      // }
+      } catch (err) {
+        console.log(err);
+      }
     },
 
   }
