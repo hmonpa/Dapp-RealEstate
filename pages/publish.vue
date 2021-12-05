@@ -90,6 +90,7 @@
 <script>
 import { Dapp } from '@/dapp';
 import auth from '@/src/auth';
+import moment from 'moment';
 const IPFS = require('ipfs-core');
 
 export default {
@@ -109,7 +110,6 @@ export default {
       rooms: 1,
       bathrooms: 1,
       tokens: 0,
-      rentalEndDate: 0
     }
   },
   methods: {  
@@ -188,6 +188,7 @@ export default {
       const propertyForm = document.querySelector("#propertyForm");
       propertyForm.addEventListener("submit", e => {
         e.preventDefault(); 
+        console.log(moment(propertyForm["date-end"].value).unix());
       });
 
       try {
@@ -197,15 +198,8 @@ export default {
           this.tokens = propertyForm["input-tokens"].value;
         }
 
-        if(this.typeOfProperty == 0){
-          let date = propertyForm["date-end"].value;
-          date = date.split("-");
-          this.rentalEndDate = new Date(date[2], date[1] - 1, date[0]);
-          console.log(this.rentalEndDate.getTime());
-        }
-
         this.typeOfProperty == 0 && this.rooms > 1 ? 
-          await Dapp.uploadProperty(account, propertyForm["city"].value, propertyForm["address"].value, propertyForm["price"].value, this.rooms, propertyForm["area"].value, this.bathrooms, this.typeOfProperty, this.tokens, this.rentalEndDate) 
+          await Dapp.uploadProperty(account, propertyForm["city"].value, propertyForm["address"].value, propertyForm["price"].value, this.rooms, propertyForm["area"].value, this.bathrooms, this.typeOfProperty, this.tokens, moment(propertyForm["date-end"].value).unix()) 
           : 
           await Dapp.uploadProperty(account, propertyForm["city"].value, propertyForm["address"].value, propertyForm["price"].value, this.rooms, propertyForm["area"].value, this.bathrooms, this.typeOfProperty, 0, 0);
         
@@ -213,7 +207,7 @@ export default {
       } catch (err) {
         console.log(err);
       }
-    },
+    }
 
   }
 }
