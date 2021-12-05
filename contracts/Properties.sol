@@ -82,6 +82,27 @@ contract Properties {
         emit PropertyCreated(getRandomId(), _owner, _city, _physicalAddr, eurToWei(_price), _sellOrRent, block.timestamp);
     }
 
+    // Update number of tokens
+    function updateTokens(uint256 _id, uint256 _num) public
+    {
+        uint index = getPropertyById(_id);
+        uint256 currentTokens = props[index].tokens;
+        currentTokens = currentTokens - _num;
+        props[index].tokens = currentTokens;
+    }
+
+    // Buy token (or tokens) of a property
+    function buyToken(address _from, uint256 _numTokens, uint256 _id) public payable
+    {
+        uint index = getPropertyById(_id);
+        uint256 currentTokens = props[index].tokens;
+        this.sendBalance(props[index].owner, msg.value); // Msg value is price / numTokens
+        currentTokens = currentTokens - _numTokens;
+        props[index].tokens = currentTokens;
+
+        if(currentTokens == 0) this.propertySettled(index);
+    }   
+
     // Returns the number of properties already created
     function getAllProperties() public view returns (uint)
     {
@@ -114,8 +135,7 @@ contract Properties {
         this.sendBalance(addr, msg.value);
 
         // Changes the value of the boolean 
-        props[index].soldAt         = block.timestamp;
-        properties[index].soldAt    = block.timestamp;
+        this.propertySettled(index);
 
         // Emit an event
         emit isPropertySold(addr, props[index].price, props[index].soldAt);
@@ -125,4 +145,12 @@ contract Properties {
         props[index].owner = _address;
         properties[index].owner = _address;
     }
+
+
+    function propertySettled(uint256 _index) public 
+    {
+        props[_index].soldAt         = block.timestamp;
+        properties[_index].soldAt    = block.timestamp;
+    }
+
 }
