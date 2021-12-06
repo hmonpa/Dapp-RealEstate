@@ -3,7 +3,6 @@ pragma solidity ^0.4.24;
 
 contract Properties {
 
-    uint public propertyCounter = 0;
     struct Property 
     {
         uint256 id;                     // Catastro?               
@@ -24,26 +23,49 @@ contract Properties {
         uint256 createdAt;
         uint256 soldOn;              
     }
+
+    struct initialTokens
+    {
+        uint256 id;
+        uint256 tokens;
+    }
     
     constructor() public
     {
+        // Example for sell
+        // uploadProperty(
+        //     msg.sender,                         // Owner
+        //     "Sant Boi de Llobregat",            // City
+        //     "C/ Mossèn Antoni Solanes, 105",    // Physical address
+        //     5000,                               // Price in EUR
+        //     3,                                  // Num of rooms 
+        //     80,                                 // Area in m²
+        //     1,                                  // Num of bathrooms
+        //     1,                                  // Sell --> 1
+        //     0,                                  // Tokens
+        //     0                                   // Rental end date
+        // );
+
+        // Example for rent with tokens
         uploadProperty(
             msg.sender,                         // Owner
-            "Sant Boi de Llobregat",            // City
-            "C/ Mossèn Antoni Solanes, 105",    // Physical address
-            5000,                               // Price in EUR
-            3,                                  // Num of rooms 
-            80,                                 // Area in m²
+            "Cunit",                            // City
+            "Avinguda Barcelona, 88, Bajo",     // Physical address
+            10000,                              // Price in EUR
+            2,                                  // Num of rooms 
+            60,                                 // Area in m²
             1,                                  // Num of bathrooms
-            1,                                  // Sell --> 1
-            0,                                  // Tokens
-            0                                   // Rental end date
+            0,                                  // Rent --> 0
+            2,                                  // Tokens
+            1672614000                          // Rental end date
         );
     }
 
-    // ----------------------- MAPPINGS -----------------------
+    // ----------------------- MAPPINGS & VARIABLES -----------------------
     mapping (uint256 => Property) public properties;
     Property[] public props;
+    mapping (uint256 => initialTokens) public startedTokens;
+    uint public propertyCounter = 0;
 
     // ----------------------- EVENTS -----------------------
     event PropertyCreated(
@@ -78,20 +100,17 @@ contract Properties {
     function uploadProperty(address _owner, string _city, string _physicalAddr, uint256 _price, uint256 _numRooms, uint256 _area, uint256 _numBathrooms, uint256 _sellOrRent, uint256 _tokens, uint256 _rentalEndDate) public
     {
         Property memory newProperty = Property(getRandomId(), _owner, _city, _physicalAddr, eurToWei(_price), _numRooms, _area, _numBathrooms, _sellOrRent,  _tokens, _rentalEndDate, block.timestamp, 0);
+        
         properties[propertyCounter] = newProperty;
         props.push(newProperty);
-        propertyCounter++;
-        emit PropertyCreated(getRandomId(), _owner, _city, _physicalAddr, eurToWei(_price), _sellOrRent, block.timestamp);
-    }
 
-    // Update number of tokens
-    // function updateTokens(uint256 _id, uint256 _num) public
-    // {
-    //     uint index = getPropertyById(_id);
-    //     uint256 currentTokens = props[index].tokens;
-    //     currentTokens = currentTokens - _num;
-    //     props[index].tokens = currentTokens;
-    // }
+        emit PropertyCreated(getRandomId(), _owner, _city, _physicalAddr, eurToWei(_price), _sellOrRent, block.timestamp);
+    
+        uint256 _id = properties[propertyCounter].id;
+        startedTokens[_id] = initialTokens(_id, _tokens);
+
+        propertyCounter++;
+    }
 
     // Returns the number of properties already created
     function getAllProperties() public view returns (uint)
@@ -157,14 +176,17 @@ contract Properties {
     function buyTokens(address _from, uint256 _numTokens, uint256 _id) public payable
     {
         uint index = getPropertyById(_id);
-        uint256 currentTokens = props[index].tokens;
         this.sendBalance(props[index].owner, msg.value); // Msg value is price / numTokens
-        currentTokens = currentTokens - _numTokens;
-        props[index].tokens = currentTokens;
-
-        if(currentTokens == 0) this.propertySettled(index);
-
+        
         emit propertyTokenPurchased(_from, _id, _numTokens, (props[index].price/_numTokens));
+        
+        // Updating current number of tokens
+        uint256 currentTokens = props[index].tokens;
+        currentTokens -= _numTokens;
+        props[index].tokens = currentTokens;
+        properties[index].tokens = currentTokens;
+
+        if(props[index].tokens == 0) this.propertySettled(index);
     }   
 
     function propertySettled(uint256 _index) public 

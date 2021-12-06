@@ -49,7 +49,7 @@
         </div>
       </div>
 
-      <!-- Modal -->
+      <!-- ################## MODAL ################## -->
       <div
         v-for="(prop, index) in properties"
         :id="'property_' + index"
@@ -79,7 +79,7 @@
               <p>Published on: {{ getStringDate(prop.createdAt) }}</p> 
               <p>Price: {{ weiToEur(prop.price) }}€ ({{ weiToEth(prop.price) }}ETH)</p>
               <p>Rooms: {{ prop.rooms }}</p>
-              <p>Bathrooms: {{ prop.bathrooms}}</p>
+              <p>Bathrooms: {{ prop.bathrooms }}</p>
               <p>Area: {{ prop.area }}m²</p>
               <!-- !! PENDING: Only visible for users logged -->
               <!-- For selling -->
@@ -104,18 +104,22 @@
               </div>
               <!-- For renting a tokenized property -->
               <div v-if="prop.sellOrRent == 0 && prop.tokens > 0 && prop.soldOn == 0">
+                <p>Initial tokens: {{ propertiesTokens[index] }}</p>
                 <p>Rental end date: {{ getStringDate(prop.rentalEndDate) }}</p>
                 <p>Available tokens: {{ prop.tokens }}</p>
                 <p>Price per token: {{ (weiToEur(prop.price) / prop.tokens).toFixed(2) }}€ ({{ (weiToEth(prop.price) / prop.tokens).toFixed(2) }} ETH)</p>
 
-                <span>Number of tokens:</span>
-                <div class="container-rooms">
-                  <label id="minus" @click="decrement()">-</label>
-                  <input id="input-tokens" name="input-tokens" type="number" min="1" value="1" readonly>
-                  <label id="plus" @click="increment(prop.tokens)">+</label>
-                </div>
+                <div v-if="userLogged">
+                  <span>Number of tokens:</span>
+                  <div class="container-rooms">
+                    <label id="minus" @click="decrement()">-</label>
+                    <input id="input-tokens" name="input-tokens" type="number" min="1" value="1" readonly>
+                    <label id="plus" @click="increment(prop.tokens)">+</label>
+                  </div>
+                </div> 
                 
                 <button
+                  v-if="userLogged"
                   type="button"
                   class="buy-property"
                   @click="buyTokens(prop.id, tokens, (prop.price/prop.tokens)*tokens)"
@@ -126,7 +130,7 @@
               <!-- #################### DIFFERENT CASES OF LIQUIDATED PROPERTY #################### -->
               <!-- Button for notice of sold -->
               <button
-                v-else-if="prop.soldOn != 0 && prop.rentalEndDate == 0"
+                v-else-if="userLogged && prop.soldOn != 0 && prop.rentalEndDate == 0"
                 type="button"
                 class="property-sold"
                 style="cursor:text"
@@ -135,7 +139,7 @@
               </button>
               <!-- Button for notice of rented -->
               <button
-                v-else-if="prop.soldOn != 0 && prop.rentalEndDate != 0"
+                v-else-if="userLogged && prop.soldOn != 0 && prop.rentalEndDate != 0"
                 type="button"
                 class="property-sold"
                 style="cursor:text"
@@ -143,6 +147,7 @@
               Rented on {{ getStringDate(prop.soldOn) }}
               </button>
             </div>
+            <!-- #################### END OF DIFFERENT CASES OF LIQUIDATED PROPERTY #################### -->
             <div class="modal-footer">
               <button
                 type="button"
@@ -161,22 +166,30 @@
 </template>
 <script>
 import { Dapp } from '@/dapp';
+import auth from '@/src/auth';
 
 export default {
   // Load the contracts
   beforeMount(){
     this.start();
   },
+  computed: {
+    userLogged() {
+      return auth.getUserLogged();
+    }
+  },
   data(){
     return {
       properties: [],
+      propertiesTokens: [],
       fade: "modal fade",
       autoplay: true,
       tokens: 1
       // PENDING: Show this until having the oracle / API:
       // fakeEth: 3500
-    }
+    } 
   },
+
   methods: {  
     // Starts the dApp 
     async start(){
@@ -188,6 +201,7 @@ export default {
     async renderProperties(){
       try {
         this.properties = [];
+        this.propertiesTokens = [];
         const invalidAddr = 0x0000000000000000000000000000000000000000;
         let existingProp = true;
         let i = 0;
@@ -195,13 +209,17 @@ export default {
         {
           let prop = await Dapp.Properties.properties(i);
           let owner = prop.owner;
-          if (owner != invalidAddr)
+          if (owner != invalidAddr){
             this.properties.push(prop);
+            let tokensProp = await Dapp.Properties.startedTokens(prop.id);
+            this.propertiesTokens.push(tokensProp);
+          }
           else
             existingProp = false;               
           
           i++;
         }
+
       }
       catch (err) {
         console.log(err);
@@ -231,8 +249,7 @@ export default {
       let from = await Dapp.loadEthereum();
       await Dapp.buyTokens(from, id.toNumber(), tokens, priceToPay);
 
-      // Update the status of properties
-      await this.renderProperties();
+      window.location.reload();
     },
 
     // Get dates in human format
@@ -276,35 +293,7 @@ export default {
       if(value > 1) value--;
       inputTokens.value = value;
       this.tokens = value;
-  }
+    }
   }
 }
 </script>
-
-<style scoped>
-  .properties .container-rooms {
-    display: flex;
-    border-radius: 45px;
-    border: 1px solid #cecece;
-    width: 40.5%;
-    margin-left: 220px;
-  }
-
-  .properties .container-rooms #input-tokens {
-    text-align: center;
-    font-size: 14px;
-    border: none;
-    outline: none;
-    color: #202030;
-  }
-
-  .properties .container-rooms label {
-    color: #3498db;
-    font-size: 13px;
-    font-weight: 20px;
-    border: none;
-    background-color: #ffffff;
-    cursor: pointer;
-    outline: none;
-  }
-</style>

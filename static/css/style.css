@@ -708,6 +708,32 @@ section {
   color: #3498db;
 }
 
+.properties .container-rooms {
+  display: flex;
+  border-radius: 45px;
+  border: 1px solid #cecece;
+  width: 40.5%;
+  margin-left: 220px;
+}
+
+.properties .container-rooms #input-tokens {
+  text-align: center;
+  font-size: 14px;
+  border: none;
+  outline: none;
+  color: #202030;
+}
+
+.properties .container-rooms label {
+  color: #3498db;
+  font-size: 13px;
+  font-weight: 20px;
+  border: none;
+  background-color: #ffffff;
+  cursor: pointer;
+  outline: none;
+}
+
 /*--------------------------------------------------------------
 # More Services
 --------------------------------------------------------------*/

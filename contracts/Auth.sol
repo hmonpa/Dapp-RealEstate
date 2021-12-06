@@ -19,7 +19,7 @@ contract Auth {
     constructor() public 
     {
         // Register first user
-        signUp(msg.sender, "Héctor", "hmonpa@gmail.com", "pass123456");
+        signUp(msg.sender, "Héctor", "hmonpa@gmail.com", "a");
     }
 
     // ----------------------- MAPPINGS -----------------------
