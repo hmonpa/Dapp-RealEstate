@@ -13,6 +13,7 @@
             class="col-md-6 col-lg-3 d-flex align-items-stretch mb-5 mb-lg-0"
             style="margin:10px 0 10px 0"
           >
+            <!-- ################## CARD ################## -->
             <div
               class="icon-box" 
               data-aos="fade-up" 
@@ -45,6 +46,7 @@
                 <p class="description">{{ getStringDate(prop.createdAt) }}</p>  
               </div>
             </div>
+            <!-- ################## END OF CARD ################## -->
           </div>
         </div>
       </div>
@@ -70,6 +72,7 @@
                 @click="pause"
               ></button>
             </div>
+
             <div class="modal-body" style="padding: 40px;text-align:center">
               <div v-if="prop.sellOrRent == 0 && prop.tokens > 0" style="background-color:yellow;width:100%">
                 <p class="description">TOKENIZED PROPERTY</p>
@@ -81,7 +84,8 @@
               <p>Rooms: {{ prop.rooms }}</p>
               <p>Bathrooms: {{ prop.bathrooms }}</p>
               <p>Area: {{ prop.area }}m²</p>
-              <!-- !! PENDING: Only visible for users logged -->
+
+              <!-- #################### DIFFERENT BUTTONS AND CASES #################### -->
               <!-- For selling -->
               <button
                 v-if="prop.sellOrRent == 1 && prop.soldOn == 0"
@@ -91,6 +95,7 @@
               >
               Buy property
               </button>
+
               <!-- For renting -->
               <div v-if="prop.sellOrRent == 0 && prop.soldOn == 0 && prop.tokens == 0">
                 <p>Rental end date: {{ getStringDate(prop.rentalEndDate) }}</p>
@@ -102,6 +107,7 @@
                 Rent property
                 </button>
               </div>
+
               <!-- For renting a tokenized property -->
               <div v-if="prop.sellOrRent == 0 && prop.tokens > 0 && prop.soldOn == 0">
                 <p v-if="propertiesTokens[index]">Initial tokens: {{ getNumOfTokens(index) }}</p>
@@ -126,7 +132,8 @@
                 >
                 Buy tokens
                 </button>
-              </div> 
+              </div>
+              <!-- #################### END OF  DIFFERENT BUTTONS AND CASES #################### -->
               <!-- #################### DIFFERENT CASES OF LIQUIDATED PROPERTY #################### -->
               <!-- Button for notice of sold -->
               <button
@@ -161,6 +168,7 @@
           </div>
         </div>
       </div>
+      <!-- ################## END OF MODAL ################## -->
     </section>
   <!-- End Properties Section -->
 </template>
@@ -169,15 +177,16 @@ import { Dapp } from '@/dapp';
 import auth from '@/src/auth';
 
 export default {
-  // Load the contracts
-  beforeMount(){
-    this.start();
-  },
-  computed: {
-    userLogged() {
-      return auth.getUserLogged();
-    }
-  },
+
+  // ----- VUE LIFE-CYCLE -----
+  // BeforeCreate:  Vue has not loaded the component, we cannot yet access the component's options, methods or data.
+  // Created:       In this point Vue has loaded the component and the sections data and methods already exists.
+  // BeforeMount
+  // Mounted:       We have access to the DOM and the computed is executed inmediatly after it
+  // BeforeUpdate
+  // Updated:       Is executed when produced changes in the component, uses "computed" and "watchers" properties.
+  // Destroyed:     Is executed when one component is removed. Example: Uses of v-if or v-show.
+
   data(){
     return {
       properties: [],
@@ -185,6 +194,7 @@ export default {
       fade: "modal fade",
       autoplay: true,
       tokens: 1
+      
       // PENDING: Show this until having the oracle / API:
       // fakeEth: 3500
     } 
@@ -304,6 +314,17 @@ export default {
       if(value > 1) value--;
       inputTokens.value = value;
       this.tokens = value;
+    }
+  },
+
+  beforeMount(){
+    // Load the contracts
+    this.start();
+  },
+
+  computed: {
+    userLogged() {
+      return auth.getUserLogged();
     }
   }
 }
