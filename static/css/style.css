@@ -716,7 +716,7 @@ section {
   margin-left: 220px;
 }
 
-.properties .container-rooms #input-tokens {
+.properties .container-rooms .input-tokens {
   text-align: center;
   font-size: 14px;
   border: none;

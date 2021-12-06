@@ -104,17 +104,17 @@
               </div>
               <!-- For renting a tokenized property -->
               <div v-if="prop.sellOrRent == 0 && prop.tokens > 0 && prop.soldOn == 0">
-                <p>Initial tokens: {{ propertiesTokens[index] }}</p>
+                <p v-if="propertiesTokens[index]">Initial tokens: {{ getNumOfTokens(index) }}</p>
                 <p>Rental end date: {{ getStringDate(prop.rentalEndDate) }}</p>
                 <p>Available tokens: {{ prop.tokens }}</p>
-                <p>Price per token: {{ (weiToEur(prop.price) / prop.tokens).toFixed(2) }}€ ({{ (weiToEth(prop.price) / prop.tokens).toFixed(2) }} ETH)</p>
+                <p v-if="propertiesTokens[index]">Price per token: {{ (weiToEur(prop.price) / getNumOfTokens(index)).toFixed(2) }}€ ({{ (weiToEth(prop.price) / prop.tokens).toFixed(2) }} ETH)</p>
 
                 <div v-if="userLogged">
                   <span>Number of tokens:</span>
                   <div class="container-rooms">
-                    <label id="minus" @click="decrement()">-</label>
-                    <input id="input-tokens" name="input-tokens" type="number" min="1" value="1" readonly>
-                    <label id="plus" @click="increment(prop.tokens)">+</label>
+                    <label id="minus" @click="decrement(index)">-</label>
+                    <input :id="'input-tokens-' + index" name="input-tokens" class="input-tokens" type="number" min="1" value="1" readonly>
+                    <label id="plus" @click="increment(prop.tokens, index)">+</label>
                   </div>
                 </div> 
                 
@@ -227,7 +227,8 @@ export default {
     },
 
     // Buy property
-    async buyProperty(id, price){
+    async buyProperty(id, price)
+    {
       let from = await Dapp.loadEthereum();
       await Dapp.buyProperty(from, id.toNumber(), price);
 
@@ -236,7 +237,8 @@ export default {
     },
 
     // Rent property
-    async rentProperty(id, price, rentalEndDate){
+    async rentProperty(id, price, rentalEndDate)
+    {
       let from = await Dapp.loadEthereum();
       await Dapp.rentProperty(from, id.toNumber(), rentalEndDate, price);
 
@@ -245,7 +247,8 @@ export default {
     },
 
     // Buy tokens
-    async buyTokens(id, tokens, priceToPay){
+    async buyTokens(id, tokens, priceToPay)
+    {
       let from = await Dapp.loadEthereum();
       await Dapp.buyTokens(from, id.toNumber(), tokens, priceToPay);
 
@@ -253,23 +256,29 @@ export default {
     },
 
     // Get dates in human format
-    getStringDate(date){
+    getStringDate(date)
+    {
       return new Date(date*1000).toLocaleString();
     },
 
-    // Currencies conversion
-    weiToEur(price){
-      return price/243739092347530;
+    // Get initial number of tokens
+    getNumOfTokens(index)
+    {
+      return this.propertiesTokens[index]["tokens"];
     },
 
-    weiToEth(price){
+    // Currencies conversion
+    weiToEur(price)
+    {
+      return price/243739092347530;
+    },
+    weiToEth(price)
+    {
       return (price/(10**18)).toFixed(2);
     },
 
-    // Select number of tokens
-
-
-    pause() {
+    pause() 
+    {
       const iframes = document.querySelectorAll("#modal iframe");
       iframes.forEach(element => {
         const srcArray = element.src.split("");
@@ -280,15 +289,17 @@ export default {
     },
 
     // ----------------------- Buttons functions -----------------------
-    increment(maxTokens) {
-      var inputTokens = document.getElementById('input-tokens');
+    increment(currentTokens, index) 
+    {
+      var inputTokens = document.getElementById('input-tokens-' + index);
       var value = inputTokens.value;
-      if(value < maxTokens) value++;
+      if(value < currentTokens) value++;
       inputTokens.value = value;
       this.tokens = value;
     },
-    decrement() {
-      var inputTokens = document.getElementById('input-tokens');
+    decrement(index) 
+    {
+      var inputTokens = document.getElementById('input-tokens-' + index);
       var value = inputTokens.value;
       if(value > 1) value--;
       inputTokens.value = value;
