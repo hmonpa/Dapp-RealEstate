@@ -202,13 +202,18 @@ export default {
   },
 
   methods: {  
-    async generateIPFS(){
+    async generateIPFS(addr){
       // Testing with InterPlanetary File System Protocol
-      console.log(IPFS.isIPFS);
-      // const ipfs = await IPFS.create();
-      // const { cid } = await ipfs.add('Prueba');
-      // const cidString = cid.toString();
-      // console.log(cidString);
+      const ipfs = await IPFS.create();
+      const results = await ipfs.add(addr);
+      let cidString = results.toString();
+      // for await (const cid of results)
+      // {
+      //   console.log("Cid: ", cid.toString());
+      //   cidString += cid.toString();
+      // }
+      console.log("CID STRING ", results)
+
       
       // const stream = ipfs.cat(cidString);
       // let data = '';
@@ -216,6 +221,8 @@ export default {
       // for await (const chunk of stream){
       //   data += chunk.toString();
       // }
+
+      // console.log("Data ", data);
     },
     // Starts the dApp 
     async start(){
@@ -256,7 +263,9 @@ export default {
     async buyProperty(id, price)
     {
       let from = await Dapp.loadEthereum();
-      await this.generateIPFS();
+      await this.generateIPFS(from);
+      
+      // COMMENT TEMPORARY
       // await Dapp.buyProperty(from, id.toNumber(), price);
 
       // Update the status of properties
