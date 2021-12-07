@@ -175,6 +175,7 @@
 <script>
 import { Dapp } from '@/dapp';
 import auth from '@/src/auth';
+import * as IPFS from 'ipfs-core';
 
 export default {
 
@@ -201,6 +202,21 @@ export default {
   },
 
   methods: {  
+    async generateIPFS(){
+      // Testing with InterPlanetary File System Protocol
+      console.log(IPFS.isIPFS);
+      // const ipfs = await IPFS.create();
+      // const { cid } = await ipfs.add('Prueba');
+      // const cidString = cid.toString();
+      // console.log(cidString);
+      
+      // const stream = ipfs.cat(cidString);
+      // let data = '';
+
+      // for await (const chunk of stream){
+      //   data += chunk.toString();
+      // }
+    },
     // Starts the dApp 
     async start(){
       await Dapp.init();
@@ -240,7 +256,8 @@ export default {
     async buyProperty(id, price)
     {
       let from = await Dapp.loadEthereum();
-      await Dapp.buyProperty(from, id.toNumber(), price);
+      await this.generateIPFS();
+      // await Dapp.buyProperty(from, id.toNumber(), price);
 
       // Update the status of properties
       await this.renderProperties();

@@ -91,7 +91,6 @@
 import { Dapp } from '@/dapp';
 import auth from '@/src/auth';
 import moment from 'moment';
-const IPFS = require('ipfs-core');
 
 export default {
   async beforeMount(){
@@ -115,19 +114,6 @@ export default {
   methods: {  
     // Starts the dApp 
     async start(){
-      // Testing with InterPlanetary File System Protocol
-      /* const ipfs = await IPFS.create();
-      const { cid } = await ipfs.add('Prueba');
-      const cidString = cid.toString();
-      console.log(cidString);
-      
-      const stream = ipfs.cat(cidString);
-      let data = '';
-
-      for await (const chunk of stream){
-        data += chunk.toString();
-      } */
-
       await Dapp.init();
     },
 

@@ -57,7 +57,7 @@
             >
                 <div class="modal-content">
                     <div class="modal-header">
-                        <h6 style="text-align:center">{{ account }}</h6>
+                        <h6 style="text-align:center">{{ userLogged[0] }}</h6>
                         <button
                             type="button"
                             class="btn-close"
@@ -112,18 +112,26 @@ export default {
         return {
             fade: "modal fade",
             autoplay: true,
-            account
+            account,
         }
     },
     async beforeMount(){
         // Checking every second if MetaMask have an account
-
-        // !! PENDING: If userLogged and account changes, force the logout.
         var accountInterval = setInterval(async() => {
             this.account = await Dapp.checkStatus();
+            // If userLogged and account changes, force the logout
+            if((!this.account && this.userLogged) || (this.userLogged && this.isAccountChanged()))
+            {
+                auth.logoutUser();
+                this.logout();
+            }
         }, 1000);
     },
     methods: {
+        isAccountChanged(){
+            return this.account.toLowerCase() !== this.userLogged[0].toLowerCase();
+        },
+
         async connectWallet() {
             this.account = await Dapp.loadEthereum();            
             if (!this.account)
@@ -142,6 +150,7 @@ export default {
                 });
             }
         },
+        
         async logout() {
             // Swal.fire({
             //     title: 'Are you sure you want to exit?',
@@ -160,6 +169,7 @@ export default {
             auth.logoutUser(user);
             window.location.reload();
         },
+
         pause() {
             const iframes = document.querySelectorAll("#modal iframe");
             iframes.forEach(element => {
@@ -170,6 +180,7 @@ export default {
             });
         }
     }, 
+    
     mounted() {
         /**
         * Easy selector helper function

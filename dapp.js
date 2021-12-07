@@ -136,10 +136,6 @@ export const Dapp = {
         await Dapp.Auth.signUp(address, name, email, password, {
             from: address
         });
-
-        let user = await Dapp.Auth.usersByAddr(address);
-        let users = await Dapp.Auth.users;
-        // console.log(users);
     },
 
     tryToConnect: async(address, password) => {
