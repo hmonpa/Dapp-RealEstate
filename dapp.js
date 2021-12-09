@@ -1,8 +1,7 @@
-const Web3 = require('web3');
-const auth = require('./src/auth');
-const Vue = require('vue');
-const Metamask = require('@metamask/legacy-web3');
-
+const Web3      = require('web3');
+const auth      = require('./src/auth');
+const Vue       = require('vue');
+const Metamask  = require('@metamask/legacy-web3');
 
 // https://www.trufflesuite.com/docs/truffle/advanced/build-processes
 var authJson        = require('./build/contracts/Auth.json');
@@ -17,7 +16,7 @@ Auth.setProvider(new Web3.providers.HttpProvider("http://127.0.0.1:7545"));
 Properties.setProvider(new Web3.providers.HttpProvider("http://127.0.0.1:7545"));           
 
 export const Dapp = {
-    contracts: {},
+
     init: async() => {
         Dapp.Auth = Auth;
         Dapp.Properties = Properties;
@@ -34,15 +33,12 @@ export const Dapp = {
 
     // Open MetaMask to choose an @
     loadEthereum: async() => {
-        // console.log("PRUEBA:" , window.ethereum.isMetaMask);
         if (window.ethereum){
             try {
                 Dapp.web3Provider = window.ethereum;
                 
                 let accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
                 Dapp.account = accounts[0];
-                // Vue.prototype.$account = Dapp.account;
-                // console.log(Vue.prototype.$account);
                 return Dapp.account;
                 
             } catch (err) {
@@ -102,7 +98,6 @@ export const Dapp = {
                 from: from, 
                 value: value
             });
-
         } catch (err) {
             console.log(err);
         }
@@ -146,9 +141,7 @@ export const Dapp = {
 
     checkExists: async(address) => {
         let user = await Dapp.Auth.usersByAddr(address);
-        let res = (user.email) ? 1 : 0;
-
-        return res; 
+        return (user.email) ? 1 : 0;
     },
 
     getUserData: async(address) => {

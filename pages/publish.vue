@@ -76,6 +76,9 @@
                   <input type="date" id="date-end" name="date-end" class="form-control" value="2022-08-08" required>
                 </div>
               </div>
+              <div class="form-group text-center">
+                <input type="file" id="input-image" @change="onImgSelected" name="input-image" class="form-control" accept="image/*" required>
+              </div>
               <div class="text-center">
                 <button type="submit" @click="uploadData">Publish</button>
               </div>
@@ -88,9 +91,11 @@
 </template>
 
 <script>
-import { Dapp } from '@/dapp';
+import * as IPFS from 'ipfs-core';
 import auth from '@/src/auth';
+import { Dapp } from '@/dapp';
 import moment from 'moment';
+// import ipfsClient from ('ipfs-http-client');
 
 export default {
   async beforeMount(){
@@ -103,6 +108,8 @@ export default {
     }
   },
   data(){
+    // const ipfs = ipfsClient('/ip4/127.0.0.1/tcp/5001');
+
     return {
       typeOfProperty: 1,
       tokenized: 1,
@@ -115,6 +122,35 @@ export default {
     // Starts the dApp 
     async start(){
       await Dapp.init();
+    },
+
+    onImgSelected(event)
+    {
+      event.preventDefault();
+      event.stopPropagation();
+      this.image = event.target.files[0];
+      this.uploadToIPFS(this.image);
+    },
+
+    async uploadToIPFS(img){
+      const imgDetails = {
+        path: img.name,
+        content: img
+      }
+      const options = {
+        wrapWithDirectory: true
+      }
+      console.log(imgDetails, " ", options);
+      const ipfs = await IPFS.create();
+      const results = await ipfs.add(imgDetails, options);
+      // let cidString = results.toString();
+      try {
+        console.log(results);
+      } catch (err)
+      {
+        console.log(err);
+      }
+
     },
 
     // ----------------------- Buttons functions -----------------------

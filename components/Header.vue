@@ -124,6 +124,7 @@ export default {
             {
                 auth.logoutUser();
                 this.logout();
+                window.location.href = "/";
             }
         }, 1000);
     },

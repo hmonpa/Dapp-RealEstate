@@ -133,7 +133,8 @@
                 Buy tokens
                 </button>
               </div>
-              <!-- #################### END OF  DIFFERENT BUTTONS AND CASES #################### -->
+              <!-- #################### END OF DIFFERENT BUTTONS AND CASES #################### -->
+
               <!-- #################### DIFFERENT CASES OF LIQUIDATED PROPERTY #################### -->
               <!-- Button for notice of sold -->
               <button
@@ -169,6 +170,7 @@
         </div>
       </div>
       <!-- ################## END OF MODAL ################## -->
+
     </section>
   <!-- End Properties Section -->
 </template>
@@ -205,7 +207,7 @@ export default {
     async generateIPFS(addr){
       // Testing with InterPlanetary File System Protocol
       const ipfs = await IPFS.create();
-      const results = await ipfs.add(addr);
+      const results = await ipfs.add("1234");
       let cidString = results.toString();
       // for await (const cid of results)
       // {
@@ -263,10 +265,7 @@ export default {
     async buyProperty(id, price)
     {
       let from = await Dapp.loadEthereum();
-      await this.generateIPFS(from);
-      
-      // COMMENT TEMPORARY
-      // await Dapp.buyProperty(from, id.toNumber(), price);
+      await Dapp.buyProperty(from, id.toNumber(), price);
 
       // Update the status of properties
       await this.renderProperties();
