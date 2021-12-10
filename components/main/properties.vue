@@ -74,6 +74,9 @@
             </div>
 
             <div class="modal-body" style="padding: 40px;text-align:center">
+              <div >
+                <img class="images" src="https://ipfs.io/ipfs/QmYUAQbT6Q4UZh4LdWtSH3sPbXvR2xWP2LqDtkM3JQcUrk">
+              </div>
               <div v-if="prop.sellOrRent == 0 && prop.tokens > 0" style="background-color:yellow;width:100%">
                 <p class="description">TOKENIZED PROPERTY</p>
               </div>
@@ -177,7 +180,6 @@
 <script>
 import { Dapp } from '@/dapp';
 import auth from '@/src/auth';
-import * as IPFS from 'ipfs-core';
 
 export default {
 
@@ -204,28 +206,6 @@ export default {
   },
 
   methods: {  
-    async generateIPFS(addr){
-      // Testing with InterPlanetary File System Protocol
-      const ipfs = await IPFS.create();
-      const results = await ipfs.add("1234");
-      let cidString = results.toString();
-      // for await (const cid of results)
-      // {
-      //   console.log("Cid: ", cid.toString());
-      //   cidString += cid.toString();
-      // }
-      console.log("CID STRING ", results)
-
-      
-      // const stream = ipfs.cat(cidString);
-      // let data = '';
-
-      // for await (const chunk of stream){
-      //   data += chunk.toString();
-      // }
-
-      // console.log("Data ", data);
-    },
     // Starts the dApp 
     async start(){
       await Dapp.init();

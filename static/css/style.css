@@ -718,7 +718,7 @@ section {
 
 .properties .container-rooms .input-tokens {
   text-align: center;
-  font-size: 14px;
+  font-size: 13.5px;
   border: none;
   outline: none;
   color: #202030;
@@ -726,12 +726,17 @@ section {
 
 .properties .container-rooms label {
   color: #3498db;
-  font-size: 13px;
+  font-size: 14px;
   font-weight: 20px;
   border: none;
   background-color: #ffffff;
   cursor: pointer;
   outline: none;
+}
+
+.properties .images {
+  max-width: 700px;
+  max-height: 700px;
 }
 
 /*--------------------------------------------------------------

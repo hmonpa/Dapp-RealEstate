@@ -4,6 +4,7 @@
       <div class="container">
         <div class="section-title" data-aos="fade-up">
           <h2>Upload properties</h2>
+          <!-- <img src="ipfs://QmaUdiiUCcBTYKXPeRXdsrnPt53DdwzCMrvznZqD7vmPBu"> -->
         </div>
 
         <div class="row">
@@ -76,7 +77,8 @@
                   <input type="date" id="date-end" name="date-end" class="form-control" value="2022-08-08" required>
                 </div>
               </div>
-              <div class="form-group text-center">
+              <div class="form-group">
+                <span>Upload image:</span>
                 <input type="file" id="input-image" @change="onImgSelected" name="input-image" class="form-control" accept="image/*" required>
               </div>
               <div class="text-center">
@@ -91,11 +93,12 @@
 </template>
 
 <script>
-import * as IPFS from 'ipfs-core';
+// import * as IPFS from 'ipfs-core';
 import auth from '@/src/auth';
 import { Dapp } from '@/dapp';
 import moment from 'moment';
-// import ipfsClient from ('ipfs-http-client');
+import * as IPFS from 'ipfs';
+import toBuffer from 'it-to-buffer';
 
 export default {
   async beforeMount(){
@@ -137,19 +140,39 @@ export default {
         path: img.name,
         content: img
       }
+
       const options = {
         wrapWithDirectory: true
       }
       console.log(imgDetails, " ", options);
-      const ipfs = await IPFS.create();
-      const results = await ipfs.add(imgDetails, options);
+      const node = await IPFS.create({ silent: true });
+      
+      // const image = await node.add({
+      //   path: img.name,
+      //   content: img
+      // })
+      console.log("Node:", node);
+      let cid = await node.add(imgDetails.content);
+      console.log("Node add: ", cid);
+
+      const buffer = await toBuffer(node.cat(cid.path));
+      const blob = new Blob(buffer);
+      // const newImage = document.querySelector('img');
+      // newImage.src = URL.createObjectURL(blob);
+      // newImage.src = `https://ipfs.io/ipfs/${cid.path}`
+      // console.log("Node cat: ", await node.cat)
+      // const imgBuffer = await node.cat(image[0]);
+      // console.log('Added image:', imgBuffer);
+
+      // const ipfs = await IPFS.create();
+      // const results = this.ipfs.add(imgDetails, options);
       // let cidString = results.toString();
-      try {
-        console.log(results);
-      } catch (err)
-      {
-        console.log(err);
-      }
+      // try {
+      //   console.log(results);
+      // } catch (err)
+      // {
+      //   console.log(err);
+      // }
 
     },
 
