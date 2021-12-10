@@ -1,7 +1,7 @@
 const Web3      = require('web3');
 const auth      = require('./src/auth');
-const Vue       = require('vue');
-const Metamask  = require('@metamask/legacy-web3');
+// const Vue       = require('vue');
+// const Metamask  = require('@metamask/legacy-web3');
 
 // https://www.trufflesuite.com/docs/truffle/advanced/build-processes
 var authJson        = require('./build/contracts/Auth.json');

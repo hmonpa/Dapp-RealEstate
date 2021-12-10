@@ -74,12 +74,11 @@
             </div>
 
             <div class="modal-body" style="padding: 40px;text-align:center">
-              <div>
-                <p>{{ getCidFromImg(index) }}</p>
-                <img class="images" src="https://ipfs.io/ipfs/QmYUAQbT6Q4UZh4LdWtSH3sPbXvR2xWP2LqDtkM3JQcUrk">
-              </div>
               <div v-if="prop.sellOrRent == 0 && prop.tokens > 0" style="background-color:yellow;width:100%">
                 <p class="description">TOKENIZED PROPERTY</p>
+              </div>
+              <div v-if="properties">
+                <img class="images" :src="`https://ipfs.io/ipfs/${getCidFromImg(index)}`">
               </div>
               <span class="line"></span>
               <h6>Owner: {{ prop.owner }}</h6>
@@ -208,8 +207,10 @@ export default {
 
   methods: {  
     // Starts the dApp 
-    async start(){
+    async start1(){
       await Dapp.init();
+    },
+    async start2(){
       await this.renderProperties();
     },
 
@@ -227,15 +228,12 @@ export default {
           let prop = await Dapp.Properties.properties(i);
           let owner = prop.owner;
           if (owner != invalidAddr){
-            // Render properties
             this.properties.push(prop);
 
-            // Render tokens
             let tokensProp  = await Dapp.Properties.startedTokens(prop.id);
-            this.propertiesTokens.push(tokensProp);
-            
-            // Render images
             let imageProp   = await Dapp.Properties.propertyImg(prop.id);
+            
+            this.propertiesTokens.push(tokensProp);
             this.propertiesImages.push(imageProp);
           }
           else
@@ -293,7 +291,7 @@ export default {
 
     getCidFromImg(index)
     {
-      return this.propertiesImages[index];
+      if(this.propertiesImages[index]) return this.propertiesImages[index]["ipfsImage"];
     },
 
     // Currencies conversion
@@ -336,9 +334,10 @@ export default {
     }
   },
 
-  beforeMount(){
+  async beforeMount(){
     // Load the contracts
-    this.start();
+    await this.start1();
+    await this.start2();
   },
 
   computed: {
