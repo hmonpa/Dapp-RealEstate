@@ -111,8 +111,6 @@ export default {
     }
   },
   data(){
-    // const ipfs = ipfsClient('/ip4/127.0.0.1/tcp/5001');
-
     return {
       typeOfProperty: 1,
       tokenized: 1,
@@ -135,7 +133,8 @@ export default {
       this.uploadToIPFS(this.image);
     },
 
-    async uploadToIPFS(img){
+    async uploadToIPFS(img)
+    {
       const imgDetails = {
         path: img.name,
         content: img
@@ -144,6 +143,7 @@ export default {
       const options = {
         wrapWithDirectory: true
       }
+
       console.log(imgDetails, " ", options);
       const node = await IPFS.create({ silent: true });
       

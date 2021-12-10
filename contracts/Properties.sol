@@ -29,6 +29,13 @@ contract Properties {
         uint256 id;
         uint256 tokens;
     }
+
+    struct propertyImages
+    {
+        uint256 id;
+        string ipfsImage;
+    }
+
     
     constructor() public
     {
@@ -48,23 +55,28 @@ contract Properties {
 
         // Example for rent with tokens
         uploadProperty(
-            msg.sender,                         // Owner
-            "Cunit",                            // City
-            "Avinguda Barcelona, 88, Bajo",     // Physical address
-            10000,                              // Price in EUR
-            2,                                  // Num of rooms 
-            60,                                 // Area in m²
-            1,                                  // Num of bathrooms
-            0,                                  // Rent --> 0
-            2,                                  // Tokens
-            1672614000                          // Rental end date
+            msg.sender,                                         // Owner
+            "Cunit",                                            // City
+            "Avinguda Barcelona, 88, Bajo",                     // Physical address
+            10000,                                              // Price in EUR
+            2,                                                  // Num of rooms 
+            60,                                                 // Area in m²
+            1,                                                  // Num of bathrooms
+            0,                                                  // Rent --> 0
+            2,                                                  // Tokens
+            1672614000,                                         // Rental end date
+            'QmYUAQbT6Q4UZh4LdWtSH3sPbXvR2xWP2LqDtkM3JQcUrk'    // CID
         );
     }
 
     // ----------------------- MAPPINGS & VARIABLES -----------------------
     mapping (uint256 => Property) public properties;
     Property[] public props;
+
     mapping (uint256 => initialTokens) public startedTokens;
+
+    mapping (uint256 => propertyImages) public propertyImg;
+
     uint public propertyCounter = 0;
 
     // ----------------------- EVENTS -----------------------
@@ -97,7 +109,7 @@ contract Properties {
     }
 
     // Creates a new property, emit PropertyCreated event
-    function uploadProperty(address _owner, string _city, string _physicalAddr, uint256 _price, uint256 _numRooms, uint256 _area, uint256 _numBathrooms, uint256 _sellOrRent, uint256 _tokens, uint256 _rentalEndDate) public
+    function uploadProperty(address _owner, string _city, string _physicalAddr, uint256 _price, uint256 _numRooms, uint256 _area, uint256 _numBathrooms, uint256 _sellOrRent, uint256 _tokens, uint256 _rentalEndDate, string _ipfsImage) public
     {
         Property memory newProperty = Property(getRandomId(), _owner, _city, _physicalAddr, eurToWei(_price), _numRooms, _area, _numBathrooms, _sellOrRent,  _tokens, _rentalEndDate, block.timestamp, 0);
         
@@ -108,6 +120,8 @@ contract Properties {
     
         uint256 _id = properties[propertyCounter].id;
         startedTokens[_id] = initialTokens(_id, _tokens);
+
+        propertyImg[_id] = propertyImages(_id, _ipfsImage);
 
         propertyCounter++;
     }

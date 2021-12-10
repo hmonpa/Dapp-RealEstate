@@ -74,7 +74,8 @@
             </div>
 
             <div class="modal-body" style="padding: 40px;text-align:center">
-              <div >
+              <div>
+                <p>{{ getCidFromImg(index) }}</p>
                 <img class="images" src="https://ipfs.io/ipfs/QmYUAQbT6Q4UZh4LdWtSH3sPbXvR2xWP2LqDtkM3JQcUrk">
               </div>
               <div v-if="prop.sellOrRent == 0 && prop.tokens > 0" style="background-color:yellow;width:100%">
@@ -217,6 +218,7 @@ export default {
       try {
         this.properties = [];
         this.propertiesTokens = [];
+        this.propertiesImages = [];
         const invalidAddr = 0x0000000000000000000000000000000000000000;
         let existingProp = true;
         let i = 0;
@@ -225,9 +227,16 @@ export default {
           let prop = await Dapp.Properties.properties(i);
           let owner = prop.owner;
           if (owner != invalidAddr){
+            // Render properties
             this.properties.push(prop);
-            let tokensProp = await Dapp.Properties.startedTokens(prop.id);
+
+            // Render tokens
+            let tokensProp  = await Dapp.Properties.startedTokens(prop.id);
             this.propertiesTokens.push(tokensProp);
+            
+            // Render images
+            let imageProp   = await Dapp.Properties.propertyImg(prop.id);
+            this.propertiesImages.push(imageProp);
           }
           else
             existingProp = false;               
@@ -280,6 +289,11 @@ export default {
     getNumOfTokens(index)
     {
       return this.propertiesTokens[index]["tokens"];
+    },
+
+    getCidFromImg(index)
+    {
+      return this.propertiesImages[index];
     },
 
     // Currencies conversion
