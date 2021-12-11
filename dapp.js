@@ -27,7 +27,7 @@ export const Dapp = {
     // ----------------- WALLET & ACCOUNT FUNCTIONS -----------------
     
     // Return the @ connected in MetaMask
-    checkStatus: async() => {
+    currentAddr: async() => {
         return window.ethereum.selectedAddress;
     },
 
@@ -147,4 +147,5 @@ export const Dapp = {
     getUserData: async(address) => {
         return await Dapp.Auth.getUser(address);
     }
+
 };

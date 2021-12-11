@@ -120,7 +120,7 @@ export default {
     async beforeMount(){
         // Checking every second if MetaMask have an account
         var accountInterval = setInterval(async() => {
-            this.account = await Dapp.checkStatus();
+            this.account = await Dapp.currentAddr();
             // If userLogged and account changes, force the logout
             if((!this.account && this.userLogged) || (this.userLogged && this.isAccountChanged()))
             {

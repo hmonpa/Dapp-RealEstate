@@ -142,6 +142,16 @@ contract Properties {
         revert('Not found');
     }
 
+    // TO BE COMPLETED: Remove property by their ID 
+    // function removeProperty(uint256 _id) public view returns (uint)
+    // {
+    //     for (uint i = 0; i < propertyCounter; i++)
+    //     {
+    //         if (_id == props[i].id) return i;
+    //     }
+    //     revert('Not found');
+    // }
+
     // Send balance to account
     function sendBalance(address _receiver, uint256 _amount) payable external {
         _receiver.transfer(_amount);

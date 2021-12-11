@@ -4,7 +4,6 @@
       <div class="container">
         <div class="section-title" data-aos="fade-up">
           <h2>Upload properties</h2>
-          <!-- <img src="ipfs://QmaUdiiUCcBTYKXPeRXdsrnPt53DdwzCMrvznZqD7vmPBu"> -->
         </div>
 
         <div class="row">
@@ -204,7 +203,7 @@ export default {
 
     // Upload from the properties form
     async uploadData() {
-      const account = await Dapp.checkStatus();
+      const account = await Dapp.currentAddr();
 
       propertyForm.addEventListener("submit", e => {
         e.preventDefault(); 

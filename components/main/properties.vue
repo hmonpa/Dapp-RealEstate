@@ -101,9 +101,9 @@
                 v-if="prop.sellOrRent == 1 && prop.soldOn == 0"
                 type="button"
                 class="buy-property"
-                @click="buyProperty(prop.id, prop.price)"
+                @click="buyProperty(index, prop.id, prop.price)"
               >
-              Buy property
+                Buy property
               </button>
 
               <!-- For renting -->
@@ -114,7 +114,7 @@
                   class="buy-property"
                   @click="rentProperty(prop.id, prop.price, prop.rentalEndDate)"
                 >
-                Rent property
+                  Rent property
                 </button>
               </div>
 
@@ -135,12 +135,12 @@
                 </div> 
                 
                 <button
-                  v-if="userLogged"
+                  v-if="userLogged && prop.id"
                   type="button"
                   class="buy-property"
                   @click="buyTokens(prop.id, tokens, (prop.price/prop.tokens)*tokens)"
                 >
-                Buy tokens
+                  Buy tokens
                 </button>
               </div>
               <!-- #################### END OF DIFFERENT BUTTONS AND CASES #################### -->
@@ -153,7 +153,7 @@
                 class="property-sold"
                 style="cursor:text"
               >
-              Sold on {{ getStringDate(prop.soldOn) }}
+                Sold on {{ getStringDate(prop.soldOn) }}
               </button>
               <!-- Button for notice of rented -->
               <button
@@ -162,7 +162,7 @@
                 class="property-sold"
                 style="cursor:text"
               >
-              Rented on {{ getStringDate(prop.soldOn) }}
+                Rented on {{ getStringDate(prop.soldOn) }}
               </button>
             </div>
             <!-- #################### END OF DIFFERENT CASES OF LIQUIDATED PROPERTY #################### -->
@@ -201,13 +201,13 @@ export default {
   // Updated:       Is executed when produced changes in the component, uses "computed" and "watchers" properties.
   // Destroyed:     Is executed when one component is removed. Example: Uses of v-if or v-show.
 
-  data(){
+  async data(){
     return {
       properties: [],
       propertiesTokens: [],
       fade: "modal fade",
       autoplay: true,
-      tokens: 1
+      tokens: 1,
       
       // PENDING: Show this until having the oracle / API:
       // fakeEth: 3500
@@ -218,6 +218,7 @@ export default {
     // Starts the dApp 
     async start1(){
       await Dapp.init();
+      console.log(window.ethereum.selectedAddress);
     },
     async start2(){
       await this.renderProperties();
@@ -257,35 +258,53 @@ export default {
       }
     },
 
-    async generateContract(id)
+    async generateContract(index, id)
     {
-      var content = '<b>'+ "What\'s up , hello world" + '</b>';
+      var content   = await this.contractTemplate(index);
       // any kind of extension (.txt,.cpp,.cs,.bat)
-      var filename = "Contract " + id;
+      var filename  = "Contract " + id;
 
       var blob = new Blob([content], {
-      type: "text/plain;charset=utf-8"
+        type: "text/plain;charset=utf-8;charset=ANSI"
       });
 
-      const fileDetails = {
-        path: filename,
-        content: blob
-      }
-
-      const options = {
-        wrapWithDirectory: true
-      }
-      console.log(fileDetails);
-      const node = await IPFS.create({ silent: true });
-      let cid = await node.add(blob);
+      const node  = await IPFS.create({ silent: true });
+      let cid     = await node.add(blob);
       console.log("Node add: ", cid.path);
+      // OPTION FOR DOWNLOAD THE CONTRACT IN FILE VERSION:
       // saveAs(blob, filename);
     },
 
-    // Buy property
-    async buyProperty(id, price)
+    async contractTemplate(i)
     {
-      await this.generateContract(id);
+      const prop      = this.properties[i];
+      const buyerAddr = await Dapp.currentAddr();
+
+      const buyer     = await Dapp.getUserData(buyerAddr);
+      const seller    = await Dapp.getUserData(prop.owner);
+      const date      = new Date().toLocaleString();
+
+      return (
+        '<p style="text-align:center"><b>' 
+          + "Contrato de compra venta del inmueble " + prop.id + '</b></p><p style="margin: 20px;text-align:justify"><b>'
+          + "De un lado, la parte compradora:" + '</b><br>' + "D/Dª" + buyer[1] + " con DNI " + "------PENDING!!!" + ", y direccion de clave publica " 
+          + buyer[0] + "." + '</p><p style="margin: 20px;text-align:justify"><b>' + "De otro, la parte vendedora:"
+          + '</b><br>' + "D/Dª " + seller[1] + " con DNI " + "------PENDING!!!" + ", y direccion de clave publica " + seller[0] + "." 
+          + '</p><p style="text-align:center"><b>' + "EXPONEN" + '</b></p><p style="margin: 20px;text-align:justify"><b>'
+          + "PRIMERO.-" + '</b>' + "Que la parte vendedora es duena de pleno dominio de la siguiente finca: " + '<br><ul><li>'
+          + "Catastro:" + prop.id + '</li><li>' + "Direccion: " + prop.physicalAddr + '</li><li>' + "Poblacion: " + prop.city + '</li></ul></p>'
+          + '<p style="margin: 20px;text-align:justify"><b>' + "SEGUNDO.-" + '</b>' + "Que la parte compradora abonara el siguiente importe a la parte vendedora: " + '<br>'
+          + '<ul><li>' + this.weiToEur(prop.price) + "EUR ( " + this.weiToEth(prop.price) + "ETH ) " + '</li></ul><b>' + "TERCERO.-" + '</b>' + "Para que quede constancia y hacer valer el contrato, ambas partes han firmado digitalmente la transaccion mediante la wallet MetaMask." 
+          + '<br>' + "La parte vendedora en el momento de publicar la propiedad, y la parte compradora en el momento de abonar el importe, el " + date 
+          + '<br></p><p style="text-align:center"><b>' + "Transaccion realizada desde la aplicacion descentralizada en la red de Ethereum" + '</b><br>'
+          + "Impulsado por:" + '</p><img style="margin: 10px 0px 0px 250px" src="https://ipfs.io/ipfs/QmQNw5BUgkP9YHbsLUW8gnXoHVeqomsv3j8scnjm6YcFBP">'
+      )
+    },
+
+    // Buy property
+    async buyProperty(index, id, price)
+    {
+      await this.generateContract(index, id);
 
       // let from = await Dapp.loadEthereum();
       // await Dapp.buyProperty(from, id.toNumber(), price);
@@ -330,6 +349,11 @@ export default {
       if(this.propertiesImages[index]) return this.propertiesImages[index]["ipfsImage"];
     },
 
+    async getCurrentAddr()
+    {
+      return await Dapp.currentAddr();
+    },
+
     // Currencies conversion
     weiToEur(price)
     {
@@ -369,24 +393,7 @@ export default {
       this.tokens = value;
     },
 
-    contractTemplate(prop)
-    {
-      return (
-        '<p style="text-align:center"><b>' 
-          + "Contrato de compra venta del inmueble" + prop.id + '</b></p><p style="margin: 20px;text-align:justify"><b>'
-          + "De un lado, la parte compradora:" + '</b><br>' + "D/Dª" + nombre + " con DNI " + dni + ", y dirección de clave pública " 
-          + address + "." + '</p><p style="margin: 20px;text-align:justify"><b>' + "De otro, la parte vendedora:"
-          + '</b><br>' + "D/Dª" + nombre + " con DNI " + dni + ", y dirección de clave pública " + prop.owner + "." 
-          + '</p><p style="text-align:center"><b>' + "EXPONEN" + '</b></p><p style="margin: 20px;text-align:justify"><b>'
-          + "PRIMERO.-" + '</b>' + "Que la parte vendedora es dueña de pleno dominio de la siguiente finca: " + '<br><ul><li>'
-          + "Catastro:" + prop.id + '</li><li>' + "Dirección: " + prop.physicalAddress + '</li><li>' + "Población: " + prop.city + '</li></ul>'
-          + '<b>' + "SEGUNDO.-" + '</b>' + "Que la parte compradora abonará el siguiente importe a la parte vendedora: " + '<br>'
-          + '<ul><li>' + weiToEur(prop.price) + "€ (" + weiToEth(prop.price) + ") " + '</li></ul><b>' + "TERCERO.-" + '</b>' + "Para que quede constancia y hacer valer el contrato, ambas partes han firmado digitalmente la transacción mediante la wallet MetaMask." 
-          + '<br>' + "La parte vendedora en el momento de publicar la propiedad, y la parte compradora en el momento de abonar el importe, el " + Date.now() 
-          + '<br></p><p style="text-align:center"><b>' + "Transacción realizada desde la aplicación descentralizada en la red de Ethereum" + '</b><br>'
-          + "Impulsado por:" + '</p><img style="margin: 10px 0px 0px 250px" src="/img/logo-with-name.png">'
-      )
-    }
+
   },
 
   async beforeMount(){
@@ -537,35 +544,6 @@ export default {
 }
 
 /* ------------- Buttons ------------- */
-
-/* Buy Tickets Class */
-.buy-tickets {
-  color: #fff;
-  background: #3498db;
-  padding: 7px 22px;
-  margin: 0 0 0 15px;
-  border-radius: 50px;
-  border: 2px solid #3498db;
-  transition: 0.3s;
-  font-weight: 500;
-  line-height: 1;
-  font-size: 13px;
-}
-
-.buy-tickets:hover {
-  background-color: #035d99;
-  border: 2px solid #035d99;
-}
-
-.buy-tickets:focus {
-  color: #fff;
-}
-
-@media (max-width: 992px) {
-  .buy-tickets {
-    margin: 0 15px 0 0;
-  }
-}
 
 /* Buy Property Class */
 .buy-property {
