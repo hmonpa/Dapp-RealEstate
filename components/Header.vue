@@ -163,12 +163,12 @@ export default {
             //     if(res.isConfirmed) {
             //         let user = auth.getUserLogged();
             //         auth.logoutUser(user);
-            //         window.location.reload();
+            //         window.location.href = "/";
             //     }
             // });
             let user = auth.getUserLogged();
             auth.logoutUser(user);
-            window.location.reload();
+            window.location.href = "/";
         },
 
         pause() {

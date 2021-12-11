@@ -23,11 +23,19 @@
               style="cursor: pointer"
             >
               <div class="col-md-12 type-property">
-                <b v-if="prop.sellOrRent == 1">FOR SALE</b>
-                <b v-else>FOR RENT</b>
+                <div v-if="prop.sellOrRent == 1 && prop.soldOn == 0">
+                  <img src="/img/icons/for-sale.png">
+                </div>
+                <div v-if="prop.sellOrRent == 0 && prop.soldOn == 0">
+                  <img src="/img/icons/rent.png">
+                </div>
+                <div v-else-if="prop.soldOn != 0">
+                  <img src="/img/icons/sold.png">
+                </div>
               </div>
-              <div class="icon" style="background:url('/img/favicon.png') center;">
-                <i class="bx bxl-dribbble"></i>
+              <div class="img-preview">
+                <!--<i class="bx bxl-dribbble"></i>-->
+                <img :src="`https://ipfs.io/ipfs/${getCidFromImg(index)}`">
               </div>
               <h4 class="title">
                 <a href="">
@@ -35,14 +43,13 @@
                 </a>
               </h4>
               <div v-if="prop.soldOn != 0  && prop.rentalEndDate == 0" class="col-md-12" style="left:0;right:0;width:100%">
-                <p class="description">SOLD!</p>
+                <p class="description">Sold on {{ getStringDate(prop.soldOn) }}</p>
               </div>
               <div v-if="prop.soldOn != 0 && prop.rentalEndDate != 0" class="col-md-12" style="left:0;right:0;width:100%">
-                <p class="description">RENTED!</p>
+                <p class="description">Rented on {{ getStringDate(prop.soldOn) }}</p>
               </div>
               <div v-else-if="prop.soldOn == 0">
                 <p class="description">{{ weiToEur(prop.price) }}€ ({{ weiToEth(prop.price) }} ETH)</p>
-                <br>
                 <p class="description">{{ getStringDate(prop.createdAt) }}</p>  
               </div>
             </div>
@@ -81,7 +88,7 @@
                 <img class="images" :src="`https://ipfs.io/ipfs/${getCidFromImg(index)}`">
               </div>
               <span class="line"></span>
-              <h6>Owner: {{ prop.owner }}</h6>
+              <h6 style="margin-top:20px">Owner: {{ prop.owner }}</h6>
               <p>Published on: {{ getStringDate(prop.createdAt) }}</p> 
               <p>Price: {{ weiToEur(prop.price) }}€ ({{ weiToEth(prop.price) }}ETH)</p>
               <p>Rooms: {{ prop.rooms }}</p>
@@ -347,3 +354,218 @@ export default {
   }
 }
 </script>
+
+<style scoped>
+/* Properties */
+.properties .container {
+  margin-bottom: 150px;
+}
+
+.properties .icon-box {
+  padding: 30px;
+  position: relative;
+  overflow: hidden;
+  background: #fff;
+  box-shadow: 0 0 29px 0 rgba(68, 88, 144, 0.12);
+  transition: all 0.3s ease-in-out;
+  border-radius: 8px;
+  height: 100%;
+  width: 100%;
+  z-index: 1;
+}
+
+.properties .icon-box::before {
+  content: "";
+  position: absolute;
+  background: #e1f0fa;
+  right: -60px;
+  top: -40px;
+  width: 100px;
+  height: 100px;
+  border-radius: 50px;
+  transition: all 0.3s;
+  z-index: -1;
+}
+
+.properties .icon-box:hover::before {
+  background: #3498db;
+  right: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  border-radius: 0px;
+}
+
+.properties .type-property {
+  right: 0;
+  margin: -25px 0 10px -20px;
+}
+
+.properties .icon {
+  margin: 0 auto 20px auto;
+  padding-top: 10px;
+  display: inline-block;
+  text-align: center;
+  border-radius: 50%;
+  width: 60px;
+  height: 60px;
+  background: #3498db;
+  transition: all 0.3s ease-in-out;
+}
+
+.properties .icon i {
+  font-size: 36px;
+  line-height: 1;
+  color: #fff;
+}
+
+.properties .title {
+  font-weight: 700;
+  margin-bottom: 15px;
+  font-size: 18px;
+}
+
+.properties .title a {
+  color: #3498db;
+  text-decoration: none;
+}
+
+.properties .description {
+  font-size: 15px;
+  line-height: 28px;
+  margin-bottom: 0;
+}
+
+.properties .icon-box:hover .title a, .properties .icon-box:hover .description {
+  color: #fff;
+}
+
+.properties .icon-box:hover .icon {
+  background: #fff;
+}
+
+.properties .icon-box:hover .icon i {
+  color: #3498db;
+}
+
+.properties .container-rooms {
+  display: flex;
+  border-radius: 45px;
+  border: 1px solid #cecece;
+  width: 40.5%;
+  margin-left: 220px;
+}
+
+.properties .container-rooms .input-tokens {
+  text-align: center;
+  font-size: 13.5px;
+  border: none;
+  outline: none;
+  color: #202030;
+}
+
+.properties .container-rooms label {
+  color: #3498db;
+  font-size: 14px;
+  font-weight: 20px;
+  border: none;
+  background-color: #ffffff;
+  cursor: pointer;
+  outline: none;
+}
+
+.properties .img-preview img {
+  width: 100px;
+  height: 100px;
+  margin: 0 0 20px 60px;
+  object-fit: cover;
+  object-position: center center;
+  border-radius: 60%;
+}
+
+.properties .images {
+  max-width: 700px;
+  max-height: 700px;
+}
+
+/* ------------- Buttons ------------- */
+
+/* Buy Tickets Class */
+.buy-tickets {
+  color: #fff;
+  background: #3498db;
+  padding: 7px 22px;
+  margin: 0 0 0 15px;
+  border-radius: 50px;
+  border: 2px solid #3498db;
+  transition: 0.3s;
+  font-weight: 500;
+  line-height: 1;
+  font-size: 13px;
+}
+
+.buy-tickets:hover {
+  background-color: #035d99;
+  border: 2px solid #035d99;
+}
+
+.buy-tickets:focus {
+  color: #fff;
+}
+
+@media (max-width: 992px) {
+  .buy-tickets {
+    margin: 0 15px 0 0;
+  }
+}
+
+/* Buy Property Class */
+.buy-property {
+  color: #fff;
+  background: #02ac0a;
+  padding: 10px 30px;
+  margin: 10px 0 10px 15px;
+  border-radius: 50px;
+  border: 2px solid #02ac0a;
+  transition: 0.3s;
+  font-weight: 500;
+  line-height: 1;
+  font-size: 13px;
+}
+
+.buy-property:hover {
+  background-color: #1a9202;
+  border: 2px solid #1a9202;
+}
+
+@media (max-width: 992px) {
+  .buy-property {
+    margin: 0 15px 0 0;
+  }
+}
+
+/* Property Sold Class */
+.property-sold {
+  color: #fff;
+  background: #c40101;
+  padding: 10px 30px;
+  margin: 10px 0 10px 15px;
+  border-radius: 50px;
+  border: 2px solid #c40101;
+  transition: 0.3s;
+  font-weight: 500;
+  line-height: 1;
+  font-size: 13px;
+}
+
+.property-sold:hover {
+  background-color: #c40101;
+  border: 2px solid #c40101;
+}
+
+@media (max-width: 992px) {
+  .buy-property {
+    margin: 0 15px 0 0;
+  }
+}
+</style>

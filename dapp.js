@@ -69,9 +69,9 @@ export const Dapp = {
         
     },
     // -------------- PROPERTIES FUNCTIONS --------------
-    uploadProperty: async(owner, city, addr, price, rooms, area, bathrooms, sellOrRent, tokens, rentalEndDate) => {
+    uploadProperty: async(owner, city, addr, price, rooms, area, bathrooms, sellOrRent, tokens, rentalEndDate, cid) => {
         
-        await Dapp.Properties.uploadProperty(owner, city, addr, price, rooms, area, bathrooms, sellOrRent, tokens, rentalEndDate, {
+        await Dapp.Properties.uploadProperty(owner, city, addr, price, rooms, area, bathrooms, sellOrRent, tokens, rentalEndDate, cid, {
             from: owner
         });
 

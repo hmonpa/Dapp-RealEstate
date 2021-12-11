@@ -117,6 +117,7 @@ export default {
       rooms: 1,
       bathrooms: 1,
       tokens: 0,
+      ipfsImage: ''
     }
   },
   methods: {  
@@ -125,6 +126,7 @@ export default {
       await Dapp.init();
     },
 
+    // ----------------------- Upload images functions -----------------------
     onImgSelected(event)
     {
       event.preventDefault();
@@ -143,37 +145,10 @@ export default {
       const options = {
         wrapWithDirectory: true
       }
-
-      console.log(imgDetails, " ", options);
       const node = await IPFS.create({ silent: true });
-      
-      // const image = await node.add({
-      //   path: img.name,
-      //   content: img
-      // })
-      console.log("Node:", node);
       let cid = await node.add(imgDetails.content);
-      console.log("Node add: ", cid);
-
-      const buffer = await toBuffer(node.cat(cid.path));
-      const blob = new Blob(buffer);
-      // const newImage = document.querySelector('img');
-      // newImage.src = URL.createObjectURL(blob);
-      // newImage.src = `https://ipfs.io/ipfs/${cid.path}`
-      // console.log("Node cat: ", await node.cat)
-      // const imgBuffer = await node.cat(image[0]);
-      // console.log('Added image:', imgBuffer);
-
-      // const ipfs = await IPFS.create();
-      // const results = this.ipfs.add(imgDetails, options);
-      // let cidString = results.toString();
-      // try {
-      //   console.log(results);
-      // } catch (err)
-      // {
-      //   console.log(err);
-      // }
-
+      console.log("Node add: ", cid.path);
+      this.ipfsImage = cid.path;
     },
 
     // ----------------------- Buttons functions -----------------------
@@ -201,6 +176,7 @@ export default {
         this.tokens = value;
       }
     },
+
     decrement(i){
       if(i == 0){
         // Rooms
@@ -226,7 +202,7 @@ export default {
       }
     },
 
-    // Upload data from the upload properties form
+    // Upload from the properties form
     async uploadData() {
       const account = await Dapp.checkStatus();
 
@@ -235,17 +211,14 @@ export default {
       });
 
       try {
-        if (propertyForm["input-tokens"] == null){
-          this.tokens = 0;
-        } else {
-          this.tokens = propertyForm["input-tokens"].value;
-        }
+        propertyForm["input-tokens"] == null ? 
+          this.tokens = 0 : this.tokens = propertyForm["input-tokens"].value;
 
         // Upload property depending if it's for sale or for rent
         this.typeOfProperty == 0 && this.rooms > 1 ? 
-          await Dapp.uploadProperty(account, propertyForm["city"].value, propertyForm["address"].value, propertyForm["price"].value, this.rooms, propertyForm["area"].value, this.bathrooms, this.typeOfProperty, this.tokens, parseInt(moment(propertyForm["date-end"].value).unix())) 
+          await Dapp.uploadProperty(account, propertyForm["city"].value, propertyForm["address"].value, propertyForm["price"].value, this.rooms, propertyForm["area"].value, this.bathrooms, this.typeOfProperty, this.tokens, parseInt(moment(propertyForm["date-end"].value).unix()), this.ipfsImage) 
           : 
-          await Dapp.uploadProperty(account, propertyForm["city"].value, propertyForm["address"].value, propertyForm["price"].value, this.rooms, propertyForm["area"].value, this.bathrooms, this.typeOfProperty, 0, 0);
+          await Dapp.uploadProperty(account, propertyForm["city"].value, propertyForm["address"].value, propertyForm["price"].value, this.rooms, propertyForm["area"].value, this.bathrooms, this.typeOfProperty, 0, 0, this.ipfsImage);
         
         window.location.href = "/#properties";
         
@@ -258,7 +231,180 @@ export default {
 }
 </script>
 
-<style>
+<style scoped>
+.publish {
+  margin-top:120px;
+}
+
+.publish .container {
+  border:1px #2383c4 solid;
+  border-radius:20px;
+  width: 60%;
+  padding:60px 0 60px 0;
+  margin-top:50px;
+  margin-bottom:175px;
+}
+.publish .publish-about h3 {
+  font-size: 28px;
+  margin: 0 0 10px 0;
+  padding: 0;
+  line-height: 1;
+  font-weight: 700;
+  letter-spacing: 1px;
+  color: #222222;
+}
+.publish .publish-about p {
+  font-size: 14px;
+  line-height: 24px;
+  font-family: "Raleway", sans-serif;
+  color: rgb(0, 0, 0);
+}
+.publish #account {
+  font-weight: bold;
+}
+.publish .social-links {
+  padding-bottom: 20px;
+}
+.publish .social-links a {
+  font-size: 18px;
+  display: inline-block;
+  background: #fff;
+  color: #3498db;
+  line-height: 1;
+  padding: 8px 0;
+  margin-right: 4px;
+  border-radius: 50%;
+  text-align: center;
+  width: 36px;
+  height: 36px;
+  transition: 0.3s;
+  border: 1px solid #3498db;
+}
+.publish .social-links a:hover {
+  background: #3498db;
+  color: #fff;
+}
+.publish .info {
+  color: #444444;
+}
+.publish .info i {
+  font-size: 32px;
+  color: #3498db;
+  float: left;
+  line-height: 1;
+}
+.publish .info p {
+  padding: 0 0 10px 42px;
+  line-height: 28px;
+  font-size: 14px;
+}
+
+/* Rooms, bathrooms and tokens chooser buttons */
+.publish .container-rooms {
+	display: flex;
+	border-radius: 45px;
+  border: 1px solid #cecece;
+  width: 56.5%;
+  text-align: center;
+}
+
+.publish .container-rooms #input-rooms,
+.publish .container-rooms #input-bathrooms,
+.publish .container-rooms #input-tokens {
+	text-align: center;
+	font-size: 14px;
+	border: none;
+	outline: none;
+	color: #202030;
+}
+
+.publish .container-rooms label {
+  color: #3498db;
+	font-size: 13px;
+  font-weight: 30px;
+	border: none;
+	background-color: #ffffff;
+	cursor: pointer;
+	outline: none;
+}
+
+.publish .php-email-form .error-message {
+  display: none;
+  color: #fff;
+  background: #ed3c0d;
+  text-align: left;
+  padding: 15px;
+  font-weight: 600;
+}
+.publish .php-email-form .error-message br + br {
+  margin-top: 25px;
+}
+.publish .php-email-form .sent-message {
+  display: none;
+  color: #fff;
+  background: #18d26e;
+  text-align: center;
+  padding: 15px;
+  font-weight: 600;
+}
+.publish .php-email-form .loading {
+  display: none;
+  background: #fff;
+  text-align: center;
+  padding: 15px;
+}
+.publish .php-email-form .loading:before {
+  content: "";
+  display: inline-block;
+  border-radius: 50%;
+  width: 24px;
+  height: 24px;
+  margin: 0 10px -6px 0;
+  border: 3px solid #18d26e;
+  border-top-color: #eee;
+  -webkit-animation: animate-loading 1s linear infinite;
+  animation: animate-loading 1s linear infinite;
+}
+.publish .php-email-form .form-group {
+  margin-bottom: 20px;
+}
+.publish .php-email-form input, .publish .php-email-form textarea {
+  border-radius: 0;
+  box-shadow: none;
+  font-size: 14px;
+  padding: 10px 15px;
+}
+.publish .php-email-form input:focus, .publish .php-email-form textarea:focus {
+  border-color: #3498db;
+}
+.publish .php-email-form button[type=submit] {
+  background: #3498db;
+  border: 0;
+  padding: 10px 24px;
+  color: #fff;
+  transition: 0.4s;
+  border-radius: 50px;
+}
+.publish .php-email-form button[type=submit]:hover {
+  background: #2383c4;
+}
+@-webkit-keyframes animate-loading {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+@keyframes animate-loading {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
 /* Sell or rent style */
 #plus {
 	padding: 15px 25px 15px 5px;
