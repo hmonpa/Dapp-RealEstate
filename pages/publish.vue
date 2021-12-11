@@ -14,33 +14,33 @@
             <form id="propertyForm" class="php-email-form">
               <div class="form-group">
                 <span>City:</span>
-                <input type="text" name="city" class="form-control" id="city" placeholder="Barcelona">
+                <input type="text" name="city" class="form-control" id="city" placeholder="Barcelona" required />
               </div>
               <div class="form-group">
                 <span>Address:</span>
-                <input type="text" id="pac-input" name="address" class="form-control" placeholder="Plaça Sant Jaume, 1">
+                <input type="text" id="pac-input" name="address" class="form-control" placeholder="Plaça Sant Jaume, 1" required />
               </div>
               <div class="form-group">
                   <span>Price in EUR:</span>
-                  <input type="number" step="5000" min="0" class="form-control" name="price" id="price" placeholder="150000">
+                  <input type="number" step="5000" min="0" class="form-control" name="price" id="price" placeholder="150000" required />
               </div>
               <div class="form-group">
                 <span>Rooms:</span>
                 <div class="container-rooms">
                   <label id="minus" @click="decrement(0)">-</label>
-                  <input id="input-rooms" type="number" min="1" value="1" readonly>
+                  <input id="input-rooms" type="number" min="1" value="1" readonly required />
                   <label id="plus" @click="increment(0)">+</label>
                 </div>
               </div>
               <div class="form-group">
                   <span>Area in m²:</span>
-                  <input type="number" style="width:56.5%; border-radius:45px" min="40" class="form-control" name="area" id="area" placeholder="80">
+                  <input type="number" style="width:56.5%; border-radius:45px" min="40" class="form-control" name="area" id="area" placeholder="80" required />
               </div>
               <div class="form-group">
                 <span>Bathrooms:</span>
                 <div class="container-rooms">
                   <label id="minus" @click="decrement(1)">-</label>
-                  <input id="input-bathrooms" type="number" min="1" value="1" readonly>
+                  <input id="input-bathrooms" type="number" min="1" value="1" readonly required />
                   <label id="plus" @click="increment(1)">+</label>
                 </div>
               </div>
@@ -74,12 +74,12 @@
                 </div>
                 <div class="form-group">
                   <span>Rental end date:</span>
-                  <input type="date" id="date-end" name="date-end" class="form-control" value="2022-08-08" required>
+                  <input type="date" id="date-end" name="date-end" class="form-control" value="2022-08-08" required />
                 </div>
               </div>
               <div class="form-group">
                 <span>Upload image:</span>
-                <input type="file" id="input-image" @change="onImgSelected" name="input-image" class="form-control" accept="image/*" required>
+                <input type="file" id="input-image" @change="onImgSelected" name="input-image" class="form-control" accept="image/*" required />
               </div>
               <div class="text-center">
                 <button type="submit" @click="uploadData">Publish</button>
@@ -98,7 +98,6 @@ import auth from '@/src/auth';
 import { Dapp } from '@/dapp';
 import moment from 'moment';
 import * as IPFS from 'ipfs';
-import toBuffer from 'it-to-buffer';
 
 export default {
   async beforeMount(){
@@ -137,16 +136,17 @@ export default {
 
     async uploadToIPFS(img)
     {
-      const imgDetails = {
-        path: img.name,
-        content: img
-      }
+      // const imgDetails = {
+      //   path: img.name,
+      //   content: img
+      // }
 
       const options = {
         wrapWithDirectory: true
       }
+
       const node = await IPFS.create({ silent: true });
-      let cid = await node.add(imgDetails.content);
+      let cid = await node.add(img);
       console.log("Node add: ", cid.path);
       this.ipfsImage = cid.path;
     },

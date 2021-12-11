@@ -19,7 +19,7 @@ a:hover {
 }
 
 h1, h2, h3, h4, h5, h6 {
-  font-family: "Raleway", sans-serif;
+  font-family: "Poppins", sans-serif;
 }
 
 body .modal-backdrop {
@@ -79,15 +79,16 @@ body .modal-backdrop {
 }
 
 #header .logo h1 {
-  font-size: 30px;
-  margin: 0;
+  margin-top:100px;
+  font-size: 20px;
+  /* margin: 0; */
   padding: 0;
   line-height: 1;
   font-weight: 700;
   letter-spacing: 1px;
 }
 
-#header .logo h1 a, #header .logo h1 a:hover {
+#header .logo a, #header .logo a:hover {
   color: #222222;
   text-decoration: none;
 }
@@ -95,7 +96,7 @@ body .modal-backdrop {
 #header .logo img {
   padding: 0;
   margin: 0;
-  max-height: 40px;
+  max-height: 100px;
 }
 
 /*--------------------------------------------------------------

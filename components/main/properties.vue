@@ -187,6 +187,8 @@
 <script>
 import { Dapp } from '@/dapp';
 import auth from '@/src/auth';
+import * as IPFS from 'ipfs';
+import { saveAs } from 'file-saver';
 
 export default {
 
@@ -255,14 +257,41 @@ export default {
       }
     },
 
+    async generateContract(id)
+    {
+      var content = '<b>'+ "What\'s up , hello world" + '</b>';
+      // any kind of extension (.txt,.cpp,.cs,.bat)
+      var filename = "Contract " + id;
+
+      var blob = new Blob([content], {
+      type: "text/plain;charset=utf-8"
+      });
+
+      const fileDetails = {
+        path: filename,
+        content: blob
+      }
+
+      const options = {
+        wrapWithDirectory: true
+      }
+      console.log(fileDetails);
+      const node = await IPFS.create({ silent: true });
+      let cid = await node.add(blob);
+      console.log("Node add: ", cid.path);
+      // saveAs(blob, filename);
+    },
+
     // Buy property
     async buyProperty(id, price)
     {
-      let from = await Dapp.loadEthereum();
-      await Dapp.buyProperty(from, id.toNumber(), price);
+      await this.generateContract(id);
 
-      // Update the status of properties
-      await this.renderProperties();
+      // let from = await Dapp.loadEthereum();
+      // await Dapp.buyProperty(from, id.toNumber(), price);
+
+      // // Update the status of properties
+      // await this.renderProperties();
     },
 
     // Rent property
@@ -338,6 +367,25 @@ export default {
       if(value > 1) value--;
       inputTokens.value = value;
       this.tokens = value;
+    },
+
+    contractTemplate(prop)
+    {
+      return (
+        '<p style="text-align:center"><b>' 
+          + "Contrato de compra venta del inmueble" + prop.id + '</b></p><p style="margin: 20px;text-align:justify"><b>'
+          + "De un lado, la parte compradora:" + '</b><br>' + "D/Dª" + nombre + " con DNI " + dni + ", y dirección de clave pública " 
+          + address + "." + '</p><p style="margin: 20px;text-align:justify"><b>' + "De otro, la parte vendedora:"
+          + '</b><br>' + "D/Dª" + nombre + " con DNI " + dni + ", y dirección de clave pública " + prop.owner + "." 
+          + '</p><p style="text-align:center"><b>' + "EXPONEN" + '</b></p><p style="margin: 20px;text-align:justify"><b>'
+          + "PRIMERO.-" + '</b>' + "Que la parte vendedora es dueña de pleno dominio de la siguiente finca: " + '<br><ul><li>'
+          + "Catastro:" + prop.id + '</li><li>' + "Dirección: " + prop.physicalAddress + '</li><li>' + "Población: " + prop.city + '</li></ul>'
+          + '<b>' + "SEGUNDO.-" + '</b>' + "Que la parte compradora abonará el siguiente importe a la parte vendedora: " + '<br>'
+          + '<ul><li>' + weiToEur(prop.price) + "€ (" + weiToEth(prop.price) + ") " + '</li></ul><b>' + "TERCERO.-" + '</b>' + "Para que quede constancia y hacer valer el contrato, ambas partes han firmado digitalmente la transacción mediante la wallet MetaMask." 
+          + '<br>' + "La parte vendedora en el momento de publicar la propiedad, y la parte compradora en el momento de abonar el importe, el " + Date.now() 
+          + '<br></p><p style="text-align:center"><b>' + "Transacción realizada desde la aplicación descentralizada en la red de Ethereum" + '</b><br>'
+          + "Impulsado por:" + '</p><img style="margin: 10px 0px 0px 250px" src="/img/logo-with-name.png">'
+      )
     }
   },
 
@@ -398,7 +446,7 @@ export default {
 
 .properties .type-property {
   right: 0;
-  margin: -25px 0 10px -20px;
+  margin: -25px 0 10px 200px;
 }
 
 .properties .icon {

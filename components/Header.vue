@@ -4,42 +4,44 @@
         <div class="container d-flex align-items-center justify-content-between">
 
             <div class="logo">
-                <h1><a href="/">Decentralized app</a></h1>
                 <!-- Uncomment below if you prefer to use an image logo -->
-                <!--<img src="/img/logo.png" alt="" class="img-fluid">-->
+                <a href="/">
+                    <img src="/img/logo-with-name.png" alt="" class="img-fluid">
+                    <!--<h1 style="display:inline;margin-left:10px">Hmonpa</h1>-->
+                </a>
             </div>
 
             <nav id="navbar" class="navbar">
                 <ul>
-                <li><a class="nav-link scrollto" href="/#hero">Home</a></li>
-                <li><a class="nav-link scrollto" href="/#properties">Properties</a></li>
-                <li>
-                    <NuxtLink v-if="userLogged" class="getstarted scrollto" to="publish">Publish a new property</NuxtLink>
-                </li>
-                <li>
-                    <!-- Modal -->
-                    <a 
-                        v-if="userLogged"
-                        id="account"
-                        class="access scrollto"
-                        data-aos="fade-up" 
-                        data-aos-delay="100"
-                        data-bs-toggle="modal"
-                        :data-bs-target="'#account_' + account"
-                        style="cursor: pointer"
-                    >
-                        {{ account }}
-                    </a>
-                    <!-- End Modal -->
-                    <NuxtLink v-else class="access scrollto" to="access">Access</NuxtLink>
-                </li>
-                <li>
-                    <a v-if="!account" class="metamask" style="cursor: pointer" @click="connectWallet"></a>
-                    <a v-if="account && !userLogged" id="account">{{ account }}</a>
-                </li>
-                <li>
-                    <a v-if="userLogged" class="nav-link scrollto" style="cursor: pointer" @click="logout">Logout</a>
-                </li>
+                    <li><a class="nav-link scrollto" href="/#hero">Home</a></li>
+                    <li><a class="nav-link scrollto" href="/#properties">Properties</a></li>
+                    <li>
+                        <NuxtLink v-if="userLogged" class="getstarted scrollto" to="publish">Publish a new property</NuxtLink>
+                    </li>
+                    <li>
+                        <!-- Modal -->
+                        <a 
+                            v-if="userLogged"
+                            id="account"
+                            class="access scrollto"
+                            data-aos="fade-up" 
+                            data-aos-delay="100"
+                            data-bs-toggle="modal"
+                            :data-bs-target="'#account_' + account"
+                            style="cursor: pointer"
+                        >
+                            {{ account }}
+                        </a>
+                        <!-- End Modal -->
+                        <NuxtLink v-else class="access scrollto" to="access">Access</NuxtLink>
+                    </li>
+                    <li>
+                        <a v-if="!account" class="metamask" style="cursor: pointer" @click="connectWallet"></a>
+                        <a v-if="account && !userLogged" id="account">{{ account }}</a>
+                    </li>
+                    <li>
+                        <a v-if="userLogged" class="nav-link scrollto" style="cursor: pointer" @click="logout">Logout</a>
+                    </li>
                 </ul>
                 <i class="bi bi-list mobile-nav-toggle"></i>
             </nav>
