@@ -219,7 +219,7 @@ export default {
           : 
           await Dapp.uploadProperty(account, propertyForm["city"].value, propertyForm["address"].value, propertyForm["price"].value, this.rooms, propertyForm["area"].value, this.bathrooms, this.typeOfProperty, 0, 0, this.ipfsImage);
         
-        window.location.href = "/#properties";
+        window.location.href = "/properties";
         
       } catch (err) {
         console.log(err);

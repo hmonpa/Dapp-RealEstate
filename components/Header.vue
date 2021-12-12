@@ -14,7 +14,9 @@
             <nav id="navbar" class="navbar">
                 <ul>
                     <li><a class="nav-link scrollto" href="/#hero">Home</a></li>
-                    <li><a class="nav-link scrollto" href="/#properties">Properties</a></li>
+                    <li>
+                        <NuxtLink class="nav-link scrollto" to="properties">Properties</NuxtLink>
+                    </li>
                     <li>
                         <NuxtLink v-if="userLogged" class="getstarted scrollto" to="publish">Publish a new property</NuxtLink>
                     </li>
@@ -97,7 +99,6 @@ import { Dapp } from '@/dapp';
 import auth from '@/src/auth';
 import swal from 'sweetalert';
 import Swal from 'sweetalert2';
-
 
 export default {
     computed: {

@@ -90,9 +90,11 @@ contract Properties {
         uint256 createdAt
     );
 
-    event isPropertySold (address addr, uint256 price, uint256 soldOn);
-    event isPropertyRent (address addr, uint256 price, uint256 rentalEndDate);
-    event propertyTokenPurchased (address from, uint256 idProperty, uint256 numberOfTokens, uint256 pricePerToken);
+    event propertySold (address soldBy, uint256 price, uint256 soldOn);
+    event propertyRented (address rentedBy, uint256 price, uint256 rentalEndDate);
+    event propertyTokenPurchased (address purchasedBy, uint256 idProperty, uint256 numberOfTokens, uint256 pricePerToken);
+    event propertyRemoved (address byOwner, uint256 id);
+
 
     // ----------------------- FUNCTIONS -----------------------
     
@@ -142,16 +144,6 @@ contract Properties {
         revert('Not found');
     }
 
-    // TO BE COMPLETED: Remove property by their ID 
-    // function removeProperty(uint256 _id) public view returns (uint)
-    // {
-    //     for (uint i = 0; i < propertyCounter; i++)
-    //     {
-    //         if (_id == props[i].id) return i;
-    //     }
-    //     revert('Not found');
-    // }
-
     // Send balance to account
     function sendBalance(address _receiver, uint256 _amount) payable external {
         _receiver.transfer(_amount);
@@ -171,7 +163,7 @@ contract Properties {
         this.propertySettled(index);
 
         // Emit an event
-        emit isPropertySold(_address, props[index].price, props[index].soldOn);
+        emit propertySold(_address, props[index].price, props[index].soldOn);
         
         // Changes the owner after sell the property and
         // replace the property status from mapping and array
@@ -193,7 +185,7 @@ contract Properties {
         this.propertySettled(index);
         
         // Emit an event
-        emit isPropertyRent(_address, props[index].price, _rentalEndDate);
+        emit propertyRented(_address, props[index].price, _rentalEndDate);
     }
 
     // Buy token (or tokens) of a property
@@ -212,6 +204,24 @@ contract Properties {
 
         if(props[index].tokens == 0) this.propertySettled(index);
     }   
+
+    // Remove property by their ID 
+    function removeProperty(uint256 _id) public returns (uint)
+    {
+        bool deleted = false;
+        for (uint i = 0; i < propertyCounter && !deleted; i++)
+        {
+            if (_id == properties[i].id){
+                require(properties[i].soldOn == 0);
+
+                delete properties[i];
+                delete props[i];
+                deleted = true;
+            }
+        }
+
+        emit propertyRemoved(msg.sender, _id);
+    }
 
     function propertySettled(uint256 _index) public 
     {

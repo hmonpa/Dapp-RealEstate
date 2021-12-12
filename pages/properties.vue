@@ -1,6 +1,6 @@
 <template>
     <!-- ======= Properties Section ======= -->
-    <section id="properties" class="properties">
+    <section id="properties" class="properties" style="margin-top:100px">
       <div class="container">
 
         <div class="section-title" data-aos="fade-up">
@@ -85,6 +85,11 @@
                 <p class="description">TOKENIZED PROPERTY</p>
               </div>
               <div v-if="properties">
+                <div v-if="isOwner(prop.owner) && userLogged">
+                  <button class="remove-property" @click="removeProperty(prop.owner, prop.id)">
+                    <img src="/img/icons/trash.png">
+                  </button>
+                </div>
                 <img class="images" :src="`https://ipfs.io/ipfs/${getCidFromImg(index)}`">
               </div>
               <span class="line"></span>
@@ -98,21 +103,28 @@
               <!-- #################### DIFFERENT BUTTONS AND CASES #################### -->
               <!-- For selling -->
               <button
-                v-if="prop.sellOrRent == 1 && prop.soldOn == 0"
+                v-if="prop.sellOrRent == 1 
+                  && prop.soldOn == 0 
+                  && !isOwner(prop.owner)"
                 type="button"
                 class="buy-property"
-                @click="buyProperty(index, prop.id, prop.price)"
+                @click="buyProperty(index, prop.id, prop.price, prop.owner)"
               >
                 Buy property
               </button>
 
               <!-- For renting -->
-              <div v-if="prop.sellOrRent == 0 && prop.soldOn == 0 && prop.tokens == 0">
+              <div 
+                v-if="prop.sellOrRent == 0 
+                && prop.soldOn == 0 
+                && prop.tokens == 0
+                && !isOwner(prop.owner)"
+              >
                 <p>Rental end date: {{ getStringDate(prop.rentalEndDate) }}</p>
                 <button
                   type="button"
                   class="buy-property"
-                  @click="rentProperty(prop.id, prop.price, prop.rentalEndDate)"
+                  @click="rentProperty(prop.id, prop.price, prop.rentalEndDate, prop.owner)"
                 >
                   Rent property
                 </button>
@@ -125,7 +137,7 @@
                 <p>Available tokens: {{ prop.tokens }}</p>
                 <p v-if="propertiesTokens[index]">Price per token: {{ (weiToEur(prop.price) / getNumOfTokens(index)).toFixed(2) }}€ ({{ (weiToEth(prop.price) / prop.tokens).toFixed(2) }} ETH)</p>
 
-                <div v-if="userLogged">
+                <div v-if="userLogged && !isOwner(prop.owner)">
                   <span>Number of tokens:</span>
                   <div class="container-rooms">
                     <label id="minus" @click="decrement(index)">-</label>
@@ -135,10 +147,10 @@
                 </div> 
                 
                 <button
-                  v-if="userLogged && prop.id"
+                  v-if="userLogged && prop.id && !isOwner(prop.owner)"
                   type="button"
                   class="buy-property"
-                  @click="buyTokens(prop.id, tokens, (prop.price/prop.tokens)*tokens)"
+                  @click="buyTokens(prop.id, tokens, (prop.price/prop.tokens)*tokens), prop.owner"
                 >
                   Buy tokens
                 </button>
@@ -190,6 +202,9 @@ import auth from '@/src/auth';
 import * as IPFS from 'ipfs';
 import { saveAs } from 'file-saver';
 
+import swal from 'sweetalert';
+import Swal from 'sweetalert2';
+
 export default {
 
   // ----- VUE LIFE-CYCLE -----
@@ -201,7 +216,7 @@ export default {
   // Updated:       Is executed when produced changes in the component, uses "computed" and "watchers" properties.
   // Destroyed:     Is executed when one component is removed. Example: Uses of v-if or v-show.
 
-  async data(){
+  data(){
     return {
       properties: [],
       propertiesTokens: [],
@@ -218,7 +233,6 @@ export default {
     // Starts the dApp 
     async start1(){
       await Dapp.init();
-      console.log(window.ethereum.selectedAddress);
     },
     async start2(){
       await this.renderProperties();
@@ -231,13 +245,13 @@ export default {
         this.propertiesTokens = [];
         this.propertiesImages = [];
         const invalidAddr = 0x0000000000000000000000000000000000000000;
-        let existingProp = true;
-        let i = 0;
-        while (existingProp)
+        let numProperties = await Dapp.Properties.propertyCounter();
+        for (let i = 0; i < numProperties; i++)
         {
           let prop = await Dapp.Properties.properties(i);
           let owner = prop.owner;
-          if (owner != invalidAddr){
+          if (owner != invalidAddr)
+          {
             this.properties.push(prop);
 
             let tokensProp  = await Dapp.Properties.startedTokens(prop.id);
@@ -245,13 +259,8 @@ export default {
             
             this.propertiesTokens.push(tokensProp);
             this.propertiesImages.push(imageProp);
-          }
-          else
-            existingProp = false;               
-          
-          i++;
+          }          
         }
-
       }
       catch (err) {
         console.log(err);
@@ -302,10 +311,13 @@ export default {
     },
 
     // Buy property
-    async buyProperty(index, id, price)
+    async buyProperty(index, id, price, owner)
     {
-      await this.generateContract(index, id);
+      this.getCustomAlert("buy", price, owner);
 
+      // await this.generateContract(index, id);
+
+      // COMMENT FOR TESTING
       // let from = await Dapp.loadEthereum();
       // await Dapp.buyProperty(from, id.toNumber(), price);
 
@@ -313,48 +325,106 @@ export default {
       // await this.renderProperties();
     },
 
-    // Rent property
-    async rentProperty(id, price, rentalEndDate)
+    // ----------------------- Rent property -----------------------
+    async rentProperty(id, price, rentalEndDate, owner)
     {
-      let from = await Dapp.loadEthereum();
-      await Dapp.rentProperty(from, id.toNumber(), rentalEndDate, price);
+      this.getCustomAlert("rent", price, owner);
 
-      // Update the status of properties
-      await this.renderProperties();
+      // let from = await Dapp.loadEthereum();
+      // await Dapp.rentProperty(from, id.toNumber(), rentalEndDate, price);
+
+      // await this.renderProperties();
     },
 
-    // Buy tokens
-    async buyTokens(id, tokens, priceToPay)
+    // ----------------------- Buy tokens -----------------------
+    async buyTokens(id, tokens, priceToPay, owner)
     {
-      let from = await Dapp.loadEthereum();
-      await Dapp.buyTokens(from, id.toNumber(), tokens, priceToPay);
+      // this.getCustomAlert("buy-token", priceToPay, owner);
 
-      window.location.reload();
+      // let from = await Dapp.loadEthereum();
+      // await Dapp.buyTokens(from, id.toNumber(), tokens, priceToPay);
+
+      // window.location.reload();
+
+        Swal.fire({
+          title: 'Are you sure you want to make the transaction?',
+          text: "If you accept, the payment of " + this.weiToEth(priceToPay) + "ETH will be made at this moment",
+          imageUrl: 'https://cdn.dribbble.com/users/2574702/screenshots/6702374/metamask.gif',
+          imageWidth: 400,
+          imageHeight: 300,
+          imageAlt: 'Metamask image',
+          showCancelButton: true,
+          confirmButtonColor: '#00F838',
+          cancelButtonColor: '#d33',
+          confirmButtonText: 'Yes, I\'m sure'
+        }).then((result) => {
+          if (result.isConfirmed) {
+            Swal.fire(
+              'Done!',
+              'You have sent the payment of ' + this.weiToEth(priceToPay) + 'ETH to ' + owner + '.',
+              'success'
+            )
+            // .then(function() {
+            //   window.location.reload();
+            // });
+          }
+        })
     },
 
-    // Get dates in human format
+    // ----------------------- Remove property -----------------------
+    async removeProperty(owner, id)
+    {
+      Swal.fire({
+        title: 'Are you sure you want to delete the property?',
+        text: "You won't be able to revert this!",
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#00F838',
+        cancelButtonColor: '#d33',
+        confirmButtonText: 'Yes, delete it!'
+      }).then(async(result) => {
+        if (result.isConfirmed) {
+          await Dapp.removeProperty(owner, id);
+          await this.renderProperties();
+
+          Swal.fire(
+            'Deleted!',
+            'The property with id ' + id + ' has been deleted.',
+            'success'
+          ).then(function() {
+            window.location.reload();
+          });
+        }
+      })
+
+    },
+
+    // ----------------------- Get dates in human format -----------------------
     getStringDate(date)
     {
       return new Date(date*1000).toLocaleString();
     },
 
-    // Get initial number of tokens
+    // ----------------------- Get initial number of tokens -----------------------
     getNumOfTokens(index)
     {
       return this.propertiesTokens[index]["tokens"];
     },
 
+    // ----------------------- Get CID of the image from mapping -----------------------
     getCidFromImg(index)
     {
       if(this.propertiesImages[index]) return this.propertiesImages[index]["ipfsImage"];
     },
 
-    async getCurrentAddr()
+    // ----------------------- Check if current address is the owner -----------------------
+    isOwner(propOwner)
     {
-      return await Dapp.currentAddr();
+      let currentAddr = window.ethereum.selectedAddress;
+      return propOwner.toLowerCase() == currentAddr.toLowerCase();
     },
 
-    // Currencies conversion
+    // ----------------------- Currencies conversion ----------------------- 
     weiToEur(price)
     {
       return price/243739092347530;
@@ -364,6 +434,7 @@ export default {
       return (price/(10**18)).toFixed(2);
     },
 
+    // ----------------------- Modal close ----------------------- 
     pause() 
     {
       const iframes = document.querySelectorAll("#modal iframe");
@@ -392,9 +463,37 @@ export default {
       inputTokens.value = value;
       this.tokens = value;
     },
-
-
   },
+  // ----------------------- Create custom sweet alert -----------------------
+  getCustomAlert(type, price, address)
+  {
+    // return (
+      Swal.fire({
+        title: 'Are you sure you want to make the transaction?',
+        text: "If you accept, the payment of " + price + " will be made at this moment",
+        imageUrl: 'https://www.returngis.net/wp-content/uploads/2019/05/logo-metamask-1.png',
+        imageWidth: 400,
+        imageHeight: 200,
+        imageAlt: 'Metamask image',
+        showCancelButton: true,
+        confirmButtonColor: '#00F838',
+        cancelButtonColor: '#d33',
+        confirmButtonText: 'Yes, I\'m sure'
+      }).then((result) => {
+        if (result.isConfirmed) {
+          Swal.fire(
+            'Done!',
+            'You have sent the payment of ' + price + ' to ' + address + '.',
+            'success'
+          )
+          // .then(function() {
+          //   window.location.reload();
+          // });
+        }
+      })
+    // )
+  },
+
 
   async beforeMount(){
     // Load the contracts
@@ -593,5 +692,16 @@ export default {
   .buy-property {
     margin: 0 15px 0 0;
   }
+}
+
+/* Remove Property Class*/
+.properties .remove-property {
+  border: none;
+  margin-left: 640px;
+  background-color: #fff;
+}
+.properties .remove-property img {
+  max-width: 50px;
+  max-height: 50px;
 }
 </style>

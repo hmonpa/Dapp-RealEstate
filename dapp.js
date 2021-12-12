@@ -1,5 +1,6 @@
-const Web3      = require('web3');
-const auth      = require('./src/auth');
+const Web3          = require('web3');
+const Eth           = require('web3-eth');
+const auth          = require('./src/auth');
 // const Vue       = require('vue');
 // const Metamask  = require('@metamask/legacy-web3');
 
@@ -10,10 +11,16 @@ var TruffleContract = require('@truffle/contract');                             
 
 var Auth            = TruffleContract(authJson);
 var Properties      = TruffleContract(propertiesJson);
+Properties.defaults({
+    gas: 4712388,
+    gasPrice: 100000000000
+});
+
 
 // Provide the contracts with a web3 provider
 Auth.setProvider(new Web3.providers.HttpProvider("http://127.0.0.1:7545"));
 Properties.setProvider(new Web3.providers.HttpProvider("http://127.0.0.1:7545"));           
+var web3 = new Web3("http://127.0.0.1:7545");
 
 export const Dapp = {
 
@@ -21,6 +28,7 @@ export const Dapp = {
         Dapp.Auth = Auth;
         Dapp.Properties = Properties;
         Dapp.account;
+        Dapp.web3Provider;
 
         await Dapp.loadContracts();
     },
@@ -111,6 +119,18 @@ export const Dapp = {
                 value: priceToPay
             })
         } catch (err) {
+            console.log(err);
+        }
+    },
+
+    removeProperty: async(from, id) => {
+        // web3.eth.getGasPrice()
+        // .then(console.log);
+        try {
+            await Dapp.Properties.removeProperty(id, {
+                from: from
+            });
+        } catch (err){
             console.log(err);
         }
     },

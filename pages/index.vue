@@ -8,7 +8,7 @@
     <MainPortfolio /> 
     <MainTeam />
     <MainPricing />
-    <MainFaq />-->
-    <MainProperties />
+    <MainFaq />
+    <MainProperties />-->
   </main>
 </template>

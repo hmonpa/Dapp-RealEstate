@@ -60,7 +60,7 @@ export default {
             e.preventDefault();
         });
 
-        const account = document.getElementById("account").innerText;
+        const account = await Dapp.currentAddr();
 
         // Check if MetaMask is connected with account
         if(!account) {
@@ -102,7 +102,6 @@ export default {
                 title: "Login successfully",
                 icon: "success"
               }).then(function() {
-                // SOLVE REDIRECT WITH ROUTES
                 window.location.href = "/";
               });
             }
