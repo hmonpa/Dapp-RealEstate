@@ -62,7 +62,7 @@
                       <div id="toggleswitch"></div>
                     </div>
                   </div>
-                  <div v-if="tokenized" class="num-tokenizations">
+                  <div v-if="tokenized">
                     <span>Number of tokens:</span>
                     <div class="container-rooms">
                       <label id="minus" @click="decrement(2)">-</label>

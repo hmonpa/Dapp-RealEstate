@@ -108,8 +108,9 @@
                   && !isOwner(prop.owner)"
                 type="button"
                 class="buy-property"
-                @click="buyProperty(index, prop.id, prop.price, prop.owner)"
+                @click="sendTransaction("buy", prop, 0)"
               >
+              <!--OLD CLICK: @click="buyProperty(index, prop.id, prop.price, prop.owner)"-->
                 Buy property
               </button>
 
@@ -124,7 +125,7 @@
                 <button
                   type="button"
                   class="buy-property"
-                  @click="rentProperty(prop.id, prop.price, prop.rentalEndDate, prop.owner)"
+                  @click="sendTransaction("rent", prop, 0)"
                 >
                   Rent property
                 </button>
@@ -150,8 +151,9 @@
                   v-if="userLogged && prop.id && !isOwner(prop.owner)"
                   type="button"
                   class="buy-property"
-                  @click="buyTokens(prop.id, tokens, (prop.price/prop.tokens)*tokens), prop.owner"
+                  @click="sendTransaction('buy-token', prop, tokens)"
                 >
+                <!-- OLD CLICK: @click="buyTokens(prop.id, tokens, (prop.price/prop.tokens)*tokens), prop.owner"-->
                   Buy tokens
                 </button>
               </div>
@@ -267,11 +269,11 @@ export default {
       }
     },
 
-    async generateContract(index, id)
+    async generateContract(prop)
     {
-      var content   = await this.contractTemplate(index);
+      var content   = await this.contractTemplate(prop);
       // any kind of extension (.txt,.cpp,.cs,.bat)
-      var filename  = "Contract " + id;
+      var filename  = "Contract " + prop.id;
 
       var blob = new Blob([content], {
         type: "text/plain;charset=utf-8;charset=ANSI"
@@ -284,9 +286,8 @@ export default {
       // saveAs(blob, filename);
     },
 
-    async contractTemplate(i)
+    async contractTemplate(prop)
     {
-      const prop      = this.properties[i];
       const buyerAddr = await Dapp.currentAddr();
 
       const buyer     = await Dapp.getUserData(buyerAddr);
@@ -310,65 +311,66 @@ export default {
       )
     },
 
-    // Buy property
-    async buyProperty(index, id, price, owner)
+    // Old functions for doing transactions...
+    
+    // // Buy property
+    // async buyProperty(prop, tokens)
+    // {
+    //   this.sendTransaction("buy", prop, tokens);
+
+    //   // await this.generateContract(prop);
+
+    //   // // Update the status of properties
+    //   // await this.renderProperties();
+    // },
+
+    // // ----------------------- Rent property -----------------------
+    // async rentProperty(prop, tokens)
+    // {
+    //   this.sendTransaction("rent", prop, tokens);
+    //   // await this.renderProperties();
+    // },
+
+    // // ----------------------- Buy tokens -----------------------
+    // async buyTokens(prop, tokens)
+    // {
+    //   this.sendTransaction("buy-token", prop, tokens);
+    // },
+
+    // ----------------------- Create custom sweet alert -----------------------
+    async sendTransaction(type, prop, tokens)
     {
-      this.getCustomAlert("buy", price, owner);
-
-      // await this.generateContract(index, id);
-
-      // COMMENT FOR TESTING
-      // let from = await Dapp.loadEthereum();
-      // await Dapp.buyProperty(from, id.toNumber(), price);
-
-      // // Update the status of properties
-      // await this.renderProperties();
-    },
-
-    // ----------------------- Rent property -----------------------
-    async rentProperty(id, price, rentalEndDate, owner)
-    {
-      this.getCustomAlert("rent", price, owner);
-
-      // let from = await Dapp.loadEthereum();
-      // await Dapp.rentProperty(from, id.toNumber(), rentalEndDate, price);
-
-      // await this.renderProperties();
-    },
-
-    // ----------------------- Buy tokens -----------------------
-    async buyTokens(id, tokens, priceToPay, owner)
-    {
-      // this.getCustomAlert("buy-token", priceToPay, owner);
-
-      // let from = await Dapp.loadEthereum();
-      // await Dapp.buyTokens(from, id.toNumber(), tokens, priceToPay);
-
-      // window.location.reload();
-
-        Swal.fire({
-          title: 'Are you sure you want to make the transaction?',
-          text: "If you accept, the payment of " + this.weiToEth(priceToPay) + "ETH will be made at this moment",
-          imageUrl: 'https://cdn.dribbble.com/users/2574702/screenshots/6702374/metamask.gif',
-          imageWidth: 400,
-          imageHeight: 300,
-          imageAlt: 'Metamask image',
-          showCancelButton: true,
-          confirmButtonColor: '#00F838',
-          cancelButtonColor: '#d33',
-          confirmButtonText: 'Yes, I\'m sure'
-        }).then((result) => {
-          if (result.isConfirmed) {
-            Swal.fire(
-              'Done!',
-              'You have sent the payment of ' + this.weiToEth(priceToPay) + 'ETH to ' + owner + '.',
-              'success'
-            )
-            // .then(function() {
-            //   window.location.reload();
-            // });
-          }
-        })
+      Swal.fire({
+        title: 'Are you sure you want to make the transaction?',
+        text: "If you accept, the payment of " + this.weiToEth(prop.price) + "ETH will be made at this moment",
+        imageUrl: 'https://cdn.dribbble.com/users/2574702/screenshots/6702374/metamask.gif',
+        imageWidth: 400,
+        imageHeight: 300,
+        imageAlt: 'Metamask image',
+        showCancelButton: true,
+        confirmButtonColor: '#00F838',
+        cancelButtonColor: '#d33',
+        confirmButtonText: 'Yes, I\'m sure'
+      }).then(async(result) => {
+        if (result.isConfirmed) {
+          let from = await Dapp.loadEthereum();
+          Swal.fire(
+            'Done!',
+            'You have sent the payment of ' + this.weiToEth(prop.price) + 'ETH to ' + prop.owner + '.',
+            'success'
+          ).then(async() => {
+            // PENDING: MOVE CALLS BEFORE SWAL, TO ADD THE IPFS CONTRACT TO THE 2ND SWAL
+            if (type == "buy-token") await Dapp.buyTokens(from, prop.id.toNumber(), tokens, prop.price);
+            if (type == "rent") await Dapp.rentProperty(from, prop.id.toNumber(), prop.rentalEndDate, prop.price);
+            if (type == "buy")
+            {
+              await Dapp.buyProperty(from, prop.id.toNumber(), prop.price);
+              await this.generateContract(prop);
+            }
+            // window.location.reload();
+          });
+        }
+      }).catch(Swal.fire.noop);
     },
 
     // ----------------------- Remove property -----------------------
@@ -396,7 +398,6 @@ export default {
           });
         }
       })
-
     },
 
     // ----------------------- Get dates in human format -----------------------
@@ -464,36 +465,6 @@ export default {
       this.tokens = value;
     },
   },
-  // ----------------------- Create custom sweet alert -----------------------
-  getCustomAlert(type, price, address)
-  {
-    // return (
-      Swal.fire({
-        title: 'Are you sure you want to make the transaction?',
-        text: "If you accept, the payment of " + price + " will be made at this moment",
-        imageUrl: 'https://www.returngis.net/wp-content/uploads/2019/05/logo-metamask-1.png',
-        imageWidth: 400,
-        imageHeight: 200,
-        imageAlt: 'Metamask image',
-        showCancelButton: true,
-        confirmButtonColor: '#00F838',
-        cancelButtonColor: '#d33',
-        confirmButtonText: 'Yes, I\'m sure'
-      }).then((result) => {
-        if (result.isConfirmed) {
-          Swal.fire(
-            'Done!',
-            'You have sent the payment of ' + price + ' to ' + address + '.',
-            'success'
-          )
-          // .then(function() {
-          //   window.location.reload();
-          // });
-        }
-      })
-    // )
-  },
-
 
   async beforeMount(){
     // Load the contracts
@@ -610,7 +581,7 @@ export default {
   margin-left: 220px;
 }
 
-.properties .container-rooms .input-tokens {
+.properties .container-rooms [name="input-tokens"] {
   text-align: center;
   font-size: 13.5px;
   border: none;
@@ -627,6 +598,18 @@ export default {
   cursor: pointer;
   outline: none;
 }
+
+/* Sell or rent style */
+#plus {
+	padding: 15px 25px 15px 5px;
+	border-radius: 0 45px 45px 0;
+}
+
+#minus {
+	padding: 15px 5px 15px 25px;
+	border-radius: 45px 0 0 45px;
+}
+
 
 .properties .img-preview img {
   width: 100px;
