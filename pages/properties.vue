@@ -108,9 +108,8 @@
                   && !isOwner(prop.owner)"
                 type="button"
                 class="buy-property"
-                @click="sendTransaction("buy", prop, 0)"
+                @click="sendTransaction('buy', prop, 0)"
               >
-              <!--OLD CLICK: @click="buyProperty(index, prop.id, prop.price, prop.owner)"-->
                 Buy property
               </button>
 
@@ -125,7 +124,7 @@
                 <button
                   type="button"
                   class="buy-property"
-                  @click="sendTransaction("rent", prop, 0)"
+                  @click="sendTransaction('rent', prop, 0)"
                 >
                   Rent property
                 </button>
@@ -153,7 +152,6 @@
                   class="buy-property"
                   @click="sendTransaction('buy-token', prop, tokens)"
                 >
-                <!-- OLD CLICK: @click="buyTokens(prop.id, tokens, (prop.price/prop.tokens)*tokens), prop.owner"-->
                   Buy tokens
                 </button>
               </div>
