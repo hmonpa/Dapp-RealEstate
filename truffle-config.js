@@ -1,3 +1,6 @@
+const HDWalletProvider = require('truffle-hdwallet-provider');
+const mnemonic = 'fun garment pudding day love other color bulk clarify have honey physical';
+
 module.exports = {
   networks: {
     monpadev: {
@@ -6,10 +9,9 @@ module.exports = {
       network_id: "*",              // Any network
       gas: 5000000                  // Gas limit used for deploys (in wei)
     },
-    mainfork: {
-      host: "127.0.0.1",
-      port: 8545,
-      network_id: 1
+    ropsten: {
+      provider: () => new HDWalletProvider(mnemonic, "https://ropsten.infura.io/v3/080c6e0ac83a44958a72bfa92a3f5110"),
+      network_id: 3
     }
   },
   compilers: {
