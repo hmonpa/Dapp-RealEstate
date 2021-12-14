@@ -1,7 +1,8 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.4.24;
+pragma solidity ^0.8.0;
 
 // import "https://github.com/0xcert/ethereum-erc721/src/contracts/tokens/nf-token-metadata.sol";
+// import "https://github.com/0xcert/ethereum-erc721/src/contracts/ownership/ownable.sol";
 
 contract Properties {
 
@@ -103,7 +104,7 @@ contract Properties {
     // Returns a generate random number 
     function getRandomId() private view returns (uint)
     { 
-        return uint(keccak256(abi.encodePacked(block.difficulty, block.timestamp, msg.sender)))%uint(now);
+        return uint(keccak256(abi.encodePacked(block.difficulty, block.timestamp, msg.sender)))%uint(77);
     }
 
     // Converts EUR to Wei (10^18 ETH)
@@ -113,7 +114,7 @@ contract Properties {
     }
 
     // Creates a new property, emit PropertyCreated event
-    function uploadProperty(address _owner, string _city, string _physicalAddr, uint256 _price, uint256 _numRooms, uint256 _area, uint256 _numBathrooms, uint256 _sellOrRent, uint256 _tokens, uint256 _rentalEndDate, string _ipfsImage) public
+    function uploadProperty(address _owner, string memory _city, string memory _physicalAddr, uint256 _price, uint256 _numRooms, uint256 _area, uint256 _numBathrooms, uint256 _sellOrRent, uint256 _tokens, uint256 _rentalEndDate, string memory _ipfsImage) public
     {
         Property memory newProperty = Property(getRandomId(), _owner, _city, _physicalAddr, eurToWei(_price), _numRooms, _area, _numBathrooms, _sellOrRent,  _tokens, _rentalEndDate, block.timestamp, 0);
         
@@ -147,18 +148,18 @@ contract Properties {
     }
 
     // Send balance to account
-    function sendBalance(address _receiver, uint256 _amount) payable external {
+    function sendBalance(address payable _receiver, uint256 _amount) payable external {
         _receiver.transfer(_amount);
     }
 
     // Buy property
-    function buyProperty(address _address, uint256 _id) public payable
+    function buyProperty(address payable _address, uint256 _id) public payable
     {
         uint index = this.getPropertyById(_id);
         require(msg.value == props[index].price);
         
         // Send the value in Eth to the original owner
-        address addr = props[index].owner;
+        address payable addr = props[index].owner;
         this.sendBalance(addr, msg.value);
 
         // Changes the value of the boolean 

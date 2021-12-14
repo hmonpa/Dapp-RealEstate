@@ -20,7 +20,7 @@
   },
   "homepage": "https://github.com/hmonpa/TFG#readme",
   "devDependencies": {
-    "solc": "^0.4.24",
+    "solc": "^0.8.0",
     "truffle-hdwallet-provider": "^1.0.17",
     "web3": "^1.0.0-beta.55"
   },

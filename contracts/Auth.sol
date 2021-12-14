@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.4.24;
+pragma solidity ^0.8.0;
 
 contract Auth {
 
@@ -16,10 +16,10 @@ contract Auth {
         uint256 createdAt;
     }
 
-    constructor() public 
+    constructor() public
     {
         // Register first user
-        signUp(msg.sender, "Héctor", "hmonpa@gmail.com", "a");
+        signUp(msg.sender, "Hector", "hmonpa@gmail.com", "a");
     }
 
     // ----------------------- MAPPINGS -----------------------
@@ -47,9 +47,9 @@ contract Auth {
     // Register a new user
     function signUp(
         address _address,
-        string _name,
-        string _email,
-        string _password
+        string memory _name,
+        string memory _email,
+        string memory _password
     ) public returns (bool) 
     {
         users.push(User(_address, _name, _email, _password, false, block.timestamp));
@@ -80,7 +80,7 @@ contract Auth {
     }
 
     // Get user from @
-    function getUser(address _address) public view returns (address, string, string, uint256)
+    function getUser(address _address) public view returns (address, string memory, string memory, uint256)
     {
         return (usersByAddr[_address].addr, usersByAddr[_address].name, usersByAddr[_address].email, usersByAddr[_address].createdAt);
     }
