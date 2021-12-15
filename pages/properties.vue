@@ -103,9 +103,7 @@
               <!-- #################### DIFFERENT BUTTONS AND CASES #################### -->
               <!-- For selling -->
               <button
-                v-if="prop.sellOrRent == 1 
-                  && prop.soldOn == 0 
-                  && !isOwner(prop.owner)"
+                v-if="restrictionForBuy(prop)"
                 type="button"
                 class="buy-property"
                 @click="sendTransaction('buy', prop, 0)"
@@ -114,13 +112,10 @@
               </button>
 
               <!-- For renting -->
-              <div 
-                v-if="prop.sellOrRent == 0 
-                && prop.soldOn == 0 
-                && prop.tokens == 0
-                && !isOwner(prop.owner)"
+              <div
+                v-if="restrictionForRenting(prop, index)" 
               >
-                <p>Rental end date: {{ getStringDate(prop.rentalEndDate) }}</p>
+                <p>Rental end date: {{ getStringDate(rentalProperties[index]) }}</p>
                 <button
                   type="button"
                   class="buy-property"
@@ -131,18 +126,20 @@
               </div>
 
               <!-- For renting a tokenized property -->
-              <div v-if="prop.sellOrRent == 0 && prop.tokens > 0 && prop.soldOn == 0">
+              <div 
+                v-if="restrictionForTokenization(prop,index)"
+              >
                 <p v-if="propertiesTokens[index]">Initial tokens: {{ getNumOfTokens(index) }}</p>
-                <p>Rental end date: {{ getStringDate(prop.rentalEndDate) }}</p>
-                <p>Available tokens: {{ prop.tokens }}</p>
-                <p v-if="propertiesTokens[index]">Price per token: {{ (weiToEur(prop.price) / getNumOfTokens(index)).toFixed(2) }}€ ({{ (weiToEth(prop.price) / prop.tokens).toFixed(2) }} ETH)</p>
+                <p>Rental end date: {{ getStringDate(tokenizedProperties[index][1]) }}</p>
+                <p>Available tokens: {{ tokenizedProperties[index] }}</p>
+                <p v-if="propertiesTokens[index]">Price per token: {{ (weiToEur(prop.price) / getNumOfTokens(index)).toFixed(2) }}€ ({{ (weiToEth(prop.price) / tokenizedProperties[index]).toFixed(2) }} ETH)</p>
 
                 <div v-if="userLogged && !isOwner(prop.owner)">
                   <span>Number of tokens:</span>
                   <div class="container-rooms">
                     <label id="minus" @click="decrement(index)">-</label>
                     <input :id="'input-tokens-' + index" name="input-tokens" class="input-tokens" type="number" min="1" value="1" readonly>
-                    <label id="plus" @click="increment(prop.tokens, index)">+</label>
+                    <label id="plus" @click="increment(tokenizedProperties[index], index)">+</label>
                   </div>
                 </div> 
                 
@@ -219,6 +216,8 @@ export default {
   data(){
     return {
       properties: [],
+      rentalProperties: [],
+      tokenizedProperties: [],
       propertiesTokens: [],
       fade: "modal fade",
       autoplay: true,
@@ -241,11 +240,17 @@ export default {
     // Catch the current created properties
     async renderProperties(){
       try {
-        this.properties = [];
+        this.properties           = [];
+        this.rentalProperties     = [];
+        this.tokenizedProperties  = [];
+
         this.propertiesTokens = [];
         this.propertiesImages = [];
+
         const invalidAddr = 0x0000000000000000000000000000000000000000;
+
         let numProperties = await Dapp.Properties.propertyCounter();
+
         for (let i = 0; i < numProperties; i++)
         {
           let prop = await Dapp.Properties.properties(i);
@@ -254,7 +259,16 @@ export default {
           {
             this.properties.push(prop);
 
-            let tokensProp  = await Dapp.Properties.startedTokens(prop.id);
+            let propRental    = await Dapp.Properties.rentalProperties(i);
+            let propTokenized = await Dapp.Properties.tokenizedProperties(i);
+
+            (propRental.idProperty.toNumber() != 0) 
+              ? this.rentalProperties.push(propRental[1].toNumber()) : this.rentalProperties.push(0);
+
+            (propTokenized.idProperty.toNumber() != 0) 
+              ? this.tokenizedProperties.push(propTokenized[2].toNumber()) : this.tokenizedProperties.push(0);
+
+            let tokensProp  = await Dapp.Properties.startedTokens(i);
             let imageProp   = await Dapp.Properties.propertyImg(prop.id);
             
             this.propertiesTokens.push(tokensProp);
@@ -265,6 +279,23 @@ export default {
       catch (err) {
         console.log(err);
       }
+    },
+
+    // ----------------------- Restrictions by type -----------------------
+    restrictionForBuy(prop)
+    {
+      return (prop.sellOrRent == 1 && prop.soldOn == 0 && !this.isOwner(prop.owner)) ? true : false;
+    },
+    
+    restrictionForRenting(prop, index)
+    {
+      return (prop.sellOrRent == 0 && prop.soldOn == 0 && this.rentalProperties[index] != 0
+          && this.tokenizedProperties[index] == 0 && !this.isOwner(prop.owner)) ? true : false;
+    },
+
+    restrictionForTokenization(prop, index)
+    {
+      return (this.rentalProperties[index] == 0 && this.tokenizedProperties[index] != 0 && prop.soldOn == 0) ? true : false;
     },
 
     async generateContract(prop)

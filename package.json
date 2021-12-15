@@ -27,7 +27,6 @@
   "dependencies": {
     "@chainlink/contracts": "^0.2.2",
     "@metamask/legacy-web3": "^2.0.0",
-    "@openzeppelin/contracts": "^4.4.0",
     "@truffle/contract": "^4.3.38",
     "axios": "^0.24.0",
     "bootstrap": "^5.1.3",

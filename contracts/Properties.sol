@@ -17,14 +17,22 @@ contract Properties {
         uint256 area;
         uint256 bathrooms;
         uint sellOrRent;   
-
-        // Rental attributes
-        uint256 tokens;
-        uint256 rentalEndDate;           // ! If sellOrRent == 0
-        
         // Dates
         uint256 createdAt;
-        uint256 soldOn;              
+        uint256 soldOn;
+    }
+
+    struct propertyForRenting
+    {
+        uint256 idProperty;
+        uint256 rentalEndDate;
+    }
+
+    struct tokenizedProperty
+    {
+        uint256 idProperty;
+        uint256 rentalEndDate;
+        uint256 tokens;
     }
 
     struct initialTokens
@@ -40,7 +48,7 @@ contract Properties {
     }
 
     
-    constructor() public
+    constructor()
     {
         // Example for sell
         // uploadProperty(
@@ -51,7 +59,7 @@ contract Properties {
         //     3,                                  // Num of rooms 
         //     80,                                 // Area in m²
         //     1,                                  // Num of bathrooms
-        //     1,                                  // Sell --> 1
+        //     1,                                  // Sell --> 1 / Rent --> 0
         //     0,                                  // Tokens
         //     0                                   // Rental end date
         // );
@@ -73,13 +81,19 @@ contract Properties {
     }
 
     // ----------------------- MAPPINGS & VARIABLES -----------------------
+    
+    // Mappings
     mapping (uint256 => Property) public properties;
-    Property[] public props;
+    mapping (uint256 => propertyForRenting) public rentalProperties;
+    mapping (uint256 => tokenizedProperty) public tokenizedProperties;
 
     mapping (uint256 => initialTokens) public startedTokens;
-
     mapping (uint256 => propertyImages) public propertyImg;
+    
+    // Array
+    Property[] public props;
 
+    // Counter
     uint public propertyCounter = 0;
 
     // ----------------------- EVENTS -----------------------
@@ -92,6 +106,8 @@ contract Properties {
         uint sellOrRent,
         uint256 createdAt
     );
+    event PropertyForRentingCreated(uint256 idProperty, uint256 rentalEndDate);
+    event TokenizedPropertyCreated(uint256 idProperty, uint256 rentalEndDate, uint256 tokens);
 
     event propertySold (address soldBy, uint256 price, uint256 soldOn);
     event propertyRented (address rentedBy, uint256 price, uint256 rentalEndDate);
@@ -114,23 +130,38 @@ contract Properties {
     }
 
     // Creates a new property, emit PropertyCreated event
-    function uploadProperty(address _owner, string memory _city, string memory _physicalAddr, uint256 _price, uint256 _numRooms, uint256 _area, uint256 _numBathrooms, uint256 _sellOrRent, uint256 _tokens, uint256 _rentalEndDate, string memory _ipfsImage) public
+    function uploadProperty(address _owner, string memory _city, string memory _physicalAddr, uint256 _price, uint256 _numRooms, uint256 _area, uint256 _bathrooms, uint256 _sellOrRent, uint256 _tokens, uint256 _rentalEndDate, string memory _ipfsImage) public
     {
-        Property memory newProperty = Property(getRandomId(), _owner, _city, _physicalAddr, eurToWei(_price), _numRooms, _area, _numBathrooms, _sellOrRent,  _tokens, _rentalEndDate, block.timestamp, 0);
+        Property memory newProperty = Property(getRandomId(), _owner, _city, _physicalAddr, eurToWei(_price), _numRooms, _area, _bathrooms, _sellOrRent, block.timestamp, 0);
         
+        // New property is added to mapping(s)
         properties[propertyCounter] = newProperty;
+        // New property is pushed to props array
         props.push(newProperty);
 
         emit PropertyCreated(getRandomId(), _owner, _city, _physicalAddr, eurToWei(_price), _sellOrRent, block.timestamp);
-    
-        uint256 _id = properties[propertyCounter].id;
-        startedTokens[_id] = initialTokens(_id, _tokens);
 
-        propertyImg[_id] = propertyImages(_id, _ipfsImage);
+        uint256 idProperty = properties[propertyCounter].id;
+        // Add image to property
+        propertyImg[idProperty] = propertyImages(idProperty, _ipfsImage);
+
+        // Rental or tokenized...
+        if (_rentalEndDate != 0 && _tokens == 0){
+            rentalProperties[propertyCounter] = propertyForRenting(idProperty, _rentalEndDate);
+            emit PropertyForRentingCreated(idProperty, _rentalEndDate);
+        }
+        
+        if (_tokens != 0){
+            tokenizedProperties[propertyCounter] = tokenizedProperty(idProperty, _rentalEndDate, _tokens);
+            startedTokens[propertyCounter] = initialTokens(idProperty, _tokens);
+            emit TokenizedPropertyCreated(idProperty, _rentalEndDate, _tokens);
+        }
 
         propertyCounter++;
+        
     }
 
+    // --------------- GETTERS ---------------
     // Returns the number of properties already created
     function getAllProperties() public view returns (uint)
     {
@@ -147,6 +178,15 @@ contract Properties {
         revert('Not found');
     }
 
+    function getPropertyOwner(uint _id) public view returns (address)
+    {
+        for (uint i = 0; i < propertyCounter; i++)
+        {
+            if (_id == props[i].id) return props[i].owner;
+        }
+        revert('Not found');
+    }
+
     // Send balance to account
     function sendBalance(address payable _receiver, uint256 _amount) payable external {
         _receiver.transfer(_amount);
@@ -159,8 +199,8 @@ contract Properties {
         require(msg.value == props[index].price);
         
         // Send the value in Eth to the original owner
-        address payable addr = props[index].owner;
-        this.sendBalance(addr, msg.value);
+        address addr = props[index].owner;
+        this.sendBalance(payable(addr), msg.value);
 
         // Changes the value of the boolean 
         this.propertySettled(index);
@@ -182,7 +222,7 @@ contract Properties {
 
         // Send the value in Eth to the original owner
         address addr = props[index].owner;
-        this.sendBalance(addr, msg.value);
+        this.sendBalance(payable(addr), msg.value);
 
         // Changes the value of the boolean 
         this.propertySettled(index);
@@ -195,21 +235,21 @@ contract Properties {
     function buyTokens(address _from, uint256 _numTokens, uint256 _id) public payable
     {
         uint index = getPropertyById(_id);
-        this.sendBalance(props[index].owner, msg.value); // Msg value is price / numTokens
+        address addr = props[index].owner;
+        this.sendBalance(payable(addr), msg.value); // Msg value is price / numTokens
         
         emit propertyTokenPurchased(_from, _id, _numTokens, (props[index].price/_numTokens));
         
         // Updating current number of tokens
-        uint256 currentTokens = props[index].tokens;
+        uint256 currentTokens = tokenizedProperties[index].tokens;
         currentTokens -= _numTokens;
-        props[index].tokens = currentTokens;
-        properties[index].tokens = currentTokens;
+        tokenizedProperties[index].tokens = currentTokens;
 
-        if(props[index].tokens == 0) this.propertySettled(index);
+        if(tokenizedProperties[index].tokens == 0) this.propertySettled(index);
     }   
 
     // Remove property by their ID 
-    function removeProperty(uint256 _id) public returns (uint)
+    function removeProperty(uint256 _id) public 
     {
         bool deleted = false;
         for (uint i = 0; i < propertyCounter && !deleted; i++)

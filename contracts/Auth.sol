@@ -1,6 +1,11 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.0;
 
+// import "https://github.com/0xcert/ethereum-erc721/src/contracts/tokens/nf-token-metadata.sol";
+// import "https://github.com/0xcert/ethereum-erc721/src/contracts/ownership/ownable.sol";
+
+// import "../node_modules/@openzeppelin/contracts/token/ERC721/ERC721.sol";
+
 contract Auth {
 
     uint public usersCounter = 0;
@@ -16,7 +21,7 @@ contract Auth {
         uint256 createdAt;
     }
 
-    constructor() public
+    constructor()
     {
         // Register first user
         signUp(msg.sender, "Hector", "hmonpa@gmail.com", "a");
@@ -38,6 +43,12 @@ contract Auth {
     );
 
     event userLogged(
+        address addr,
+        string name,
+        bool isLoggedIn
+    );
+
+    event userLogout(
         address addr,
         string name,
         bool isLoggedIn
@@ -79,7 +90,8 @@ contract Auth {
         }
     }
 
-    // Get user from @
+    // --------------- GETTERS ---------------
+    // Get complete user from @
     function getUser(address _address) public view returns (address, string memory, string memory, uint256)
     {
         return (usersByAddr[_address].addr, usersByAddr[_address].name, usersByAddr[_address].email, usersByAddr[_address].createdAt);
@@ -91,6 +103,17 @@ contract Auth {
         return users[_index].addr;
     }
 
+    // Get name from @
+    function getName(address _address) public view returns (string memory)
+    {
+        for (uint i = 0; i < usersCounter; i++)
+        {
+            if (_address == users[i].addr) return users[i].name;
+        }
+        revert('Not found');
+    }
+
+    // --------------- CHECK STATUSES OF SESSIONS ---------------
     // Checking login status by index
     function checkIsUserLogged(uint _usersCounter) public view returns (bool)
     {
@@ -113,8 +136,8 @@ contract Auth {
     function logoutByAddr(address _address) public 
     {
         usersByAddr[_address].isLoggedIn = false;
-        // PENDING: Event for logout
-    }
 
+        emit userLogout(_address, usersByAddr[_address].name, usersByAddr[_address].isLoggedIn);
+    }
 
 }

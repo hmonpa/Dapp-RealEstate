@@ -145,6 +145,7 @@ export default {
       }
 
       const node = await IPFS.create({ silent: true });
+      console.log(node);
       let cid = await node.add(img);
       console.log("Node add: ", cid.path);
       this.ipfsImage = cid.path;
@@ -214,6 +215,8 @@ export default {
           this.tokens = 0 : this.tokens = propertyForm["input-tokens"].value;
 
         // Upload property depending if it's for sale or for rent
+        console.log(account, propertyForm["city"].value, propertyForm["address"].value, propertyForm["price"].value, this.rooms, propertyForm["area"].value, this.bathrooms, this.typeOfProperty, 0, 0, this.ipfsImage);
+
         this.typeOfProperty == 0 && this.rooms > 1 ? 
           await Dapp.uploadProperty(account, propertyForm["city"].value, propertyForm["address"].value, propertyForm["price"].value, this.rooms, propertyForm["area"].value, this.bathrooms, this.typeOfProperty, this.tokens, parseInt(moment(propertyForm["date-end"].value).unix()), this.ipfsImage) 
           : 
