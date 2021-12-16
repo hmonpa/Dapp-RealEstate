@@ -18,9 +18,17 @@ Properties.defaults({
 
 
 // Provide the contracts with a web3 provider
+
+// Kovan Testnet
+// const testnet = 'https://kovan.infura.io/v3/080c6e0ac83a44958a72bfa92a3f5110';
+// Auth.setProvider(new Web3.providers.HttpProvider(testnet));
+// Properties.setProvider(new Web3.providers.HttpProvider(testnet));   
+// const web3 = new Web3(testnet);
+
+// Truffle local testnet
 Auth.setProvider(new Web3.providers.HttpProvider("http://127.0.0.1:7545"));
-Properties.setProvider(new Web3.providers.HttpProvider("http://127.0.0.1:7545"));           
-var web3 = new Web3("http://127.0.0.1:7545");
+Properties.setProvider(new Web3.providers.HttpProvider("http://127.0.0.1:7545"));   
+const web3 = new Web3("http://127.0.0.1:7545");
 
 export const Dapp = {
 
@@ -124,8 +132,7 @@ export const Dapp = {
     },
 
     removeProperty: async(from, id) => {
-        // web3.eth.getGasPrice()
-        // .then(console.log);
+
         try {
             await Dapp.Properties.removeProperty(id, {
                 from: from
@@ -137,12 +144,15 @@ export const Dapp = {
 
     // ----------------- AUTH FUNCTIONS -----------------
     signIn: async(address, password) => {
+        // let gas = web3.eth.getGasPrice();
+        
         let user0 = await Dapp.Auth.usersByAddr(address);
         
         await Dapp.Auth.signIn(address, password, {
-            from: address
+            from: address,
+            gas: gas
         });
-        
+    
         user0 = await Dapp.Auth.usersByAddr(address);
         return user0.isLoggedIn;
     },
