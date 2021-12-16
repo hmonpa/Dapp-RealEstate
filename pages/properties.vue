@@ -1,7 +1,7 @@
 <template>
     <!-- ======= Properties Section ======= -->
     <section id="properties" class="properties" style="margin-top:100px">
-      <div class="container">
+      <div class="container" v-if="loaded">
 
         <div class="section-title" data-aos="fade-up">
           <h2>Properties</h2>
@@ -214,10 +214,26 @@ export default {
       fade: "modal fade",
       autoplay: true,
       tokens: 1,
-      
-      // PENDING: Show this until having the oracle / API:
-      // fakeEth: 3500
+      Ether: '',
+      loaded: false,
     } 
+  },
+  
+  async beforeMount(){
+
+    // Load the contracts
+    await this.start1();
+    await this.start2();
+
+    await Dapp.getEtherPrice();
+    this.Ether = await Dapp.getEtherPrice();
+    this.loaded = true;
+  },
+
+  computed: {
+    userLogged() {
+      return auth.getUserLogged();
+    }
   },
 
   methods: {  
@@ -439,13 +455,14 @@ export default {
     },
 
     // ----------------------- Currencies conversion ----------------------- 
-    weiToEur(price)
+    async weiToEur(price)
     {
-      return price/243739092347530;
+      return await Dapp.convertWeiToEur(price);
     },
-    weiToEth(price)
+
+    async weiToEth(price)
     {
-      return (price/(10**18)).toFixed(2);
+      return await Dapp.convertWeiToEth(price);
     },
 
     // ----------------------- Modal close ----------------------- 
@@ -477,18 +494,6 @@ export default {
       inputTokens.value = value;
       this.tokens = value;
     },
-  },
-
-  async beforeMount(){
-    // Load the contracts
-    await this.start1();
-    await this.start2();
-  },
-
-  computed: {
-    userLogged() {
-      return auth.getUserLogged();
-    }
   }
 }
 </script>

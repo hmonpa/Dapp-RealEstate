@@ -2,6 +2,7 @@
   <div>
     <Header />
     <Nuxt />
-    <Footer />
+    <!--<MainLogos />
+    <Footer />-->
   </div>
 </template>

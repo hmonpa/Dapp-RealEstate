@@ -69,7 +69,7 @@ contract Properties {
             msg.sender,                                         // Owner
             "Cunit",                                            // City
             "Avinguda Barcelona, 88, Bajo",                     // Physical address
-            10000,                                              // Price in EUR
+            2000000000000000000,                                // Price in wei (2 ETH)
             2,                                                  // Num of rooms 
             60,                                                 // Area in m²
             1,                                                  // Num of bathrooms
@@ -123,23 +123,17 @@ contract Properties {
         return uint(keccak256(abi.encodePacked(block.difficulty, block.timestamp, msg.sender)))%uint(77);
     }
 
-    // Converts EUR to Wei (10^18 ETH)
-    function eurToWei(uint256 _price) public pure returns (uint)
-    {
-        return _price*243739092347530; 
-    }
-
     // Creates a new property, emit PropertyCreated event
     function uploadProperty(address _owner, string memory _city, string memory _physicalAddr, uint256 _price, uint256 _numRooms, uint256 _area, uint256 _bathrooms, uint256 _sellOrRent, uint256 _tokens, uint256 _rentalEndDate, string memory _ipfsImage) public
     {
-        Property memory newProperty = Property(getRandomId(), _owner, _city, _physicalAddr, eurToWei(_price), _numRooms, _area, _bathrooms, _sellOrRent, block.timestamp, 0);
+        Property memory newProperty = Property(getRandomId(), _owner, _city, _physicalAddr, _price, _numRooms, _area, _bathrooms, _sellOrRent, block.timestamp, 0);
         
         // New property is added to mapping(s)
         properties[propertyCounter] = newProperty;
         // New property is pushed to props array
         props.push(newProperty);
 
-        emit PropertyCreated(getRandomId(), _owner, _city, _physicalAddr, eurToWei(_price), _sellOrRent, block.timestamp);
+        emit PropertyCreated(getRandomId(), _owner, _city, _physicalAddr, _price, _sellOrRent, block.timestamp);
 
         uint256 idProperty = properties[propertyCounter].id;
         // Add image to property
