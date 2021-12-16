@@ -302,48 +302,6 @@ export default {
       return (this.rentalProperties[index] == 0 && this.tokenizedProperties[index] != 0 && prop.soldOn == 0) ? true : false;
     },
 
-    async generateContract(prop)
-    {
-      var content   = await this.contractTemplate(prop);
-      // any kind of extension (.txt,.cpp,.cs,.bat)
-      var filename  = "Contract " + prop.id;
-
-      var blob = new Blob([content], {
-        type: "text/plain;charset=utf-8;charset=ANSI"
-      });
-
-      const node  = await IPFS.create({ silent: true });
-      let cid     = await node.add(blob);
-      console.log("Contract added to: ", cid.path);
-      // OPTION FOR DOWNLOAD THE CONTRACT IN FILE VERSION:
-      // saveAs(blob, filename);
-    },
-
-    async contractTemplate(prop)
-    {
-      const buyerAddr = await Dapp.currentAddr();
-
-      const buyer     = await Dapp.getUserData(buyerAddr);
-      const seller    = await Dapp.getUserData(prop.owner);
-      const date      = new Date().toLocaleString();
-
-      return (
-        '<p style="text-align:center"><b>' 
-          + "Contrato de compra venta del inmueble " + prop.id + '</b></p><p style="margin: 20px;text-align:justify"><b>'
-          + "De un lado, la parte compradora:" + '</b><br>' + "D/Dª" + buyer[1] + " con DNI " + "------PENDING!!!" + ", y direccion de clave publica " 
-          + buyer[0] + "." + '</p><p style="margin: 20px;text-align:justify"><b>' + "De otro, la parte vendedora:"
-          + '</b><br>' + "D/Dª " + seller[1] + " con DNI " + "------PENDING!!!" + ", y direccion de clave publica " + seller[0] + "." 
-          + '</p><p style="text-align:center"><b>' + "EXPONEN" + '</b></p><p style="margin: 20px;text-align:justify"><b>'
-          + "PRIMERO.-" + '</b>' + "Que la parte vendedora es duena de pleno dominio de la siguiente finca: " + '<br><ul><li>'
-          + "Catastro:" + prop.id + '</li><li>' + "Direccion: " + prop.physicalAddr + '</li><li>' + "Poblacion: " + prop.city + '</li></ul></p>'
-          + '<p style="margin: 20px;text-align:justify"><b>' + "SEGUNDO.-" + '</b>' + "Que la parte compradora abonara el siguiente importe a la parte vendedora: " + '<br>'
-          + '<ul><li>' + this.weiToEur(prop.price) + "EUR ( " + this.weiToEth(prop.price) + "ETH ) " + '</li></ul><b>' + "TERCERO.-" + '</b>' + "Para que quede constancia y hacer valer el contrato, ambas partes han firmado digitalmente la transaccion mediante la wallet MetaMask." 
-          + '<br>' + "La parte vendedora en el momento de publicar la propiedad, y la parte compradora en el momento de abonar el importe, el " + date 
-          + '<br></p><p style="text-align:center"><b>' + "Transaccion realizada desde la aplicacion descentralizada en la red de Ethereum" + '</b><br>'
-          + "Impulsado por:" + '</p><img style="margin: 10px 0px 0px 250px" src="https://ipfs.io/ipfs/QmQNw5BUgkP9YHbsLUW8gnXoHVeqomsv3j8scnjm6YcFBP">'
-      )
-    },
-
     // ----------------------- Send transactions and create custom sweet alert -----------------------
     async sendTransaction(type, prop, tokens, arg)
     {
@@ -412,6 +370,49 @@ export default {
       })
     },
 
+    async generateContract(prop)
+    {
+      var content   = await this.contractTemplate(prop);
+      // any kind of extension (.txt,.cpp,.cs,.bat)
+      var filename  = "Contract " + prop.id;
+
+      var blob = new Blob([content], {
+        type: "text/plain;charset=utf-8;charset=ANSI"
+      });
+
+      const node  = await IPFS.create({ silent: true });
+      let cid     = await node.add(blob);
+      console.log("Contract added to: ", cid.path);
+      // OPTION FOR DOWNLOAD THE CONTRACT IN FILE VERSION:
+      // saveAs(blob, filename);
+    },
+
+    async contractTemplate(prop)
+    {
+      const buyerAddr = await Dapp.currentAddr();
+
+      const buyer     = await Dapp.getUserData(buyerAddr);
+      const seller    = await Dapp.getUserData(prop.owner);
+      const date      = new Date().toLocaleString();
+
+      return (
+        '<p style="text-align:center"><b>' 
+          + "Contrato de compra venta del inmueble " + prop.id + '</b></p><p style="margin: 20px;text-align:justify"><b>'
+          + "De un lado, la parte compradora:" + '</b><br>' + "D/Dª" + buyer[1] + " con DNI " + "------PENDING!!!" + ", y direccion de clave publica " 
+          + buyer[0] + "." + '</p><p style="margin: 20px;text-align:justify"><b>' + "De otro, la parte vendedora:"
+          + '</b><br>' + "D/Dª " + seller[1] + " con DNI " + "------PENDING!!!" + ", y direccion de clave publica " + seller[0] + "." 
+          + '</p><p style="text-align:center"><b>' + "EXPONEN" + '</b></p><p style="margin: 20px;text-align:justify"><b>'
+          + "PRIMERO.-" + '</b>' + "Que la parte vendedora es duena de pleno dominio de la siguiente finca: " + '<br><ul><li>'
+          + "Catastro:" + prop.id + '</li><li>' + "Direccion: " + prop.physicalAddr + '</li><li>' + "Poblacion: " + prop.city + '</li></ul></p>'
+          + '<p style="margin: 20px;text-align:justify"><b>' + "SEGUNDO.-" + '</b>' + "Que la parte compradora abonara el siguiente importe a la parte vendedora: " + '<br>'
+          + '<ul><li>' + this.weiToEur(prop.price) + "EUR ( " + this.weiToEth(prop.price) + "ETH ) " + '</li></ul><b>' + "TERCERO.-" + '</b>' + "Para que quede constancia y hacer valer el contrato, ambas partes han firmado digitalmente la transaccion mediante la wallet MetaMask." 
+          + '<br>' + "La parte vendedora en el momento de publicar la propiedad, y la parte compradora en el momento de abonar el importe, el " + date 
+          + '<br></p><p style="text-align:center"><b>' + "Transaccion realizada desde la aplicacion descentralizada en la red de Ethereum" + '</b><br>'
+          + "Impulsado por:" + '</p><img style="margin: 10px 0px 0px 250px" src="https://ipfs.io/ipfs/QmQNw5BUgkP9YHbsLUW8gnXoHVeqomsv3j8scnjm6YcFBP">'
+      )
+    },
+
+    // ----------------------- GETTERS -----------------------
     // ----------------------- Get dates in human format -----------------------
     getStringDate(date)
     {
