@@ -42,10 +42,10 @@
                   {{ prop.city }}
                 </a>
               </h4>
-              <div v-if="prop.soldOn != 0  && prop.rentalEndDate == 0" class="col-md-12" style="left:0;right:0;width:100%">
+              <div v-if="prop.soldOn != 0  && rentalProperties[index] == 0" class="col-md-12" style="left:0;right:0;width:100%">
                 <p class="description">Sold on {{ getStringDate(prop.soldOn) }}</p>
               </div>
-              <div v-if="prop.soldOn != 0 && prop.rentalEndDate != 0" class="col-md-12" style="left:0;right:0;width:100%">
+              <div v-if="prop.soldOn != 0 && rentalProperties[index] != 0 && tokenizedProperties[index] == 0" class="col-md-12" style="left:0;right:0;width:100%">
                 <p class="description">Rented on {{ getStringDate(prop.soldOn) }}</p>
               </div>
               <div v-else-if="prop.soldOn == 0">
@@ -119,7 +119,7 @@
                 <button
                   type="button"
                   class="buy-property"
-                  @click="sendTransaction('rent', prop, 0)"
+                  @click="sendTransaction('rent', prop, 0, rentalProperties[index])"
                 >
                   Rent property
                 </button>
@@ -130,7 +130,7 @@
                 v-if="restrictionForTokenization(prop,index)"
               >
                 <p v-if="propertiesTokens[index]">Initial tokens: {{ getNumOfTokens(index) }}</p>
-                <p>Rental end date: {{ getStringDate(tokenizedProperties[index][1]) }}</p>
+                <p>Rental end date: {{ getStringDate(tokenizedPropDates[index]) }}</p>
                 <p>Available tokens: {{ tokenizedProperties[index] }}</p>
                 <p v-if="propertiesTokens[index]">Price per token: {{ (weiToEur(prop.price) / getNumOfTokens(index)).toFixed(2) }}€ ({{ (weiToEth(prop.price) / tokenizedProperties[index]).toFixed(2) }} ETH)</p>
 
@@ -147,7 +147,7 @@
                   v-if="userLogged && prop.id && !isOwner(prop.owner)"
                   type="button"
                   class="buy-property"
-                  @click="sendTransaction('buy-token', prop, tokens)"
+                  @click="sendTransaction('buy-token', prop, tokens, ((prop.price) / tokenizedProperties[index]))"
                 >
                   Buy tokens
                 </button>
@@ -157,7 +157,7 @@
               <!-- #################### DIFFERENT CASES OF LIQUIDATED PROPERTY #################### -->
               <!-- Button for notice of sold -->
               <button
-                v-else-if="userLogged && prop.soldOn != 0 && prop.rentalEndDate == 0"
+                v-else-if="userLogged && prop.soldOn != 0 && rentalProperties[index] == 0"
                 type="button"
                 class="property-sold"
                 style="cursor:text"
@@ -166,7 +166,7 @@
               </button>
               <!-- Button for notice of rented -->
               <button
-                v-else-if="userLogged && prop.soldOn != 0 && prop.rentalEndDate != 0"
+                v-else-if="userLogged && prop.soldOn != 0 && rentalProperties[index] != 0 && tokenizedProperties[index] == 0"
                 type="button"
                 class="property-sold"
                 style="cursor:text"
@@ -193,6 +193,7 @@
     </section>
   <!-- End Properties Section -->
 </template>
+
 <script>
 import { Dapp } from '@/dapp';
 import auth from '@/src/auth';
@@ -203,22 +204,13 @@ import swal from 'sweetalert';
 import Swal from 'sweetalert2';
 
 export default {
-
-  // ----- VUE LIFE-CYCLE -----
-  // BeforeCreate:  Vue has not loaded the component, we cannot yet access the component's options, methods or data.
-  // Created:       In this point Vue has loaded the component and the sections data and methods already exists.
-  // BeforeMount
-  // Mounted:       We have access to the DOM and the computed is executed inmediatly after it
-  // BeforeUpdate
-  // Updated:       Is executed when produced changes in the component, uses "computed" and "watchers" properties.
-  // Destroyed:     Is executed when one component is removed. Example: Uses of v-if or v-show.
-
   data(){
     return {
-      properties: [],
-      rentalProperties: [],
-      tokenizedProperties: [],
-      propertiesTokens: [],
+      properties: [],             // Property data
+      rentalProperties: [],       // Rental end date of rental property
+      tokenizedProperties: [],    // Current available tokens of tokenized property
+      tokenizedPropDates: [],     // Rental end date of tokenized property
+      propertiesTokens: [],       // Initial tokens of a tokenized property
       fade: "modal fade",
       autoplay: true,
       tokens: 1,
@@ -243,6 +235,7 @@ export default {
         this.properties           = [];
         this.rentalProperties     = [];
         this.tokenizedProperties  = [];
+        this.tokenizedPropDates   = [];
 
         this.propertiesTokens = [];
         this.propertiesImages = [];
@@ -257,21 +250,32 @@ export default {
           let owner = prop.owner;
           if (owner != invalidAddr)
           {
+            // Add property data
             this.properties.push(prop);
 
             let propRental    = await Dapp.Properties.rentalProperties(i);
             let propTokenized = await Dapp.Properties.tokenizedProperties(i);
 
+            // RENTAL PROPERTY: Add rental end date
             (propRental.idProperty.toNumber() != 0) 
               ? this.rentalProperties.push(propRental[1].toNumber()) : this.rentalProperties.push(0);
 
-            (propTokenized.idProperty.toNumber() != 0) 
-              ? this.tokenizedProperties.push(propTokenized[2].toNumber()) : this.tokenizedProperties.push(0);
+            // RENTAL TOKENIZED PROPERTY: Add rental end date and number of available tokens
+            if (propTokenized.idProperty.toNumber() != 0){
+              this.tokenizedPropDates.push(propTokenized[1]);
+              this.tokenizedProperties.push(propTokenized[2].toNumber());
+            } else {
+               this.tokenizedPropDates.push(0);
+              this.tokenizedProperties.push(0);
+            }
 
             let tokensProp  = await Dapp.Properties.startedTokens(i);
             let imageProp   = await Dapp.Properties.propertyImg(prop.id);
             
+            // RENTAL TOKENIZED PROPERTY: Add initial tokens
             this.propertiesTokens.push(tokensProp);
+
+            // Add property image
             this.propertiesImages.push(imageProp);
           }          
         }
@@ -310,7 +314,7 @@ export default {
 
       const node  = await IPFS.create({ silent: true });
       let cid     = await node.add(blob);
-      console.log("Node add: ", cid.path);
+      console.log("Contract added to: ", cid.path);
       // OPTION FOR DOWNLOAD THE CONTRACT IN FILE VERSION:
       // saveAs(blob, filename);
     },
@@ -340,34 +344,8 @@ export default {
       )
     },
 
-    // Old functions for doing transactions...
-    
-    // // Buy property
-    // async buyProperty(prop, tokens)
-    // {
-    //   this.sendTransaction("buy", prop, tokens);
-
-    //   // await this.generateContract(prop);
-
-    //   // // Update the status of properties
-    //   // await this.renderProperties();
-    // },
-
-    // // ----------------------- Rent property -----------------------
-    // async rentProperty(prop, tokens)
-    // {
-    //   this.sendTransaction("rent", prop, tokens);
-    //   // await this.renderProperties();
-    // },
-
-    // // ----------------------- Buy tokens -----------------------
-    // async buyTokens(prop, tokens)
-    // {
-    //   this.sendTransaction("buy-token", prop, tokens);
-    // },
-
-    // ----------------------- Create custom sweet alert -----------------------
-    async sendTransaction(type, prop, tokens)
+    // ----------------------- Send transactions and create custom sweet alert -----------------------
+    async sendTransaction(type, prop, tokens, arg)
     {
       Swal.fire({
         title: 'Are you sure you want to make the transaction?',
@@ -389,13 +367,18 @@ export default {
             'success'
           ).then(async() => {
             // PENDING: MOVE CALLS BEFORE SWAL, TO ADD THE IPFS CONTRACT TO THE 2ND SWAL
-            if (type == "buy-token") await Dapp.buyTokens(from, prop.id.toNumber(), tokens, prop.price);
-            if (type == "rent") await Dapp.rentProperty(from, prop.id.toNumber(), prop.rentalEndDate, prop.price);
+            if (type == "buy-token")
+              await Dapp.buyTokens(from, prop.id.toNumber(), tokens, arg);
+            
+            if (type == "rent")
+              await Dapp.rentProperty(from, prop.id.toNumber(), arg, prop.price);
+            
             if (type == "buy")
             {
               await Dapp.buyProperty(from, prop.id.toNumber(), prop.price);
               await this.generateContract(prop);
             }
+            
             // window.location.reload();
           });
         }
@@ -510,210 +493,210 @@ export default {
 </script>
 
 <style scoped>
-/* Properties */
-.properties .container {
-  margin-bottom: 150px;
-}
-
-.properties .icon-box {
-  padding: 30px;
-  position: relative;
-  overflow: hidden;
-  background: #fff;
-  box-shadow: 0 0 29px 0 rgba(68, 88, 144, 0.12);
-  transition: all 0.3s ease-in-out;
-  border-radius: 8px;
-  height: 100%;
-  width: 100%;
-  z-index: 1;
-}
-
-.properties .icon-box::before {
-  content: "";
-  position: absolute;
-  background: #e1f0fa;
-  right: -60px;
-  top: -40px;
-  width: 100px;
-  height: 100px;
-  border-radius: 50px;
-  transition: all 0.3s;
-  z-index: -1;
-}
-
-.properties .icon-box:hover::before {
-  background: #3498db;
-  right: 0;
-  top: 0;
-  width: 100%;
-  height: 100%;
-  border-radius: 0px;
-}
-
-.properties .type-property {
-  right: 0;
-  margin: -25px 0 10px 200px;
-}
-
-.properties .icon {
-  margin: 0 auto 20px auto;
-  padding-top: 10px;
-  display: inline-block;
-  text-align: center;
-  border-radius: 50%;
-  width: 60px;
-  height: 60px;
-  background: #3498db;
-  transition: all 0.3s ease-in-out;
-}
-
-.properties .icon i {
-  font-size: 36px;
-  line-height: 1;
-  color: #fff;
-}
-
-.properties .title {
-  font-weight: 700;
-  margin-bottom: 15px;
-  font-size: 18px;
-}
-
-.properties .title a {
-  color: #3498db;
-  text-decoration: none;
-}
-
-.properties .description {
-  font-size: 15px;
-  line-height: 28px;
-  margin-bottom: 0;
-}
-
-.properties .icon-box:hover .title a, .properties .icon-box:hover .description {
-  color: #fff;
-}
-
-.properties .icon-box:hover .icon {
-  background: #fff;
-}
-
-.properties .icon-box:hover .icon i {
-  color: #3498db;
-}
-
-.properties .container-rooms {
-  display: flex;
-  border-radius: 45px;
-  border: 1px solid #cecece;
-  width: 40.5%;
-  margin-left: 220px;
-}
-
-.properties .container-rooms [name="input-tokens"] {
-  text-align: center;
-  font-size: 13.5px;
-  border: none;
-  outline: none;
-  color: #202030;
-}
-
-.properties .container-rooms label {
-  color: #3498db;
-  font-size: 14px;
-  font-weight: 20px;
-  border: none;
-  background-color: #ffffff;
-  cursor: pointer;
-  outline: none;
-}
-
-/* Sell or rent style */
-#plus {
-	padding: 15px 25px 15px 5px;
-	border-radius: 0 45px 45px 0;
-}
-
-#minus {
-	padding: 15px 5px 15px 25px;
-	border-radius: 45px 0 0 45px;
-}
-
-
-.properties .img-preview img {
-  width: 100px;
-  height: 100px;
-  margin: 0 0 20px 60px;
-  object-fit: cover;
-  object-position: center center;
-  border-radius: 60%;
-}
-
-.properties .images {
-  max-width: 700px;
-  max-height: 700px;
-}
-
-/* ------------- Buttons ------------- */
-
-/* Buy Property Class */
-.buy-property {
-  color: #fff;
-  background: #02ac0a;
-  padding: 10px 30px;
-  margin: 10px 0 10px 15px;
-  border-radius: 50px;
-  border: 2px solid #02ac0a;
-  transition: 0.3s;
-  font-weight: 500;
-  line-height: 1;
-  font-size: 13px;
-}
-
-.buy-property:hover {
-  background-color: #1a9202;
-  border: 2px solid #1a9202;
-}
-
-@media (max-width: 992px) {
-  .buy-property {
-    margin: 0 15px 0 0;
+  /* Properties */
+  .properties .container {
+    margin-bottom: 150px;
   }
-}
 
-/* Property Sold Class */
-.property-sold {
-  color: #fff;
-  background: #c40101;
-  padding: 10px 30px;
-  margin: 10px 0 10px 15px;
-  border-radius: 50px;
-  border: 2px solid #c40101;
-  transition: 0.3s;
-  font-weight: 500;
-  line-height: 1;
-  font-size: 13px;
-}
-
-.property-sold:hover {
-  background-color: #c40101;
-  border: 2px solid #c40101;
-}
-
-@media (max-width: 992px) {
-  .buy-property {
-    margin: 0 15px 0 0;
+  .properties .icon-box {
+    padding: 30px;
+    position: relative;
+    overflow: hidden;
+    background: #fff;
+    box-shadow: 0 0 29px 0 rgba(68, 88, 144, 0.12);
+    transition: all 0.3s ease-in-out;
+    border-radius: 8px;
+    height: 100%;
+    width: 100%;
+    z-index: 1;
   }
-}
 
-/* Remove Property Class*/
-.properties .remove-property {
-  border: none;
-  margin-left: 640px;
-  background-color: #fff;
-}
-.properties .remove-property img {
-  max-width: 50px;
-  max-height: 50px;
-}
+  .properties .icon-box::before {
+    content: "";
+    position: absolute;
+    background: #e1f0fa;
+    right: -60px;
+    top: -40px;
+    width: 100px;
+    height: 100px;
+    border-radius: 50px;
+    transition: all 0.3s;
+    z-index: -1;
+  }
+
+  .properties .icon-box:hover::before {
+    background: #3498db;
+    right: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    border-radius: 0px;
+  }
+
+  .properties .type-property {
+    right: 0;
+    margin: -25px 0 10px 200px;
+  }
+
+  .properties .icon {
+    margin: 0 auto 20px auto;
+    padding-top: 10px;
+    display: inline-block;
+    text-align: center;
+    border-radius: 50%;
+    width: 60px;
+    height: 60px;
+    background: #3498db;
+    transition: all 0.3s ease-in-out;
+  }
+
+  .properties .icon i {
+    font-size: 36px;
+    line-height: 1;
+    color: #fff;
+  }
+
+  .properties .title {
+    font-weight: 700;
+    margin-bottom: 15px;
+    font-size: 18px;
+  }
+
+  .properties .title a {
+    color: #3498db;
+    text-decoration: none;
+  }
+
+  .properties .description {
+    font-size: 15px;
+    line-height: 28px;
+    margin-bottom: 0;
+  }
+
+  .properties .icon-box:hover .title a, .properties .icon-box:hover .description {
+    color: #fff;
+  }
+
+  .properties .icon-box:hover .icon {
+    background: #fff;
+  }
+
+  .properties .icon-box:hover .icon i {
+    color: #3498db;
+  }
+
+  .properties .container-rooms {
+    display: flex;
+    border-radius: 45px;
+    border: 1px solid #cecece;
+    width: 40.5%;
+    margin-left: 220px;
+  }
+
+  .properties .container-rooms [name="input-tokens"] {
+    text-align: center;
+    font-size: 13.5px;
+    border: none;
+    outline: none;
+    color: #202030;
+  }
+
+  .properties .container-rooms label {
+    color: #3498db;
+    font-size: 14px;
+    font-weight: 20px;
+    border: none;
+    background-color: #ffffff;
+    cursor: pointer;
+    outline: none;
+  }
+
+  /* Sell or rent style */
+  #plus {
+    padding: 15px 25px 15px 5px;
+    border-radius: 0 45px 45px 0;
+  }
+
+  #minus {
+    padding: 15px 5px 15px 25px;
+    border-radius: 45px 0 0 45px;
+  }
+
+
+  .properties .img-preview img {
+    width: 100px;
+    height: 100px;
+    margin: 0 0 20px 60px;
+    object-fit: cover;
+    object-position: center center;
+    border-radius: 60%;
+  }
+
+  .properties .images {
+    max-width: 700px;
+    max-height: 700px;
+  }
+
+  /* ------------- Buttons ------------- */
+
+  /* Buy Property Class */
+  .buy-property {
+    color: #fff;
+    background: #02ac0a;
+    padding: 10px 30px;
+    margin: 10px 0 10px 15px;
+    border-radius: 50px;
+    border: 2px solid #02ac0a;
+    transition: 0.3s;
+    font-weight: 500;
+    line-height: 1;
+    font-size: 13px;
+  }
+
+  .buy-property:hover {
+    background-color: #1a9202;
+    border: 2px solid #1a9202;
+  }
+
+  @media (max-width: 992px) {
+    .buy-property {
+      margin: 0 15px 0 0;
+    }
+  }
+
+  /* Property Sold Class */
+  .property-sold {
+    color: #fff;
+    background: #c40101;
+    padding: 10px 30px;
+    margin: 10px 0 10px 15px;
+    border-radius: 50px;
+    border: 2px solid #c40101;
+    transition: 0.3s;
+    font-weight: 500;
+    line-height: 1;
+    font-size: 13px;
+  }
+
+  .property-sold:hover {
+    background-color: #c40101;
+    border: 2px solid #c40101;
+  }
+
+  @media (max-width: 992px) {
+    .buy-property {
+      margin: 0 15px 0 0;
+    }
+  }
+
+  /* Remove Property Class*/
+  .properties .remove-property {
+    border: none;
+    margin-left: 640px;
+    background-color: #fff;
+  }
+  .properties .remove-property img {
+    max-width: 50px;
+    max-height: 50px;
+  }
 </style>
