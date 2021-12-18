@@ -15,6 +15,7 @@
           >
             <!-- ################## CARD ################## -->
             <div
+              v-if="priceInEur != null"
               class="icon-box" 
               data-aos="fade-up" 
               data-aos-delay="100"
@@ -49,7 +50,7 @@
                 <p class="description">Rented on {{ getStringDate(prop.soldOn) }}</p>
               </div>
               <div v-else-if="prop.soldOn == 0">
-                <p class="description">{{ weiToEur(prop.price) }}€ ({{ weiToEth(prop.price) }} ETH)</p>
+                <p class="description">{{ priceInEur }}€ <b>({{ priceInEth }} ETH)</b></p>
                 <p class="description">{{ getStringDate(prop.createdAt) }}</p>  
               </div>
             </div>
@@ -95,7 +96,7 @@
               <span class="line"></span>
               <h6 style="margin-top:20px">Owner: {{ prop.owner }}</h6>
               <p>Published on: {{ getStringDate(prop.createdAt) }}</p> 
-              <p>Price: {{ weiToEur(prop.price) }}€ ({{ weiToEth(prop.price) }}ETH)</p>
+              <p>Price: {{ priceInEur }}€ ({{ priceInEth }}ETH)</p>
               <p>Rooms: {{ prop.rooms }}</p>
               <p>Bathrooms: {{ prop.bathrooms }}</p>
               <p>Area: {{ prop.area }}m²</p>
@@ -206,24 +207,29 @@ import Swal from 'sweetalert2';
 export default {
   data(){
     return {
-      properties: [],             // Property data
-      rentalProperties: [],       // Rental end date of rental property
-      tokenizedProperties: [],    // Current available tokens of tokenized property
-      tokenizedPropDates: [],     // Rental end date of tokenized property
-      propertiesTokens: [],       // Initial tokens of a tokenized property
+      properties:           [],             // Property data
+      rentalProperties:     [],             // Rental end date of rental property
+      tokenizedProperties:  [],             // Current available tokens of tokenized property
+      tokenizedPropDates:   [],             // Rental end date of tokenized property
+      propertiesTokens:     [],             // Initial tokens of a tokenized property
+      
       fade: "modal fade",
       autoplay: true,
       tokens: 1,
+
       Ether: '',
       loaded: false,
+      priceInEur: null,
+      priceInEth: null
     } 
   },
   
   async beforeMount(){
-
     // Load the contracts
-    await this.start1();
-    await this.start2();
+    // await this.loadContracts();
+    // await this.renderProps();
+    await Dapp.init();
+    await this.renderProperties();
 
     await Dapp.getEtherPrice();
     this.Ether = await Dapp.getEtherPrice();
@@ -237,13 +243,13 @@ export default {
   },
 
   methods: {  
-    // Starts the dApp 
-    async start1(){
-      await Dapp.init();
-    },
-    async start2(){
-      await this.renderProperties();
-    },
+    // // Starts the dApp 
+    // async loadContracts(){
+    //   await Dapp.init();
+    // },
+    // async start2(){
+    //   await this.renderProperties();
+    // },
 
     // Catch the current created properties
     async renderProperties(){
@@ -388,7 +394,7 @@ export default {
 
     async generateContract(prop)
     {
-      var content   = await this.contractTemplate(prop);
+      var content   = await this.salesContractTemplate(prop);
       // any kind of extension (.txt,.cpp,.cs,.bat)
       var filename  = "Contract " + prop.id;
 
@@ -403,7 +409,7 @@ export default {
       // saveAs(blob, filename);
     },
 
-    async contractTemplate(prop)
+    async salesContractTemplate(prop)
     {
       const buyerAddr = await Dapp.currentAddr();
 
@@ -454,15 +460,15 @@ export default {
       return propOwner.toLowerCase() == currentAddr.toLowerCase();
     },
 
-    // ----------------------- Currencies conversion ----------------------- 
+    // ----------------------- Currencies conversions ----------------------- 
     async weiToEur(price)
     {
-      return await Dapp.convertWeiToEur(price);
+      this.priceInEur = await Dapp.convertWeiToEur(price);
     },
 
     async weiToEth(price)
     {
-      return await Dapp.convertWeiToEth(price);
+      this.priceInEth = await Dapp.convertWeiToEth(price);
     },
 
     // ----------------------- Modal close ----------------------- 

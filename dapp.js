@@ -36,7 +36,6 @@ export const Dapp = {
         Dapp.Properties = Properties;
         Dapp.account;
         Dapp.web3Provider;
-        await Dapp.getEtherPrice();
 
         await Dapp.loadContracts();
     },
@@ -190,6 +189,7 @@ export const Dapp = {
         }
     },
 
+    // ----------------------- Currencies conversions ----------------------- 
     convertEurToWei: async(eur) => {
         let priceEthEur = await Dapp.getEtherPrice();
         let ethers = eur/priceEthEur;
@@ -200,12 +200,16 @@ export const Dapp = {
     convertWeiToEur: async(wei) => {
         let ethers = web3.utils.fromWei(wei, 'ether');
         let priceEthEur = await Dapp.getEtherPrice();
-        console.log(ethers*priceEthEur);
+        // console.log(ethers*priceEthEur);
         return ethers*priceEthEur;
     },
 
     convertWeiToEth: async(wei) => {
         return web3.utils.fromWei(wei, 'ether');
+    },
+
+    getPropertyOwner: async(owner) => {
+        return await Dapp.Auth.getName(owner);
     }
 
 };

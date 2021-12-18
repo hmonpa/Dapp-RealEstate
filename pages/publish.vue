@@ -101,7 +101,8 @@ import * as IPFS from 'ipfs';
 export default {
   async beforeMount(){
     // Call to the contracts
-    this.start();
+    // this.start();
+    await Dapp.init();
   },
   computed: {
     userLogged() {
@@ -120,9 +121,9 @@ export default {
   },
   methods: {  
     // Starts the dApp 
-    async start(){
-      await Dapp.init();
-    },
+    // async start(){
+    //   await Dapp.init();
+    // },
 
     // ----------------------- Upload images functions -----------------------
     onImgSelected(event)
@@ -215,7 +216,7 @@ export default {
           this.tokens = 0 : this.tokens = propertyForm["input-tokens"].value;
 
         // Upload property depending if it's for sale or for rent
-        console.log(account, propertyForm["city"].value, propertyForm["address"].value, propertyForm["price"].value, this.rooms, propertyForm["area"].value, this.bathrooms, this.typeOfProperty, 0, 0, this.ipfsImage);
+        // console.log(account, propertyForm["city"].value, propertyForm["address"].value, propertyForm["price"].value, this.rooms, propertyForm["area"].value, this.bathrooms, this.typeOfProperty, 0, 0, this.ipfsImage);
 
         this.typeOfProperty == 0 && this.rooms > 1 ? 
           await Dapp.uploadProperty(account, propertyForm["city"].value, propertyForm["address"].value, propertyForm["price"].value, this.rooms, propertyForm["area"].value, this.bathrooms, this.typeOfProperty, this.tokens, parseInt(moment(propertyForm["date-end"].value).unix()), this.ipfsImage) 

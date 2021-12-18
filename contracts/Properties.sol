@@ -8,7 +8,7 @@ contract Properties {
 
     struct Property 
     {
-        uint256 id;                     // Catastro?               
+        string id;                     // Ref. catastral              
         address owner;
         string city;
         string physicalAddr;            
@@ -22,28 +22,32 @@ contract Properties {
         uint256 soldOn;
     }
 
+    struct idProperty
+    {
+        string idProperty;
+    }
     struct propertyForRenting
     {
-        uint256 idProperty;
+        string idProperty;
         uint256 rentalEndDate;
     }
 
     struct tokenizedProperty
     {
-        uint256 idProperty;
+        string idProperty;
         uint256 rentalEndDate;
         uint256 tokens;
     }
 
     struct initialTokens
     {
-        uint256 id;
+        string id;
         uint256 tokens;
     }
 
     struct propertyImages
     {
-        uint256 id;
+        string id;
         string ipfsImage;
     }
 
@@ -92,13 +96,14 @@ contract Properties {
     
     // Array
     Property[] public props;
+    idProperty[] public idsProperties;
 
     // Counter
     uint public propertyCounter = 0;
 
     // ----------------------- EVENTS -----------------------
     event PropertyCreated(
-        uint256 id,             
+        string id,             
         address owner,
         string city,
         string physicalAddr,            
@@ -106,38 +111,44 @@ contract Properties {
         uint sellOrRent,
         uint256 createdAt
     );
-    event PropertyForRentingCreated(uint256 idProperty, uint256 rentalEndDate);
-    event TokenizedPropertyCreated(uint256 idProperty, uint256 rentalEndDate, uint256 tokens);
+    event PropertyForRentingCreated(string idProperty, uint256 rentalEndDate);
+    event TokenizedPropertyCreated(string idProperty, uint256 rentalEndDate, uint256 tokens);
 
     event propertySold (address soldBy, uint256 price, uint256 soldOn);
     event propertyRented (address rentedBy, uint256 price, uint256 rentalEndDate);
-    event propertyTokenPurchased (address purchasedBy, uint256 idProperty, uint256 numberOfTokens, uint256 pricePerToken);
-    event propertyRemoved (address byOwner, uint256 id);
+    event propertyTokenPurchased (address purchasedBy, string idProperty, uint256 numberOfTokens, uint256 pricePerToken);
+    event propertyRemoved (address byOwner, string id);
 
 
     // ----------------------- FUNCTIONS -----------------------
     
     // Returns a generate random number 
-    function getRandomId() private view returns (uint)
-    { 
-        return uint(keccak256(abi.encodePacked(block.difficulty, block.timestamp, msg.sender)))%uint(77);
+    // function getRandomId() private view returns (uint)
+    // { 
+    //     return uint(keccak256(abi.encodePacked(block.difficulty, block.timestamp, msg.sender)))%uint(77);
+    // }
+
+    function addIdProperty(string memory _id) public pure
+    {
+        idsProperties.push(_id);
     }
 
     // Creates a new property, emit PropertyCreated event
     function uploadProperty(address _owner, string memory _city, string memory _physicalAddr, uint256 _price, uint256 _numRooms, uint256 _area, uint256 _bathrooms, uint256 _sellOrRent, uint256 _tokens, uint256 _rentalEndDate, string memory _ipfsImage) public
     {
-        Property memory newProperty = Property(getRandomId(), _owner, _city, _physicalAddr, _price, _numRooms, _area, _bathrooms, _sellOrRent, block.timestamp, 0);
+        string memory _id = addIdProperty();
+        Property memory newProperty = Property(_id, _owner, _city, _physicalAddr, _price, _numRooms, _area, _bathrooms, _sellOrRent, block.timestamp, 0);
         
         // New property is added to mapping(s)
         properties[propertyCounter] = newProperty;
         // New property is pushed to props array
         props.push(newProperty);
 
-        emit PropertyCreated(getRandomId(), _owner, _city, _physicalAddr, _price, _sellOrRent, block.timestamp);
+        emit PropertyCreated(addIdProperty(), _owner, _city, _physicalAddr, _price, _sellOrRent, block.timestamp);
 
-        uint256 idProperty = properties[propertyCounter].id;
+        string memory idProperty = properties[propertyCounter].id;
         // Add image to property
-        propertyImg[idProperty] = propertyImages(idProperty, _ipfsImage);
+        propertyImg[propertyCounter] = propertyImages(idProperty, _ipfsImage);
 
         // Rental or tokenized...
         if (_rentalEndDate != 0 && _tokens == 0){
@@ -163,22 +174,28 @@ contract Properties {
     }
 
     // Get a property by their ID
-    function getPropertyById(uint256 _id) public view returns (uint)
+    function getPropertyById(string memory _id) public view returns (uint)
     {
+        bytes memory idParams = bytes(_id);
+        uint lengthId = idParams.length;
         for (uint i = 0; i < propertyCounter; i++)
         {
-            if (_id == props[i].id) return i;
+            bytes memory currentId = bytes(props[i].id);
+            bool found = true;
+            if (lengthId != currentId.length) continue;
+            for (uint j = 0; j < lengthId || !found; j++)
+            {
+                if(idParams[j] != currentId[j]) found = false;
+            }
+            if (found) return i;
         }
         revert('Not found');
     }
 
-    function getPropertyOwner(uint _id) public view returns (address)
+    function getPropertyOwner(string memory _id) public view returns (address)
     {
-        for (uint i = 0; i < propertyCounter; i++)
-        {
-            if (_id == props[i].id) return props[i].owner;
-        }
-        revert('Not found');
+        uint i = getPropertyById(_id);
+        return props[i].owner;
     }
 
     // Send balance to account
@@ -187,7 +204,7 @@ contract Properties {
     }
 
     // Buy property
-    function buyProperty(address payable _address, uint256 _id) public payable
+    function buyProperty(address payable _address, string memory _id) public payable
     {
         uint index = this.getPropertyById(_id);
         require(msg.value == props[index].price);
@@ -209,7 +226,7 @@ contract Properties {
     }
 
     // Rent property
-    function rentProperty(address _address, uint256 _id, uint256 _rentalEndDate) public payable
+    function rentProperty(address _address, string memory _id, uint256 _rentalEndDate) public payable
     {
         uint index = this.getPropertyById(_id);
         require(msg.value == props[index].price);
@@ -226,7 +243,7 @@ contract Properties {
     }
 
     // Buy token (or tokens) of a property
-    function buyTokens(address _from, uint256 _numTokens, uint256 _id) public payable
+    function buyTokens(address _from, uint256 _numTokens, string memory _id) public payable
     {
         uint index = getPropertyById(_id);
         address addr = props[index].owner;
@@ -243,19 +260,14 @@ contract Properties {
     }   
 
     // Remove property by their ID 
-    function removeProperty(uint256 _id) public 
+    function removeProperty(string memory _id) public 
     {
-        bool deleted = false;
-        for (uint i = 0; i < propertyCounter && !deleted; i++)
-        {
-            if (_id == properties[i].id){
-                require(properties[i].soldOn == 0);
+        uint i = getPropertyById(_id);
 
-                delete properties[i];
-                delete props[i];
-                deleted = true;
-            }
-        }
+        require(properties[i].soldOn == 0);
+
+        delete properties[i];
+        delete props[i];
 
         emit propertyRemoved(msg.sender, _id);
     }
