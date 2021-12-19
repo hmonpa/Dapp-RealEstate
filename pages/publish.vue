@@ -12,6 +12,10 @@
           <div class="col-lg-6 col-md-12" data-aos="fade-up" data-aos-delay="300">
             <form id="propertyForm" class="php-email-form">
               <div class="form-group">
+                <span>Cadastral reference:</span>
+                <input type="text" name="id" class="form-control" id="id" placeholder="XX-XXXXX-XXXX-XX" required />
+              </div>
+              <div class="form-group">
                 <span>City:</span>
                 <input type="text" name="city" class="form-control" id="city" placeholder="Barcelona" required />
               </div>
@@ -97,6 +101,8 @@ import auth from '@/src/auth';
 import { Dapp } from '@/dapp';
 import moment from 'moment';
 import * as IPFS from 'ipfs';
+import swal from 'sweetalert';
+import Swal from 'sweetalert2';
 
 export default {
   async beforeMount(){
@@ -120,11 +126,6 @@ export default {
     }
   },
   methods: {  
-    // Starts the dApp 
-    // async start(){
-    //   await Dapp.init();
-    // },
-
     // ----------------------- Upload images functions -----------------------
     onImgSelected(event)
     {
@@ -136,11 +137,6 @@ export default {
 
     async uploadToIPFS(img)
     {
-      // const imgDetails = {
-      //   path: img.name,
-      //   content: img
-      // }
-
       const options = {
         wrapWithDirectory: true
       }
@@ -154,81 +150,127 @@ export default {
 
     // ----------------------- Buttons functions -----------------------
     increment(i) {
-      if (i == 0){
-        // Rooms
-        var inputrooms = document.getElementById('input-rooms');
-        var value = inputrooms.value;
-        if(value < 10) value++;
-        inputrooms.value = value;
-        this.rooms = value;
-      } else if(i == 1){
-        // Bathrooms
-        var inputBathrooms = document.getElementById('input-bathrooms');
-        var value = inputBathrooms.value;
-        if(value < 10) value++;
-        inputBathrooms.value = value;
-        this.bathrooms = value;
-      } else if (i == 2){
-        // Tokens
-        var inputTokens = document.getElementById('input-tokens');
-        var value = inputTokens.value;
-        if(value < this.rooms) value++;
-        inputTokens.value = value;
-        this.tokens = value;
+      switch (i) {
+        case 0: 
+          // Rooms
+          var inputrooms = document.getElementById('input-rooms');
+          var value = inputrooms.value;
+          if(value < 10) value++;
+          inputrooms.value = value;
+          this.rooms = value;
+          break;
+        case 1:
+          // Bathrooms
+          var inputBathrooms = document.getElementById('input-bathrooms');
+          var value = inputBathrooms.value;
+          if(value < 10) value++;
+          inputBathrooms.value = value;
+          this.bathrooms = value;
+          break;
+        case 2:
+          // Tokens
+          var inputTokens = document.getElementById('input-tokens');
+          var value = inputTokens.value;
+          if(value < this.rooms) value++;
+          inputTokens.value = value;
+          this.tokens = value;
+          break;
       }
     },
 
     decrement(i){
-      if(i == 0){
-        // Rooms
-        var inputrooms = document.getElementById('input-rooms');
-        var value = inputrooms.value;
-        if(value > 1) value--;
-        inputrooms.value = value;
-        this.rooms = value;
-      } else if(i == 1) {
-        // Bathrooms
-        var inputBathrooms = document.getElementById('input-bathrooms');
-        var value = inputBathrooms.value;
-        if(value > 2) value--;
-        inputBathrooms.value = value;
-        this.bathrooms = value;
-      } else if(i == 2) {
-        // Tokens
-        var inputTokens = document.getElementById('input-tokens');
-        var value = inputTokens.value;
-        if(value > 2) value--;
-        inputTokens.value = value;
-        this.tokens = value;
+      switch(i) {
+        case 0:
+          // Rooms
+          var inputrooms = document.getElementById('input-rooms');
+          var value = inputrooms.value;
+          if(value > 1) value--;
+          inputrooms.value = value;
+          this.rooms = value;
+          break;
+        case 1:
+          // Bathrooms
+          var inputBathrooms = document.getElementById('input-bathrooms');
+          var value = inputBathrooms.value;
+          if(value > 2) value--;
+          inputBathrooms.value = value;
+          this.bathrooms = value;
+          break;
+        case 2:
+          // Tokens
+          var inputTokens = document.getElementById('input-tokens');
+          var value = inputTokens.value;
+          if(value > 2) value--;
+          inputTokens.value = value;
+          this.tokens = value;
+          break;
       }
     },
 
     // Upload from the properties form
     async uploadData() {
-      const account = await Dapp.currentAddr();
-
       propertyForm.addEventListener("submit", e => {
         e.preventDefault(); 
       });
 
+      const account = await Dapp.currentAddr();
       try {
         propertyForm["input-tokens"] == null ? 
           this.tokens = 0 : this.tokens = propertyForm["input-tokens"].value;
 
-        // Upload property depending if it's for sale or for rent
-        // console.log(account, propertyForm["city"].value, propertyForm["address"].value, propertyForm["price"].value, this.rooms, propertyForm["area"].value, this.bathrooms, this.typeOfProperty, 0, 0, this.ipfsImage);
+        const allowed = await this.isAllowedProperty(propertyForm["id"].value);
 
-        this.typeOfProperty == 0 && this.rooms > 1 ? 
-          await Dapp.uploadProperty(account, propertyForm["city"].value, propertyForm["address"].value, propertyForm["price"].value, this.rooms, propertyForm["area"].value, this.bathrooms, this.typeOfProperty, this.tokens, parseInt(moment(propertyForm["date-end"].value).unix()), this.ipfsImage) 
-          : 
-          await Dapp.uploadProperty(account, propertyForm["city"].value, propertyForm["address"].value, propertyForm["price"].value, this.rooms, propertyForm["area"].value, this.bathrooms, this.typeOfProperty, 0, 0, this.ipfsImage);
-        
-        window.location.href = "/properties";
+        if (allowed){
+          Swal.fire({
+            title: 'Are you sure you want to upload this property to the platform?',
+            imageUrl: 'https://cdn.dribbble.com/users/2574702/screenshots/6702374/metamask.gif',
+            imageWidth: 400,
+            imageHeight: 300,
+            imageAlt: 'Metamask image',
+            showCancelButton: true,
+            confirmButtonColor: '#00F838',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Yes, I\'m sure'
+          }).then(async(result) => {
+            if (result.isConfirmed) {
+              
+              await Dapp.uploadPropertyData(account, this.rooms, propertyForm["area"].value, this.bathrooms);
+              // console.log(propertyForm["id"].value, account, propertyForm["city"].value, propertyForm["address"].value, propertyForm["price"].value, this.rooms, propertyForm["area"].value, this.bathrooms, this.typeOfProperty, this.tokens, parseInt(moment(propertyForm["date-end"].value).unix()), this.ipfsImage);
+              // Upload property depending if it's for sale or for rent
+              this.typeOfProperty == 0 && this.rooms > 1 ? 
+                await Dapp.uploadProperty(propertyForm["id"].value, account, propertyForm["city"].value, propertyForm["address"].value, propertyForm["price"].value, this.typeOfProperty, this.tokens, parseInt(moment(propertyForm["date-end"].value).unix()), this.ipfsImage) 
+                : 
+                await Dapp.uploadProperty(propertyForm["id"].value, account, propertyForm["city"].value, propertyForm["address"].value, propertyForm["price"].value, this.typeOfProperty, 0, 0, this.ipfsImage);
+
+               Swal.fire(
+                'Done!',
+                'You have successfully uploaded property ' + propertyForm["id"].value + '.',
+                'success'
+              ).then(async() => {
+                window.location.href = "/properties";
+              });
+            }
+          });
+        } else {
+          Swal.fire(
+            'This property already exists!',
+            'The property with id ' + propertyForm["id"].value + ' already exists.',
+            'error'
+          );
+        }
         
       } catch (err) {
         console.log(err);
       }
-    }
+    }, 
+
+    async isAllowedProperty(id)
+      {
+        const allowedProperty = 999999;
+        const exists = await Dapp.propertyExists(id);
+
+        return (exists == allowedProperty) ? true : false;
+      }
 
   }
 }

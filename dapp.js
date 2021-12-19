@@ -10,6 +10,7 @@ var TruffleContract = require('@truffle/contract');                             
 
 var Auth            = TruffleContract(authJson);
 var Properties      = TruffleContract(propertiesJson);
+
 Properties.defaults({
     gas: 4712388,
     gasPrice: 100000000000
@@ -84,11 +85,23 @@ export const Dapp = {
         
     },
     // -------------- PROPERTIES FUNCTIONS --------------
-    uploadProperty: async(owner, city, addr, price, rooms, area, bathrooms, sellOrRent, tokens, rentalEndDate, cid) => {
+    propertyExists: async(id) => {
+        let res = await Dapp.Properties.getPropertyById(id);
+        return res;
+
+    },
+
+    uploadPropertyData: async(owner, rooms, area, bathrooms) => {
+        await Dapp.Properties.addPropertyData(rooms, area, bathrooms, {
+            from: owner
+        });
+    },
+
+    uploadProperty: async(id, owner, city, addr, price, sellOrRent, tokens, rentalEndDate, cid) => {
         let priceInWei = await Dapp.convertEurToWei(price);
 
-        await Dapp.Properties.uploadProperty(owner, city, addr, priceInWei, rooms, area, bathrooms, sellOrRent, tokens, rentalEndDate, cid, {
-            from: owner,
+        await Dapp.Properties.uploadProperty(id, owner, city, addr, priceInWei, sellOrRent, tokens, rentalEndDate, cid, {
+            from: owner
         });
 
         // window.location.reload()

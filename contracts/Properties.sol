@@ -22,10 +22,13 @@ contract Properties {
         uint256 soldOn;
     }
 
-    struct idProperty
+    struct propertyData
     {
-        string idProperty;
+        uint256 rooms;
+        uint256 area;
+        uint256 bathrooms;
     }
+
     struct propertyForRenting
     {
         string idProperty;
@@ -69,14 +72,18 @@ contract Properties {
         // );
 
         // Example for rent with tokens
+        addPropertyData(
+            2,                                                  // Num of rooms 
+            70,                                                 // Area in m²
+            1                                                   // Num of bathrooms
+        );
+
         uploadProperty(
+            "19-HM0001-0001-SB",                                // ID
             msg.sender,                                         // Owner
             "Cunit",                                            // City
             "Avinguda Barcelona, 88, Bajo",                     // Physical address
             2000000000000000000,                                // Price in wei (2 ETH)
-            2,                                                  // Num of rooms 
-            60,                                                 // Area in m²
-            1,                                                  // Num of bathrooms
             0,                                                  // Rent --> 0
             2,                                                  // Tokens
             1672614000,                                         // Rental end date
@@ -88,6 +95,7 @@ contract Properties {
     
     // Mappings
     mapping (uint256 => Property) public properties;
+    mapping (uint256 => propertyData) public propertiesData;
     mapping (uint256 => propertyForRenting) public rentalProperties;
     mapping (uint256 => tokenizedProperty) public tokenizedProperties;
 
@@ -96,10 +104,10 @@ contract Properties {
     
     // Array
     Property[] public props;
-    idProperty[] public idsProperties;
+    propertyData[] public propsData;
 
     // Counter
-    uint public propertyCounter = 0;
+    uint public cnt = 0;
 
     // ----------------------- EVENTS -----------------------
     event PropertyCreated(
@@ -128,41 +136,47 @@ contract Properties {
     //     return uint(keccak256(abi.encodePacked(block.difficulty, block.timestamp, msg.sender)))%uint(77);
     // }
 
-    function addIdProperty(string memory _id) public pure
+    function addPropertyData(uint256 _numRooms, uint256 _area, uint256 _bathrooms) public
     {
-        idsProperties.push(_id);
+        propertyData memory saveData = propertyData(_numRooms, _area, _bathrooms);
+        propertiesData[cnt] = saveData;
     }
 
     // Creates a new property, emit PropertyCreated event
-    function uploadProperty(address _owner, string memory _city, string memory _physicalAddr, uint256 _price, uint256 _numRooms, uint256 _area, uint256 _bathrooms, uint256 _sellOrRent, uint256 _tokens, uint256 _rentalEndDate, string memory _ipfsImage) public
+    function uploadProperty(string memory _id, address _owner, string memory _city, string memory _physicalAddr, uint256 _price, uint256 _sellOrRent, uint256 _tokens, uint256 _rentalEndDate, string memory _ipfsImage) public
     {
-        string memory _id = addIdProperty();
+        uint256 _numRooms   = propertiesData[cnt].rooms;
+        uint256 _area       = propertiesData[cnt].area;
+        uint256 _bathrooms  = propertiesData[cnt].bathrooms;
+
         Property memory newProperty = Property(_id, _owner, _city, _physicalAddr, _price, _numRooms, _area, _bathrooms, _sellOrRent, block.timestamp, 0);
         
+        propertyData memory newPropData = propertyData(_numRooms, _area, _bathrooms);
         // New property is added to mapping(s)
-        properties[propertyCounter] = newProperty;
+        properties[cnt] = newProperty;
         // New property is pushed to props array
         props.push(newProperty);
+        propsData.push(newPropData);
 
-        emit PropertyCreated(addIdProperty(), _owner, _city, _physicalAddr, _price, _sellOrRent, block.timestamp);
+        emit PropertyCreated(_id, _owner, _city, _physicalAddr, _price, _sellOrRent, block.timestamp);
 
-        string memory idProperty = properties[propertyCounter].id;
         // Add image to property
-        propertyImg[propertyCounter] = propertyImages(idProperty, _ipfsImage);
+        propertyImg[cnt] = propertyImages(_id, _ipfsImage);
 
         // Rental or tokenized...
         if (_rentalEndDate != 0 && _tokens == 0){
-            rentalProperties[propertyCounter] = propertyForRenting(idProperty, _rentalEndDate);
-            emit PropertyForRentingCreated(idProperty, _rentalEndDate);
+            rentalProperties[cnt] = propertyForRenting(_id, _rentalEndDate);
+            emit PropertyForRentingCreated(_id, _rentalEndDate);
         }
         
         if (_tokens != 0){
-            tokenizedProperties[propertyCounter] = tokenizedProperty(idProperty, _rentalEndDate, _tokens);
-            startedTokens[propertyCounter] = initialTokens(idProperty, _tokens);
-            emit TokenizedPropertyCreated(idProperty, _rentalEndDate, _tokens);
+            tokenizedProperties[cnt] = tokenizedProperty(_id, _rentalEndDate, _tokens);
+            startedTokens[cnt] = initialTokens(_id, _tokens);
+
+            emit TokenizedPropertyCreated(_id, _rentalEndDate, _tokens);
         }
 
-        propertyCounter++;
+        cnt++;
         
     }
 
@@ -170,7 +184,7 @@ contract Properties {
     // Returns the number of properties already created
     function getAllProperties() public view returns (uint)
     {
-        return propertyCounter;
+        return cnt;
     }
 
     // Get a property by their ID
@@ -178,18 +192,23 @@ contract Properties {
     {
         bytes memory idParams = bytes(_id);
         uint lengthId = idParams.length;
-        for (uint i = 0; i < propertyCounter; i++)
-        {
+        
+        for (uint i = 0; i < cnt; i++) {
             bytes memory currentId = bytes(props[i].id);
             bool found = true;
-            if (lengthId != currentId.length) continue;
-            for (uint j = 0; j < lengthId || !found; j++)
-            {
+            
+            if (lengthId != currentId.length) 
+                continue;
+
+            for (uint j = 0; j < lengthId && found; j++) {
                 if(idParams[j] != currentId[j]) found = false;
             }
-            if (found) return i;
+
+            if (found)
+                return i;
         }
-        revert('Not found');
+        
+        return 999999;
     }
 
     function getPropertyOwner(string memory _id) public view returns (address)

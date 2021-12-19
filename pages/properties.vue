@@ -1,7 +1,7 @@
 <template>
     <!-- ======= Properties Section ======= -->
     <section id="properties" class="properties" style="margin-top:100px">
-      <div class="container" v-if="loaded">
+      <div class="container">
 
         <div class="section-title" data-aos="fade-up">
           <h2>Properties</h2>
@@ -13,9 +13,9 @@
             class="col-md-6 col-lg-3 d-flex align-items-stretch mb-5 mb-lg-0"
             style="margin:10px 0 10px 0"
           >
+          
             <!-- ################## CARD ################## -->
             <div
-              v-if="priceInEur != null"
               class="icon-box" 
               data-aos="fade-up" 
               data-aos-delay="100"
@@ -50,7 +50,7 @@
                 <p class="description">Rented on {{ getStringDate(prop.soldOn) }}</p>
               </div>
               <div v-else-if="prop.soldOn == 0">
-                <p class="description">{{ priceInEur }}€ <b>({{ priceInEth }} ETH)</b></p>
+                <p class="description">{{ weiToEur(prop.price) }}€ <b>({{ weiToEth(prop.price) }} ETH)</b></p>
                 <p class="description">{{ getStringDate(prop.createdAt) }}</p>  
               </div>
             </div>
@@ -60,7 +60,7 @@
       </div>
 
       <!-- ################## MODAL ################## -->
-      <div
+       <div
         v-for="(prop, index) in properties"
         :id="'property_' + index"
         :key="index"
@@ -71,7 +71,7 @@
         >
           <div class="modal-content">
             <div class="modal-header">
-              <h6 style="text-align:center">{{ prop.physicalAddr }} ({{ prop.city }})</h6>
+              <h6 style="text-align:center">{{ prop.id }} ({{ prop.city }})</h6>
               <button
                 type="button"
                 class="btn-close"
@@ -82,7 +82,7 @@
             </div>
 
             <div class="modal-body" style="padding: 40px;text-align:center">
-              <div v-if="prop.sellOrRent == 0 && prop.tokens > 0" style="background-color:yellow;width:100%">
+              <div v-if="prop.sellOrRent == 0 && tokenizedProperties[index] > 0" style="background-color:yellow;width:100%">
                 <p class="description">TOKENIZED PROPERTY</p>
               </div>
               <div v-if="properties">
@@ -96,10 +96,10 @@
               <span class="line"></span>
               <h6 style="margin-top:20px">Owner: {{ prop.owner }}</h6>
               <p>Published on: {{ getStringDate(prop.createdAt) }}</p> 
-              <p>Price: {{ priceInEur }}€ ({{ priceInEth }}ETH)</p>
-              <p>Rooms: {{ prop.rooms }}</p>
-              <p>Bathrooms: {{ prop.bathrooms }}</p>
-              <p>Area: {{ prop.area }}m²</p>
+              <p>Price: {{ weiToEur(prop.price) }}€ ({{ weiToEth(prop.price) }} ETH)</p>
+              <p>Rooms: {{ getPropertyData(index, 'rooms') }}</p>
+              <p>Bathrooms: {{ getPropertyData(index, 'bathrooms') }}</p>
+              <p>Area: {{ getPropertyData(index, 'area') }}m²</p>
 
               <!-- #################### DIFFERENT BUTTONS AND CASES #################### -->
               <!-- For selling -->
@@ -127,7 +127,7 @@
               </div>
 
               <!-- For renting a tokenized property -->
-              <div 
+               <div 
                 v-if="restrictionForTokenization(prop,index)"
               >
                 <p v-if="propertiesTokens[index]">Initial tokens: {{ getNumOfTokens(index) }}</p>
@@ -153,6 +153,7 @@
                   Buy tokens
                 </button>
               </div>
+
               <!-- #################### END OF DIFFERENT BUTTONS AND CASES #################### -->
 
               <!-- #################### DIFFERENT CASES OF LIQUIDATED PROPERTY #################### -->
@@ -165,6 +166,7 @@
               >
                 Sold on {{ getStringDate(prop.soldOn) }}
               </button>
+              
               <!-- Button for notice of rented -->
               <button
                 v-else-if="userLogged && prop.soldOn != 0 && rentalProperties[index] != 0 && tokenizedProperties[index] == 0"
@@ -175,8 +177,9 @@
                 Rented on {{ getStringDate(prop.soldOn) }}
               </button>
             </div>
+            
             <!-- #################### END OF DIFFERENT CASES OF LIQUIDATED PROPERTY #################### -->
-            <div class="modal-footer">
+             <div class="modal-footer">
               <button
                 type="button"
                 class="buy-tickets"
@@ -185,10 +188,12 @@
               >
                 Close
               </button>
+              
             </div>
           </div>
         </div>
       </div>
+      
       <!-- ################## END OF MODAL ################## -->
 
     </section>
@@ -207,12 +212,13 @@ import Swal from 'sweetalert2';
 export default {
   data(){
     return {
-      properties:           [],             // Property data
+      properties:           [],             // Property
+      propertiesData:       [],             // Some data of property
       rentalProperties:     [],             // Rental end date of rental property
       tokenizedProperties:  [],             // Current available tokens of tokenized property
       tokenizedPropDates:   [],             // Rental end date of tokenized property
       propertiesTokens:     [],             // Initial tokens of a tokenized property
-      
+    
       fade: "modal fade",
       autoplay: true,
       tokens: 1,
@@ -226,14 +232,12 @@ export default {
   
   async beforeMount(){
     // Load the contracts
-    // await this.loadContracts();
-    // await this.renderProps();
     await Dapp.init();
     await this.renderProperties();
 
-    await Dapp.getEtherPrice();
-    this.Ether = await Dapp.getEtherPrice();
-    this.loaded = true;
+    // await Dapp.getEtherPrice();
+    // this.Ether = await Dapp.getEtherPrice();
+    // this.loaded = true;
   },
 
   computed: {
@@ -243,18 +247,20 @@ export default {
   },
 
   methods: {  
-    // // Starts the dApp 
-    // async loadContracts(){
-    //   await Dapp.init();
-    // },
-    // async start2(){
-    //   await this.renderProperties();
-    // },
+    async start1(){
+      await Dapp.init();
+      console.log("start1 ok");
+    },
 
+    async start2(){
+      await this.renderProperties();
+      console.log("start2 ok");
+    },
     // Catch the current created properties
     async renderProperties(){
       try {
         this.properties           = [];
+        this.propertiesData       = [];
         this.rentalProperties     = [];
         this.tokenizedProperties  = [];
         this.tokenizedPropDates   = [];
@@ -264,45 +270,48 @@ export default {
 
         const invalidAddr = 0x0000000000000000000000000000000000000000;
 
-        let numProperties = await Dapp.Properties.propertyCounter();
+        let numProperties = await Dapp.Properties.cnt();
 
-        for (let i = 0; i < numProperties; i++)
+        for (let i = 0; i < numProperties.toNumber(); i++)
         {
           let prop = await Dapp.Properties.properties(i);
+          let propData = await Dapp.Properties.propertiesData(i);
+
           let owner = prop.owner;
+
           if (owner != invalidAddr)
           {
             // Add property data
             this.properties.push(prop);
+            this.propertiesData.push(propData);
+
+            // Add property image
+            let imageProp   = await Dapp.Properties.propertyImg(i);
+            this.propertiesImages.push(imageProp);
+
 
             let propRental    = await Dapp.Properties.rentalProperties(i);
             let propTokenized = await Dapp.Properties.tokenizedProperties(i);
-
+            
             // RENTAL PROPERTY: Add rental end date
-            (propRental.idProperty.toNumber() != 0) 
+            (propRental.idProperty) 
               ? this.rentalProperties.push(propRental[1].toNumber()) : this.rentalProperties.push(0);
 
             // RENTAL TOKENIZED PROPERTY: Add rental end date and number of available tokens
-            if (propTokenized.idProperty.toNumber() != 0){
+            if (propTokenized.idProperty != '')
+            {
               this.tokenizedPropDates.push(propTokenized[1]);
               this.tokenizedProperties.push(propTokenized[2].toNumber());
+              // Add initial tokens
+              let tokensProp  = await Dapp.Properties.startedTokens(i);
+              this.propertiesTokens.push(tokensProp[1].toNumber());
             } else {
-               this.tokenizedPropDates.push(0);
+              this.tokenizedPropDates.push(0);
               this.tokenizedProperties.push(0);
             }
-
-            let tokensProp  = await Dapp.Properties.startedTokens(i);
-            let imageProp   = await Dapp.Properties.propertyImg(prop.id);
-            
-            // RENTAL TOKENIZED PROPERTY: Add initial tokens
-            this.propertiesTokens.push(tokensProp);
-
-            // Add property image
-            this.propertiesImages.push(imageProp);
-          }          
-        }
-      }
-      catch (err) {
+          }
+        }         
+      } catch (err) {
         console.log(err);
       }
     },
@@ -347,16 +356,17 @@ export default {
             'success'
           ).then(async() => {
             // PENDING: MOVE CALLS BEFORE SWAL, TO ADD THE IPFS CONTRACT TO THE 2ND SWAL
-            if (type == "buy-token")
-              await Dapp.buyTokens(from, prop.id.toNumber(), tokens, arg);
-            
-            if (type == "rent")
-              await Dapp.rentProperty(from, prop.id.toNumber(), arg, prop.price);
-            
-            if (type == "buy")
-            {
-              await Dapp.buyProperty(from, prop.id.toNumber(), prop.price);
-              await this.generateContract(prop);
+            switch (type) {
+              case "buy":
+                await Dapp.buyProperty(from, prop.id.toNumber(), prop.price);
+                await this.generateContract(prop);
+                break;
+              case "rent":
+                await Dapp.rentProperty(from, prop.id.toNumber(), arg, prop.price);
+                break;
+              case "buy-token":
+                await Dapp.buyTokens(from, prop.id.toNumber(), tokens, arg);
+                break;
             }
             
             // window.location.reload();
@@ -453,6 +463,25 @@ export default {
       if(this.propertiesImages[index]) return this.propertiesImages[index]["ipfsImage"];
     },
 
+    // 
+    getPropertyData(index, type)
+    {
+      if(this.propertiesData[index])
+      {
+        switch (type) {
+          case "rooms":
+            return this.propertiesData[index].rooms;
+            break;
+          case "bathrooms":
+            return this.propertiesData[index].bathrooms;
+            break;
+          case "area":
+            return this.propertiesData[index].area;
+            break;
+        }
+      }
+    },
+
     // ----------------------- Check if current address is the owner -----------------------
     isOwner(propOwner)
     {
@@ -464,11 +493,13 @@ export default {
     async weiToEur(price)
     {
       this.priceInEur = await Dapp.convertWeiToEur(price);
+      return this.priceInEur;
     },
 
     async weiToEth(price)
     {
       this.priceInEth = await Dapp.convertWeiToEth(price);
+      return this.priceInEth;
     },
 
     // ----------------------- Modal close ----------------------- 
