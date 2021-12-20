@@ -72,7 +72,9 @@
                     </div>
                     <div class="modal-body" style="padding: 40px;text-align:center">
                         <span class="line"></span>
+                        <img :src="`https://ipfs.io/ipfs/${userLogged[5]}`">
                         <h6>Name: {{ userLogged[1] }}</h6>
+                        <h6>ID card: {{ userLogged[4] }}</h6>
                         <h6>Email: {{ userLogged[2] }}</h6> 
                         <h6>User since: {{ new Date(userLogged[3]*1000).toLocaleString() }}</h6> 
                     </div>

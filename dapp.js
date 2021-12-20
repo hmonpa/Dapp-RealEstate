@@ -169,8 +169,8 @@ export const Dapp = {
         return user0.isLoggedIn;
     },
 
-    signUp: async(address, name, email, password) => {
-        await Dapp.Auth.signUp(address, name, email, password, {
+    signUp: async(address, name, email, password, vatid, image) => {
+        await Dapp.Auth.signUp(address, name, email, password, vatid, image, {
             from: address
         });
     },

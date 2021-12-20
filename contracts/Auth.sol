@@ -15,8 +15,8 @@ contract Auth {
         string name;    
         string email;            
         string password;
-        // string vatId;                // DNI
-        // string ipfsImageCid;         // Image
+        string vatId;                   // DNI
+        string ipfsImage;               // Image
         bool isLoggedIn;
         uint256 createdAt;
     }
@@ -24,7 +24,7 @@ contract Auth {
     constructor()
     {
         // Register first user
-        signUp(msg.sender, "Hector", "hmonpa@gmail.com", "a");
+        signUp(msg.sender, "Hector", "hmonpa@gmail.com", "a", "47667744F", "QmexEk7JfbJ6qj3vHEtVSY7LT3pA6VPevH5DGn5PRzz7Ge");
     }
 
     // ----------------------- MAPPINGS -----------------------
@@ -38,6 +38,8 @@ contract Auth {
         string name,
         string email,
         string password,
+        string _vatId, 
+        string _ipfsImage,
         bool isLoggedIn,
         uint256 createdAt
     );
@@ -60,15 +62,17 @@ contract Auth {
         address _address,
         string memory _name,
         string memory _email,
-        string memory _password
+        string memory _password,
+        string memory _vatId,
+        string memory _ipfsImage
     ) public returns (bool) 
     {
-        users.push(User(_address, _name, _email, _password, false, block.timestamp));
-        usersByAddr[_address] = User(_address, _name, _email, _password, false, block.timestamp);
+        users.push(User(_address, _name, _email, _password, _vatId, _ipfsImage, false, block.timestamp));
+        usersByAddr[_address] = User(_address, _name, _email, _password, _vatId, _ipfsImage,false, block.timestamp);
         
         usersCounter++;
 
-        emit newUser(_address, _name, _email, _password, false, block.timestamp);
+        emit newUser(_address, _name, _email, _password,_vatId, _ipfsImage, false, block.timestamp);
         return true;
     }
 
@@ -92,9 +96,9 @@ contract Auth {
 
     // --------------- GETTERS ---------------
     // Get complete user from @
-    function getUser(address _address) public view returns (address, string memory, string memory, uint256)
+    function getUser(address _address) public view returns (address, string memory, string memory, uint256, string memory, string memory)
     {
-        return (usersByAddr[_address].addr, usersByAddr[_address].name, usersByAddr[_address].email, usersByAddr[_address].createdAt);
+        return (usersByAddr[_address].addr, usersByAddr[_address].name, usersByAddr[_address].email, usersByAddr[_address].createdAt, usersByAddr[_address].vatId, usersByAddr[_address].ipfsImage);
     }
 
     // Get @ from index

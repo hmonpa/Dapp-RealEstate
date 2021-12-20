@@ -214,12 +214,14 @@ export default {
 
       const account = await Dapp.currentAddr();
       try {
+        const owner = this.userLogged.split(",")[4];
         const response = await axios.get(
           'https://testapi.io/api/H%C3%A9ctor/registropropiedad'
           ).then(response => {
               const props = response.data;
 
-              this.propertyVerified = props.filter(prop => prop.id === (propertyForm["id"].value) && prop.owner === 'Hector')
+              this.propertyVerified = props.filter(prop => prop.id === (propertyForm["id"].value) && prop.idowner === owner);
+              console.log(this.propertyVerified);
           })
         
           console.log(this.propertyVerified.length);

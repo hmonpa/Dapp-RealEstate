@@ -11,16 +11,27 @@
             <form id="createForm" class="php-email-form">
               <p>Welcome to the dApp!</p>
               <div class="form-group">
+                <span>Full name:</span>
                 <input type="text" v-model="name" class="form-control" name="name" id="name" placeholder="Enter your name..." required>
               </div>
               <div class="form-group">
+                <span>ID Card:</span>
+                <input type="text" v-model="vatid" class="form-control" name="vatid" id="vatid" placeholder="Enter your identification document..." required>
+              </div>
+              <div class="form-group">
+                <span>Email:</span>
                 <input type="email" v-model="email" class="form-control" name="email" id="email" placeholder="Enter your email..." required>
               </div>
               <div class="form-group">
+                <span>Password:</span>
                 <input type="password" v-model="password" class="form-control" name="password" id="password" placeholder="Create a password..." required>
               </div>
+              <div class="form-group">
+                <span>Upload image:</span>
+                <input type="file" id="input-image" @change="onImgSelected" name="input-image" class="form-control" accept="image/*" required />
+              </div>
               <div class="text-center" style="margin-top:50px">
-                <button type="submit" @click="signUp">Access</button>
+                <button type="submit" @click="signUp">Register</button>
               </div>
             </form>
           </div>
@@ -36,6 +47,7 @@
 import Vue from 'vue';
 import { Dapp } from '@/dapp';
 import auth from '@/src/auth';
+import * as IPFS from 'ipfs';
 import swal from 'sweetalert';
 import Swal from 'sweetalert2';
 
@@ -51,7 +63,9 @@ export default {
   data: () => ({
     name: "",
     email: "",
-    password: ""
+    password: "",
+    vatid: "",
+    ipfsImage: ''
   }),
   methods: {
     // Load the contracts
@@ -83,7 +97,7 @@ export default {
               icon: "error"
             })
         } else {
-          await Dapp.signUp(account, createForm["name"].value, createForm["email"].value, createForm["password"].value);
+          await Dapp.signUp(account, createForm["name"].value, createForm["email"].value, createForm["password"].value, createForm["vatid"].value, this.ipfsImage);
           
           Swal.fire({
             title: "User created successfully",
@@ -93,7 +107,28 @@ export default {
           });
         }
       }
-    }
+    },
+    // ----------------------- Upload images functions -----------------------
+    onImgSelected(event)
+    {
+      event.preventDefault();
+      event.stopPropagation();
+      this.image = event.target.files[0];
+      this.uploadToIPFS(this.image);
+    },
+
+    async uploadToIPFS(img)
+    {
+      const options = {
+        wrapWithDirectory: true
+      }
+
+      const node = await IPFS.create({ silent: true });
+      console.log(node);
+      let cid = await node.add(img);
+      console.log("Node add: ", cid.path);
+      this.ipfsImage = cid.path;
+    },
   }
 }
 </script>

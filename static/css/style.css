@@ -1066,6 +1066,10 @@ section {
   font-weight: 600;
 }
 
+.access .php-email-form .form-group {
+  text-align: justify;
+}
+
 .access .php-email-form {
   text-align: center;
 }
