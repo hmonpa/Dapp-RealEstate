@@ -201,6 +201,7 @@
 </template>
 
 <script>
+import axios from 'axios';
 import { Dapp } from '@/dapp';
 import auth from '@/src/auth';
 import * as IPFS from 'ipfs';
@@ -223,10 +224,7 @@ export default {
       autoplay: true,
       tokens: 1,
 
-      priceEthEur: '',
-      loaded: false,
-      priceInEur: null,
-      priceInEth: null
+      priceEthEur: ''
     } 
   },
   
@@ -234,12 +232,9 @@ export default {
     // Load the contracts
     await Dapp.init();
     this.priceEthEur = await Dapp.getEtherPrice();
-    console.log(this.priceEthEur);
+
     await this.renderProperties();
 
-    // await Dapp.getEtherPrice();
-    // this.Ether = await Dapp.getEtherPrice();
-    // this.loaded = true;
   },
 
   computed: {
@@ -340,7 +335,7 @@ export default {
     {
       Swal.fire({
         title: 'Are you sure you want to make the transaction?',
-        text: "If you accept, the payment of " + this.weiToEth(prop.price) + "ETH will be made at this moment",
+        text: "If you accept, the payment of " + this.currencyConversion(prop.price, 'ETH') + "ETH will be made at this moment",
         imageUrl: 'https://cdn.dribbble.com/users/2574702/screenshots/6702374/metamask.gif',
         imageWidth: 400,
         imageHeight: 300,
@@ -354,24 +349,23 @@ export default {
           let from = await Dapp.loadEthereum();
           Swal.fire(
             'Done!',
-            'You have sent the payment of ' + this.weiToEth(prop.price) + 'ETH to ' + prop.owner + '.',
+            'You have sent the payment of ' + this.currencyConversion(prop.price, 'ETH') + 'ETH to ' + prop.owner + '.',
             'success'
           ).then(async() => {
             // PENDING: MOVE CALLS BEFORE SWAL, TO ADD THE IPFS CONTRACT TO THE 2ND SWAL
             switch (type) {
               case "buy":
-                await Dapp.buyProperty(from, prop.id.toNumber(), prop.price);
+                await Dapp.buyProperty(from, prop.id, prop.price);
                 await this.generateContract(prop);
                 break;
               case "rent":
-                await Dapp.rentProperty(from, prop.id.toNumber(), arg, prop.price);
+                await Dapp.rentProperty(from, prop.id, arg, prop.price);
                 break;
               case "buy-token":
-                await Dapp.buyTokens(from, prop.id.toNumber(), tokens, arg);
+                await Dapp.buyTokens(from, prop.id, tokens, arg);
                 break;
             }
-            
-            // window.location.reload();
+            window.location.reload();
           });
         }
       }).catch(Swal.fire.noop);

@@ -96,7 +96,6 @@
 </template>
 
 <script>
-// import * as IPFS from 'ipfs-core';
 import auth from '@/src/auth';
 import { Dapp } from '@/dapp';
 import moment from 'moment';
@@ -106,8 +105,6 @@ import Swal from 'sweetalert2';
 
 export default {
   async beforeMount(){
-    // Call to the contracts
-    // this.start();
     await Dapp.init();
   },
   computed: {
