@@ -97,6 +97,7 @@
 
 <script>
 import auth from '@/src/auth';
+import axios from 'axios';
 import { Dapp } from '@/dapp';
 import moment from 'moment';
 import * as IPFS from 'ipfs';
@@ -119,7 +120,8 @@ export default {
       rooms: 1,
       bathrooms: 1,
       tokens: 0,
-      ipfsImage: ''
+      ipfsImage: '',
+      propertyVerified: ''
     }
   },
   methods: {  
@@ -212,6 +214,16 @@ export default {
 
       const account = await Dapp.currentAddr();
       try {
+        const response = await axios.get(
+          'https://testapi.io/api/H%C3%A9ctor/registropropiedad'
+          ).then(response => {
+              const props = response.data;
+
+              this.propertyVerified = props.filter(prop => prop.id === (propertyForm["id"].value) && prop.owner === 'Hector')
+          })
+        
+          console.log(this.propertyVerified.length);
+        
         propertyForm["input-tokens"] == null ? 
           this.tokens = 0 : this.tokens = propertyForm["input-tokens"].value;
 
@@ -262,13 +274,12 @@ export default {
     }, 
 
     async isAllowedProperty(id)
-      {
-        const allowedProperty = 999999;
-        const exists = await Dapp.propertyExists(id);
+    {
+      const allowedProperty = 999999;
+      const exists = await Dapp.propertyExists(id);
 
-        return (exists == allowedProperty) ? true : false;
-      }
-
+      return (exists == allowedProperty) ? true : false;
+    }
   }
 }
 </script>

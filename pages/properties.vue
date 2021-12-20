@@ -201,7 +201,6 @@
 </template>
 
 <script>
-import axios from 'axios';
 import { Dapp } from '@/dapp';
 import auth from '@/src/auth';
 import * as IPFS from 'ipfs';
