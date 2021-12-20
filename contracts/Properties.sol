@@ -104,7 +104,7 @@ contract Properties {
     
     // Array
     Property[] public props;
-    propertyData[] public propsData;
+    // propertyData[] public propsData;
 
     // Counter
     uint public cnt = 0;
@@ -129,13 +129,6 @@ contract Properties {
 
 
     // ----------------------- FUNCTIONS -----------------------
-    
-    // Returns a generate random number 
-    // function getRandomId() private view returns (uint)
-    // { 
-    //     return uint(keccak256(abi.encodePacked(block.difficulty, block.timestamp, msg.sender)))%uint(77);
-    // }
-
     function addPropertyData(uint256 _numRooms, uint256 _area, uint256 _bathrooms) public
     {
         propertyData memory saveData = propertyData(_numRooms, _area, _bathrooms);
@@ -151,12 +144,13 @@ contract Properties {
 
         Property memory newProperty = Property(_id, _owner, _city, _physicalAddr, _price, _numRooms, _area, _bathrooms, _sellOrRent, block.timestamp, 0);
         
-        propertyData memory newPropData = propertyData(_numRooms, _area, _bathrooms);
+        // propertyData memory newPropData = propertyData(_numRooms, _area, _bathrooms);
         // New property is added to mapping(s)
         properties[cnt] = newProperty;
+
         // New property is pushed to props array
         props.push(newProperty);
-        propsData.push(newPropData);
+        // propsData.push(newPropData);
 
         emit PropertyCreated(_id, _owner, _city, _physicalAddr, _price, _sellOrRent, block.timestamp);
 
@@ -176,8 +170,7 @@ contract Properties {
             emit TokenizedPropertyCreated(_id, _rentalEndDate, _tokens);
         }
 
-        cnt++;
-        
+        cnt++; 
     }
 
     // --------------- GETTERS ---------------

@@ -50,7 +50,7 @@
                 <p class="description">Rented on {{ getStringDate(prop.soldOn) }}</p>
               </div>
               <div v-else-if="prop.soldOn == 0">
-                <p class="description">{{ weiToEur(prop.price) }}€ <b>({{ weiToEth(prop.price) }} ETH)</b></p>
+                <p class="description">{{ currencyConversion(prop.price, 'EUR') }}€ <b>({{ currencyConversion(prop.price, 'ETH') }} ETH)</b></p>
                 <p class="description">{{ getStringDate(prop.createdAt) }}</p>  
               </div>
             </div>
@@ -96,7 +96,7 @@
               <span class="line"></span>
               <h6 style="margin-top:20px">Owner: {{ prop.owner }}</h6>
               <p>Published on: {{ getStringDate(prop.createdAt) }}</p> 
-              <p>Price: {{ weiToEur(prop.price) }}€ ({{ weiToEth(prop.price) }} ETH)</p>
+              <p>Price: {{ currencyConversion(prop.price, 'EUR') }}€ ({{ currencyConversion(prop.price, 'ETH') }} ETH)</p>
               <p>Rooms: {{ getPropertyData(index, 'rooms') }}</p>
               <p>Bathrooms: {{ getPropertyData(index, 'bathrooms') }}</p>
               <p>Area: {{ getPropertyData(index, 'area') }}m²</p>
@@ -133,7 +133,7 @@
                 <p v-if="propertiesTokens[index]">Initial tokens: {{ getNumOfTokens(index) }}</p>
                 <p>Rental end date: {{ getStringDate(tokenizedPropDates[index]) }}</p>
                 <p>Available tokens: {{ tokenizedProperties[index] }}</p>
-                <p v-if="propertiesTokens[index]">Price per token: {{ (weiToEur(prop.price) / getNumOfTokens(index)).toFixed(2) }}€ ({{ (weiToEth(prop.price) / tokenizedProperties[index]).toFixed(2) }} ETH)</p>
+                <p v-if="propertiesTokens[index]">Price per token: {{ (currencyConversion(prop.price, 'EUR') / getNumOfTokens(index)) }}€ ({{ (currencyConversion(prop.price, 'ETH') / getNumOfTokens(index)) }} ETH)</p>
 
                 <div v-if="userLogged && !isOwner(prop.owner)">
                   <span>Number of tokens:</span>
@@ -223,7 +223,7 @@ export default {
       autoplay: true,
       tokens: 1,
 
-      Ether: '',
+      priceEthEur: '',
       loaded: false,
       priceInEur: null,
       priceInEth: null
@@ -233,6 +233,8 @@ export default {
   async beforeMount(){
     // Load the contracts
     await Dapp.init();
+    this.priceEthEur = await Dapp.getEtherPrice();
+    console.log(this.priceEthEur);
     await this.renderProperties();
 
     // await Dapp.getEtherPrice();
@@ -454,7 +456,7 @@ export default {
     // ----------------------- Get initial number of tokens -----------------------
     getNumOfTokens(index)
     {
-      return this.propertiesTokens[index]["tokens"];
+      return this.propertiesTokens[index];
     },
 
     // ----------------------- Get CID of the image from mapping -----------------------
@@ -490,6 +492,19 @@ export default {
     },
 
     // ----------------------- Currencies conversions ----------------------- 
+    currencyConversion(priceInWei, currency)
+    {
+      switch (currency) {
+        case 'EUR':
+          let ethers = priceInWei/1000000000000000000;
+          return (ethers*this.priceEthEur).toFixed(2);
+          break;
+        case 'ETH':
+          return (priceInWei/1000000000000000000).toFixed(2);
+          break;
+      }
+    },
+    
     async weiToEur(price)
     {
       this.priceInEur = await Dapp.convertWeiToEur(price);
