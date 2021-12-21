@@ -233,7 +233,6 @@ export default {
     this.priceEthEur = await Dapp.getEtherPrice();
 
     await this.renderProperties();
-
   },
 
   computed: {
@@ -243,15 +242,6 @@ export default {
   },
 
   methods: {  
-    async start1(){
-      await Dapp.init();
-      console.log("start1 ok");
-    },
-
-    async start2(){
-      await this.renderProperties();
-      console.log("start2 ok");
-    },
     // Catch the current created properties
     async renderProperties(){
       try {
@@ -284,7 +274,6 @@ export default {
             // Add property image
             let imageProp   = await Dapp.Properties.propertyImg(i);
             this.propertiesImages.push(imageProp);
-
 
             let propRental    = await Dapp.Properties.rentalProperties(i);
             let propTokenized = await Dapp.Properties.tokenizedProperties(i);
@@ -355,7 +344,21 @@ export default {
             switch (type) {
               case "buy":
                 await Dapp.buyProperty(from, prop.id, prop.price);
-                await this.generateContract(prop);
+                await this.generateContract(prop, 'ipfs');
+
+                Swal.fire({
+                  text: "Do you want to download the contract?",
+                  imageUrl: 'https://upload.wikimedia.org/wikipedia/commons/1/18/Ipfs-logo-1024-ice-text.png',
+                  imageWidth: 300,
+                  imageHeight: 300,
+                  imageAlt: 'IPFS image',
+                  showCancelButton: true,
+                  confirmButtonColor: '#00F838',
+                  cancelButtonColor: '#d33',
+                  confirmButtonText: 'Download',
+                  cancelButtonText: 'No'
+                });
+
                 break;
               case "rent":
                 await Dapp.rentProperty(from, prop.id, arg, prop.price);
@@ -364,7 +367,7 @@ export default {
                 await Dapp.buyTokens(from, prop.id, tokens, arg);
                 break;
             }
-            window.location.reload();
+            // window.location.reload();
           });
         }
       }).catch(Swal.fire.noop);
@@ -397,7 +400,7 @@ export default {
       })
     },
 
-    async generateContract(prop)
+    async generateContract(prop, action)
     {
       var content   = await this.salesContractTemplate(prop);
       // any kind of extension (.txt,.cpp,.cs,.bat)
@@ -407,11 +410,19 @@ export default {
         type: "text/plain;charset=utf-8;charset=ANSI"
       });
 
-      const node  = await IPFS.create({ silent: true });
-      let cid     = await node.add(blob);
-      console.log("Contract added to: ", cid.path);
+      switch (action) {
+        case 'ipfs':
+          const node  = await IPFS.create({ silent: true });
+          let cid     = await node.add(blob);
+          console.log("Contract added to: ", cid.path);
+          break;
+        case 'save':
+          saveAs(blob, filename);
+          break;
+      }
+
       // OPTION FOR DOWNLOAD THE CONTRACT IN FILE VERSION:
-      // saveAs(blob, filename);
+
     },
 
     async salesContractTemplate(prop)

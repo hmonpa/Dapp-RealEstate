@@ -215,6 +215,7 @@ export default {
       const account = await Dapp.currentAddr();
       try {
         const owner = this.userLogged.split(",")[4];
+      
         const response = await axios.get(
           'https://testapi.io/api/H%C3%A9ctor/registropropiedad'
           ).then(response => {
@@ -224,48 +225,56 @@ export default {
               console.log(this.propertyVerified);
           })
         
-          console.log(this.propertyVerified.length);
-        
-        propertyForm["input-tokens"] == null ? 
-          this.tokens = 0 : this.tokens = propertyForm["input-tokens"].value;
+          if (this.propertyVerified.length == 1)
+          {
+            propertyForm["input-tokens"] == null ? this.tokens = 0 : this.tokens = propertyForm["input-tokens"].value;
 
-        const allowed = await this.isAllowedProperty(propertyForm["id"].value);
+            const allowed = await this.isAllowedProperty(propertyForm["id"].value);
 
-        if (allowed){
-          Swal.fire({
-            title: 'Are you sure you want to upload this property to the platform?',
-            imageUrl: 'https://cdn.dribbble.com/users/2574702/screenshots/6702374/metamask.gif',
-            imageWidth: 400,
-            imageHeight: 300,
-            imageAlt: 'Metamask image',
-            showCancelButton: true,
-            confirmButtonColor: '#00F838',
-            cancelButtonColor: '#d33',
-            confirmButtonText: 'Yes, I\'m sure'
-          }).then(async(result) => {
-            if (result.isConfirmed) {
-              
-              await Dapp.uploadPropertyData(account, this.rooms, propertyForm["area"].value, this.bathrooms);
-              // console.log(propertyForm["id"].value, account, propertyForm["city"].value, propertyForm["address"].value, propertyForm["price"].value, this.rooms, propertyForm["area"].value, this.bathrooms, this.typeOfProperty, this.tokens, parseInt(moment(propertyForm["date-end"].value).unix()), this.ipfsImage);
-              // Upload property depending if it's for sale or for rent
-              this.typeOfProperty == 0 && this.rooms > 1 ? 
-                await Dapp.uploadProperty(propertyForm["id"].value, account, propertyForm["city"].value, propertyForm["address"].value, propertyForm["price"].value, this.typeOfProperty, this.tokens, parseInt(moment(propertyForm["date-end"].value).unix()), this.ipfsImage) 
-                : 
-                await Dapp.uploadProperty(propertyForm["id"].value, account, propertyForm["city"].value, propertyForm["address"].value, propertyForm["price"].value, this.typeOfProperty, 0, 0, this.ipfsImage);
+          if (allowed){
+            Swal.fire({
+              title: 'Are you sure you want to upload this property to the platform?',
+              imageUrl: 'https://cdn.dribbble.com/users/2574702/screenshots/6702374/metamask.gif',
+              imageWidth: 400,
+              imageHeight: 300,
+              imageAlt: 'Metamask image',
+              showCancelButton: true,
+              confirmButtonColor: '#00F838',
+              cancelButtonColor: '#d33',
+              confirmButtonText: 'Yes, I\'m sure'
+            }).then(async(result) => {
+              if (result.isConfirmed) {
+                
+                await Dapp.uploadPropertyData(account, this.rooms, propertyForm["area"].value, this.bathrooms);
+                // console.log(propertyForm["id"].value, account, propertyForm["city"].value, propertyForm["address"].value, propertyForm["price"].value, this.rooms, propertyForm["area"].value, this.bathrooms, this.typeOfProperty, this.tokens, parseInt(moment(propertyForm["date-end"].value).unix()), this.ipfsImage);
+                // Upload property depending if it's for sale or for rent
+                this.typeOfProperty == 0 && this.rooms > 1 ? 
+                  await Dapp.uploadProperty(propertyForm["id"].value, account, propertyForm["city"].value, propertyForm["address"].value, propertyForm["price"].value, this.typeOfProperty, this.tokens, parseInt(moment(propertyForm["date-end"].value).unix()), this.ipfsImage) 
+                  : 
+                  await Dapp.uploadProperty(propertyForm["id"].value, account, propertyForm["city"].value, propertyForm["address"].value, propertyForm["price"].value, this.typeOfProperty, 0, 0, this.ipfsImage);
 
-               Swal.fire(
-                'Done!',
-                'You have successfully uploaded property ' + propertyForm["id"].value + '.',
-                'success'
-              ).then(async() => {
-                window.location.href = "/properties";
-              });
-            }
-          });
-        } else {
+                Swal.fire(
+                  'Done!',
+                  'You have successfully uploaded property ' + propertyForm["id"].value + '.',
+                  'success'
+                ).then(async() => {
+                  window.location.href = "/properties";
+                });
+              }
+            });
+          } 
+          else {
+            Swal.fire(
+              'This property already exists!',
+              'The property with id ' + propertyForm["id"].value + ' already exists.',
+              'error'
+            );
+          }
+        } 
+        else {
           Swal.fire(
-            'This property already exists!',
-            'The property with id ' + propertyForm["id"].value + ' already exists.',
+            'Action not allowed!',
+            'You are not the owner of the property with cadastral reference ' + propertyForm["id"].value + '.',
             'error'
           );
         }
