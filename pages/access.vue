@@ -98,12 +98,12 @@ export default {
               let user = await Dapp.getUserData(account);
               auth.setUserLogged(Object.values(user));
 
-              Swal.fire({
-                title: "Login successfully",
-                icon: "success"
-              }).then(function() {
+              // Swal.fire({
+              //   title: "Login successfully",
+              //   icon: "success"
+              // }).then(function() {
                 window.location.href = "/";
-              });
+              // });
             }
           }
         }

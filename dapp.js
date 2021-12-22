@@ -42,12 +42,12 @@ export const Dapp = {
     },
     // ----------------- WALLET & ACCOUNT FUNCTIONS -----------------
     
-    // Return the @ connected in MetaMask
+    // Return the account connected in MetaMask
     currentAddr: async() => {
         return window.ethereum.selectedAddress;
     },
 
-    // Open MetaMask to choose an @
+    // Open MetaMask to choose an account (public key)
     loadEthereum: async() => {
         if (window.ethereum){
             try {
@@ -190,6 +190,11 @@ export const Dapp = {
         return await Dapp.Auth.getUser(address);
     },
 
+    // Get name from public key
+    getPropertyOwner: async(owner) => {
+        return await Dapp.Auth.getName(owner);
+    },
+
     // Get current price of Ether
     getEtherPrice: async() => {
         try {
@@ -221,8 +226,6 @@ export const Dapp = {
         return web3.utils.fromWei(wei, 'ether');
     },
 
-    getPropertyOwner: async(owner) => {
-        return await Dapp.Auth.getName(owner);
-    }
+
 
 };

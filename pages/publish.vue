@@ -215,14 +215,15 @@ export default {
       const account = await Dapp.currentAddr();
       try {
         const owner = this.userLogged.split(",")[4];
-      
+        console.log(owner);
+        
+        // Call to Strapi's API
         const response = await axios.get(
-          'http://localhost:1337/api/properties/'
+          'http://localhost:1337/api/properties/'   
           ).then(response => {
-              const props = response.data;
-
-              this.propertyVerified = props.filter(prop => prop.id === (propertyForm["id"].value) && prop.idowner === owner);
-              console.log(this.propertyVerified);
+              const props = response.data.data;
+              this.propertyVerified = props.filter(prop => prop.attributes.idowner === owner && prop.attributes.idproperty === propertyForm["id"].value);
+              // console.log(this.propertyVerified);
           })
         
           if (this.propertyVerified.length == 1)
@@ -265,7 +266,7 @@ export default {
           } 
           else {
             Swal.fire(
-              'This property already exists!',
+              'Action not allowed!',
               'The property with id ' + propertyForm["id"].value + ' already exists.',
               'error'
             );

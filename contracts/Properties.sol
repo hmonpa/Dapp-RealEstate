@@ -89,6 +89,26 @@ contract Properties {
             1672614000,                                         // Rental end date
             'QmYUAQbT6Q4UZh4LdWtSH3sPbXvR2xWP2LqDtkM3JQcUrk'    // CID
         );
+
+        // Example for sale
+        addPropertyData(
+            3,                                                  // Num of rooms 
+            100,                                                // Area in m²
+            2                                                   // Num of bathrooms
+        );
+
+        uploadProperty(
+            "19-HM0001-0001-SC",                                // ID
+            0x53bdBcba4f533536cAB110cFdcF3600642e10134,         // Owner
+            "Sant Boi de Llobregat",                            // City
+            "Carrer de la Mort, 123",                           // Physical address
+            2000000000000000000,                                // Price in wei (2 ETH)
+            1,                                                  // Sell --> 1
+            0,                                                  // Tokens
+            0,                                                  // Rental end date
+            'QmYUAQbT6Q4UZh4LdWtSH3sPbXvR2xWP2LqDtkM3JQcUrk'    // CID
+        );
+
     }
 
     // ----------------------- MAPPINGS & VARIABLES -----------------------

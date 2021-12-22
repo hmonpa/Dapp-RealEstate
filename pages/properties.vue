@@ -218,12 +218,14 @@ export default {
       tokenizedProperties:  [],             // Current available tokens of tokenized property
       tokenizedPropDates:   [],             // Rental end date of tokenized property
       propertiesTokens:     [],             // Initial tokens of a tokenized property
-    
+      propertiesImages:     [],
+
       fade: "modal fade",
       autoplay: true,
       tokens: 1,
 
-      priceEthEur: ''
+      priceEthEur: '',
+      cidContract: ''
     } 
   },
   
@@ -348,15 +350,20 @@ export default {
 
                 Swal.fire({
                   text: "Do you want to download the contract?",
-                  imageUrl: 'https://upload.wikimedia.org/wikipedia/commons/1/18/Ipfs-logo-1024-ice-text.png',
-                  imageWidth: 300,
-                  imageHeight: 300,
+                  imageUrl: 'https://docs.ipfs.io/images/ipfs-logo.svg',
+                  imageWidth: 169,
+                  imageHeight: 196,
                   imageAlt: 'IPFS image',
                   showCancelButton: true,
                   confirmButtonColor: '#00F838',
                   cancelButtonColor: '#d33',
                   confirmButtonText: 'Download',
-                  cancelButtonText: 'No'
+                  cancelButtonText: 'No',
+                  footer: '<div class="row" style="text-align:center"><a target="_blank" style="display:inline" href="https://ipfs.io/ipfs/' + this.cidContract + '">Want to see the contract in IPFS?</a><p style="display:inline">Save the CID\n<b>' + this.cidContract + '</b>\nto access it forever!</p></div>'
+                }).then(async(res) => {
+                  if(res.isConfirmed) {
+                    await this.generateContract(prop, 'save');
+                  }
                 });
 
                 break;
@@ -407,13 +414,14 @@ export default {
       var filename  = "Contract " + prop.id;
 
       var blob = new Blob([content], {
-        type: "text/plain;charset=utf-8;charset=ANSI"
+        type: "text/html;charset=utf-8;charset=ANSI"
       });
 
       switch (action) {
         case 'ipfs':
           const node  = await IPFS.create({ silent: true });
           let cid     = await node.add(blob);
+          this.cidContract = cid.path;
           console.log("Contract added to: ", cid.path);
           break;
         case 'save':
@@ -427,26 +435,29 @@ export default {
 
     async salesContractTemplate(prop)
     {
-      const buyerAddr = await Dapp.currentAddr();
+      // const buyerAddr = await Dapp.currentAddr();
 
-      const buyer     = await Dapp.getUserData(buyerAddr);
+      let buyer       = this.userLogged;
+      buyer           = buyer.split(",");
+      console.log("BUYER: " ,buyer);
       const seller    = await Dapp.getUserData(prop.owner);
+      console.log("SELLER: ", seller);
       const date      = new Date().toLocaleString();
 
       return (
-        '<p style="text-align:center"><b>' 
+        '<div class="container"><div class="col-md-4></div><div class="col-md-4"><p style="text-align:center"><b>' 
           + "Contrato de compra venta del inmueble " + prop.id + '</b></p><p style="margin: 20px;text-align:justify"><b>'
-          + "De un lado, la parte compradora:" + '</b><br>' + "D/Dª" + buyer[1] + " con DNI " + "------PENDING!!!" + ", y direccion de clave publica " 
+          + "De un lado, la parte compradora:" + '</b><br>' + "D/Da " + buyer[1] + " con DNI " + buyer[4] + ", y direccion de clave publica " 
           + buyer[0] + "." + '</p><p style="margin: 20px;text-align:justify"><b>' + "De otro, la parte vendedora:"
-          + '</b><br>' + "D/Dª " + seller[1] + " con DNI " + "------PENDING!!!" + ", y direccion de clave publica " + seller[0] + "." 
+          + '</b><br>' + "D/Da " + seller[1] + " con DNI " + seller[4] + ", y direccion de clave publica " + seller[0] + "." 
           + '</p><p style="text-align:center"><b>' + "EXPONEN" + '</b></p><p style="margin: 20px;text-align:justify"><b>'
           + "PRIMERO.-" + '</b>' + "Que la parte vendedora es duena de pleno dominio de la siguiente finca: " + '<br><ul><li>'
-          + "Catastro:" + prop.id + '</li><li>' + "Direccion: " + prop.physicalAddr + '</li><li>' + "Poblacion: " + prop.city + '</li></ul></p>'
+          + "Catastro: " + prop.id + '</li><li>' + "Direccion: " + prop.physicalAddr + '</li><li>' + "Poblacion: " + prop.city + '</li></ul></p>'
           + '<p style="margin: 20px;text-align:justify"><b>' + "SEGUNDO.-" + '</b>' + "Que la parte compradora abonara el siguiente importe a la parte vendedora: " + '<br>'
-          + '<ul><li>' + this.weiToEur(prop.price) + "EUR ( " + this.weiToEth(prop.price) + "ETH ) " + '</li></ul><b>' + "TERCERO.-" + '</b>' + "Para que quede constancia y hacer valer el contrato, ambas partes han firmado digitalmente la transaccion mediante la wallet MetaMask." 
+          + '<ul><li>' + this.currencyConversion(prop.price, 'EUR') + "EUR ( " + this.currencyConversion(prop.price, 'ETH') + "ETH ) " + '</li></ul><b>' + "TERCERO.-" + '</b>' + "Para que quede constancia y hacer valer el contrato, ambas partes han firmado digitalmente la transaccion mediante la wallet MetaMask." 
           + '<br>' + "La parte vendedora en el momento de publicar la propiedad, y la parte compradora en el momento de abonar el importe, el " + date 
           + '<br></p><p style="text-align:center"><b>' + "Transaccion realizada desde la aplicacion descentralizada en la red de Ethereum" + '</b><br>'
-          + "Impulsado por:" + '</p><img style="margin: 10px 0px 0px 250px" src="https://ipfs.io/ipfs/QmQNw5BUgkP9YHbsLUW8gnXoHVeqomsv3j8scnjm6YcFBP">'
+          + "Impulsado por:" + '</p><img style="margin: 10px 0px 0px 250px" src="https://ipfs.io/ipfs/QmQNw5BUgkP9YHbsLUW8gnXoHVeqomsv3j8scnjm6YcFBP"></div></div>'
       )
     },
 
@@ -466,6 +477,7 @@ export default {
     // ----------------------- Get CID of the image from mapping -----------------------
     getCidFromImg(index)
     {
+      console.log(this.propertiesImages[index]);
       if(this.propertiesImages[index]) return this.propertiesImages[index]["ipfsImage"];
     },
 
@@ -492,7 +504,7 @@ export default {
     isOwner(propOwner)
     {
       let currentAddr = window.ethereum.selectedAddress;
-      return propOwner.toLowerCase() == currentAddr.toLowerCase();
+      return (currentAddr) ? propOwner.toLowerCase() == currentAddr.toLowerCase() : false;
     },
 
     // ----------------------- Currencies conversions ----------------------- 

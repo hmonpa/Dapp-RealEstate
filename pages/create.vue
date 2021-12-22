@@ -16,7 +16,7 @@
               </div>
               <div class="form-group">
                 <span>ID Card:</span>
-                <input type="text" v-model="vatid" class="form-control" name="vatid" id="vatid" placeholder="Enter your identification document..." required>
+                <input type="text" v-model="vatid" class="form-control" name="vatid" id="vatid" placeholder="Enter your identification document..." maxlength="9" required>
               </div>
               <div class="form-group">
                 <span>Email:</span>
@@ -100,7 +100,8 @@ export default {
           await Dapp.signUp(account, createForm["name"].value, createForm["email"].value, createForm["password"].value, createForm["vatid"].value, this.ipfsImage);
           
           Swal.fire({
-            title: "User created successfully",
+            title: "Welcome " + createForm["name"].value + "!",
+            text: "User create successfully",
             icon: "success"
           }).then(function() {
             window.location.href = "/access";

@@ -25,6 +25,8 @@ contract Auth {
     {
         // Register first user
         signUp(msg.sender, "Hector", "hmonpa@gmail.com", "a", "47667744F", "QmexEk7JfbJ6qj3vHEtVSY7LT3pA6VPevH5DGn5PRzz7Ge");
+        signUp(0x53bdBcba4f533536cAB110cFdcF3600642e10134, "Testing User", "test@gmail.com", "a", "1234567F", "QmexEk7JfbJ6qj3vHEtVSY7LT3pA6VPevH5DGn5PRzz7Ge");
+        signUp(0x08a012d3647B2093F8D9b5907AAE6d7A021aEB45, "Prueba", "test@gmail.com", "a", "0000000X", "QmexEk7JfbJ6qj3vHEtVSY7LT3pA6VPevH5DGn5PRzz7Ge");
     }
 
     // ----------------------- MAPPINGS -----------------------
