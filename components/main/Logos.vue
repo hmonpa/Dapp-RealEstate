@@ -1,6 +1,6 @@
 <template>
   <!-- ======= Logos Section ======= -->
-  <section id="logos" class="logos logos">
+  <section id="logos" class="logos">
     <div class="px-5 container">
       <div class="row align-items-center">
         <div class="col-md-4 col-6"></div>
@@ -39,3 +39,6 @@
     }
   }
 </script>
+
+<style scoped>
+</style>

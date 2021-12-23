@@ -151,7 +151,7 @@ export default {
                 // Vue.prototype.$account = this.account;
                 Swal.fire({
                     title: "Great!",
-                    text: 'Your account ' + this.account + ' is already connected',
+                    text: 'Your account with public key ' + this.account + ' is already connected',
                     icon: 'success'
                 });
             }

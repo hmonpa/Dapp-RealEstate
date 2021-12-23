@@ -87,7 +87,7 @@ contract Properties {
             0,                                                  // Rent --> 0
             2,                                                  // Tokens
             1672614000,                                         // Rental end date
-            'QmYUAQbT6Q4UZh4LdWtSH3sPbXvR2xWP2LqDtkM3JQcUrk'    // CID
+            'QmaxxE5EADVcqX6fVmtoqwMtawnapGJ7AaiX9kYrKqiKyx'    // CID
         );
 
         // Example for sale

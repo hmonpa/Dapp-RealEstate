@@ -247,14 +247,13 @@ export default {
     // Catch the current created properties
     async renderProperties(){
       try {
+        this.propertiesImages     = [];
         this.properties           = [];
         this.propertiesData       = [];
         this.rentalProperties     = [];
         this.tokenizedProperties  = [];
         this.tokenizedPropDates   = [];
-
-        this.propertiesTokens = [];
-        this.propertiesImages = [];
+        this.propertiesTokens     = [];
 
         const invalidAddr = 0x0000000000000000000000000000000000000000;
 
@@ -264,18 +263,18 @@ export default {
         {
           let prop = await Dapp.Properties.properties(i);
           let propData = await Dapp.Properties.propertiesData(i);
+          let imageProp   = await Dapp.Properties.propertyImg(i);
 
           let owner = prop.owner;
 
           if (owner != invalidAddr)
           {
+            // Add property image
+            this.propertiesImages.push(imageProp);
             // Add property data
             this.properties.push(prop);
             this.propertiesData.push(propData);
 
-            // Add property image
-            let imageProp   = await Dapp.Properties.propertyImg(i);
-            this.propertiesImages.push(imageProp);
 
             let propRental    = await Dapp.Properties.rentalProperties(i);
             let propTokenized = await Dapp.Properties.tokenizedProperties(i);
@@ -477,7 +476,7 @@ export default {
     // ----------------------- Get CID of the image from mapping -----------------------
     getCidFromImg(index)
     {
-      console.log(this.propertiesImages[index]);
+      console.log(this.propertiesImages[index]["ipfsImage"]);
       if(this.propertiesImages[index]) return this.propertiesImages[index]["ipfsImage"];
     },
 

@@ -9,22 +9,21 @@
           <div class="col-lg-3 col-md-12"></div>
           <div class="col-lg-6 col-md-12" data-aos="fade-up" data-aos-delay="300">
             <form id="createForm" class="php-email-form">
-              <p>Welcome to the dApp!</p>
               <div class="form-group">
                 <span>Full name:</span>
                 <input type="text" v-model="name" class="form-control" name="name" id="name" placeholder="Enter your name..." required>
               </div>
               <div class="form-group">
                 <span>ID Card:</span>
-                <input type="text" v-model="vatid" class="form-control" name="vatid" id="vatid" placeholder="Enter your identification document..." maxlength="9" required>
+                <input type="text" v-model="vatid" class="form-control" name="vatid" id="vatid" placeholder="01234567P" maxlength="9" required>
               </div>
               <div class="form-group">
                 <span>Email:</span>
-                <input type="email" v-model="email" class="form-control" name="email" id="email" placeholder="Enter your email..." required>
+                <input type="email" v-model="email" class="form-control" name="email" id="email" placeholder="example@testing.eth" required>
               </div>
               <div class="form-group">
                 <span>Password:</span>
-                <input type="password" v-model="password" class="form-control" name="password" id="password" placeholder="Create a password..." required>
+                <input type="password" v-model="password" class="form-control" name="password" id="password" placeholder="********" required>
               </div>
               <div class="form-group">
                 <span>Upload image:</span>
