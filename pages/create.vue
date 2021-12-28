@@ -100,7 +100,7 @@ export default {
           
           Swal.fire({
             title: "Welcome " + createForm["name"].value + "!",
-            text: "User create successfully",
+            text: "User created successfully",
             icon: "success"
           }).then(function() {
             window.location.href = "/access";

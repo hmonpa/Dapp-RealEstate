@@ -223,7 +223,7 @@ export default {
           ).then(response => {
               const props = response.data.data;
               this.propertyVerified = props.filter(prop => prop.attributes.idowner === owner && prop.attributes.idproperty === propertyForm["id"].value);
-              // console.log(this.propertyVerified);
+              console.log(this.propertyVerified);
           })
         
           if (this.propertyVerified.length == 1)
@@ -256,7 +256,7 @@ export default {
 
                 Swal.fire(
                   'Done!',
-                  'You have successfully uploaded property ' + propertyForm["id"].value + '.',
+                  'You have successfully loaded property ' + propertyForm["id"].value + '.',
                   'success'
                 ).then(async() => {
                   window.location.href = "/properties";
@@ -267,7 +267,7 @@ export default {
           else {
             Swal.fire(
               'Action not allowed!',
-              'The property with id ' + propertyForm["id"].value + ' already exists.',
+              'The property with cadastral reference ' + propertyForm["id"].value + ' already exists.',
               'error'
             );
           }
