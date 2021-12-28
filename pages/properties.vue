@@ -306,24 +306,25 @@ export default {
     // ----------------------- Restrictions by type -----------------------
     restrictionForBuy(prop)
     {
-      return (prop.sellOrRent == 1 && prop.soldOn == 0 && !this.isOwner(prop.owner)) ? true : false;
+      return (prop.sellOrRent == 1 && prop.soldOn == 0 && !this.isOwner(prop.owner) && this.userLogged) ? true : false;
     },
     
     restrictionForRenting(prop, index)
     {
       return (prop.sellOrRent == 0 && prop.soldOn == 0 && this.rentalProperties[index] != 0
-          && this.tokenizedProperties[index] == 0 && !this.isOwner(prop.owner)) ? true : false;
+          && this.tokenizedProperties[index] == 0 && !this.isOwner(prop.owner) && this.userLogged) ? true : false;
     },
 
     restrictionForTokenization(prop, index)
     {
-      return (this.rentalProperties[index] == 0 && this.tokenizedProperties[index] != 0 && prop.soldOn == 0) ? true : false;
+      return (this.rentalProperties[index] == 0 && this.tokenizedProperties[index] != 0 && prop.soldOn == 0 && this.userLogged) ? true : false;
     },
 
     // ----------------------- Send transactions and create custom sweet alert -----------------------
     async sendTransaction(type, prop, tokens, arg)
     {
       let buyer       = this.userLogged;
+      console.log(this.userLogged);
       buyer           = buyer.split(",");
 
       const getPropertyId = await axios.get(
