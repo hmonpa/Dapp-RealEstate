@@ -116,7 +116,7 @@ export const Dapp = {
             });
 
         } catch (err) {
-            console.log(err);
+            return await web3.eth.getBalance(from);
         }
     },
 
@@ -127,6 +127,7 @@ export const Dapp = {
                 from: from, 
                 value: value
             });
+
         } catch (err) {
             console.log(err);
         }
@@ -145,7 +146,6 @@ export const Dapp = {
     },
 
     removeProperty: async(from, id) => {
-
         try {
             await Dapp.Properties.removeProperty(id, {
                 from: from

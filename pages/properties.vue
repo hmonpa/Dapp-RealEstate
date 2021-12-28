@@ -324,19 +324,20 @@ export default {
     async sendTransaction(type, prop, tokens, arg)
     {
       let buyer       = this.userLogged;
-      console.log(this.userLogged);
       buyer           = buyer.split(",");
 
+      // Getting the API ID of the property...
       const getPropertyId = await axios.get(
-          'http://localhost:1337/api/properties/'   
-          ).then(response => {
-              const propsData = response.data.data;
-              this.propertyVerified = propsData.filter(propData => propData.attributes.idproperty === prop.id);
-              
-              this.propId = this.propertyVerified[0].id;
-          })
+        'http://localhost:1337/api/properties/'   
+        ).then(response => {
+            const propsData = response.data.data;
+            this.propertyVerified = propsData.filter(propData => propData.attributes.idproperty === prop.id);
+            
+            this.propId = this.propertyVerified[0].id;
+        })
 
       Swal.fire({
+
         title: 'Are you sure you want to make the transaction?',
         text: "If you accept, the payment of " + this.currencyConversion(prop.price, 'ETH') + "ETH will be made at this moment",
         imageUrl: 'https://cdn.dribbble.com/users/2574702/screenshots/6702374/metamask.gif',
@@ -347,65 +348,79 @@ export default {
         confirmButtonColor: '#00F838',
         cancelButtonColor: '#d33',
         confirmButtonText: 'Yes, I\'m sure'
+
       }).then(async(result) => {
         if (result.isConfirmed) {
           let from = await Dapp.loadEthereum();
-          Swal.fire(
-            'Done!',
-            'You have sent the payment of ' + this.currencyConversion(prop.price, 'ETH') + 'ETH to ' + prop.owner + '.',
-            'success'
-          ).then(async() => {
-            switch (type) {
-              case "buy":
-                await Dapp.buyProperty(from, prop.id, prop.price);
-                await this.generateContract(prop, 'ipfs');
-
-                // Update name and idCard from property
-                await axios({
-                  method: "PUT",
-                  url: `http://localhost:1337/api/properties/${this.propId}`, 
-                  data: {
-                    "data": {
-                      "owner": buyer[1],
-                      "idowner": buyer[4]
-                    }
-                  }
-                });
-
-                Swal.fire({
-                  text: "Do you want to download the contract?",
-                  imageUrl: 'https://docs.ipfs.io/images/ipfs-logo.svg',
-                  imageWidth: 169,
-                  imageHeight: 196,
-                  imageAlt: 'IPFS image',
-                  showCancelButton: true,
-                  confirmButtonColor: '#00F838',
-                  cancelButtonColor: '#d33',
-                  confirmButtonText: 'Download',
-                  cancelButtonText: 'No',
-                  footer: '<div class="row" style="text-align:center"><a target="_blank" style="display:inline" href="https://ipfs.io/ipfs/' + this.cidContract + '">Want to see the contract in IPFS?</a><p style="display:inline">Save the CID\n<b>' + this.cidContract + '</b>\nto access it forever!</p></div>'
-                }).then(async(res) => {
-                  if(res.isConfirmed) {
-                    await this.generateContract(prop, 'save');
-                  }
-                });
-
-                break;
-
-
-              case "rent":
-                await Dapp.rentProperty(from, prop.id, arg, prop.price);
-                break;
-
-
-              case "buy-token":
-                await Dapp.buyTokens(from, prop.id, tokens, arg);
-                break;
-
+          switch (type) {
+            case "buy":
+              let res = await Dapp.buyProperty(from, prop.id, prop.price);
+              
+              if (typeof(res) == 'object'){
                 
-            }
+                // Transaction doing successfully
+                Swal.fire(
+                  'Done!',
+                  'You have sent the payment of ' + this.currencyConversion(prop.price, 'ETH') + 'ETH to ' + prop.owner + '.',
+                  'success'
+                ).then(async() => {
+                  await this.generateContract(prop, 'ipfs');
+                  
+                  // Update name and idCard from property
+                  await axios({
+                    method: "PUT",
+                    url: `http://localhost:1337/api/properties/${this.propId}`, 
+                    data: {
+                      "data": {
+                        "owner": buyer[1],
+                        "idowner": buyer[4]
+                      }
+                    }
+                  });
+
+                  // Option for download the IPFS contract
+                  Swal.fire({
+                    text: "Do you want to download the contract?",
+                    imageUrl: 'https://docs.ipfs.io/images/ipfs-logo.svg',
+                    imageWidth: 169,
+                    imageHeight: 196,
+                    imageAlt: 'IPFS image',
+                    showCancelButton: true,
+                    confirmButtonColor: '#00F838',
+                    cancelButtonColor: '#d33',
+                    confirmButtonText: 'Download',
+                    cancelButtonText: 'No',
+                    footer: '<div class="row" style="text-align:center"><a target="_blank" style="display:inline" href="https://ipfs.io/ipfs/' + this.cidContract + '">Want to see the contract in IPFS?</a><p style="display:inline">Save the CID\n<b>' + this.cidContract + '</b>\nto access it forever!</p></div>'
+                  }).then(async(res) => {
+                    if(res.isConfirmed) {
+                      await this.generateContract(prop, 'save');
+                    }
+                  });
+                });
+
+              } else {
+                // Error, insufficient balance
+                Swal.fire(
+                  'Error!',
+                  'Your balance is ' + this.currencyConversion(res, 'ETH') + 'ETH. It is insufficient to complete the transaction',
+                  'error'
+                );
+              }
+
+
+              break;
+
+
+            case "rent":
+              await Dapp.rentProperty(from, prop.id, arg, prop.price);
+              break;
+
+
+            case "buy-token":
+              await Dapp.buyTokens(from, prop.id, tokens, arg);
+              break; 
+          }
             // window.location.reload();
-          });
         }
       }).catch(Swal.fire.noop);
     },
@@ -459,8 +474,6 @@ export default {
           break;
       }
 
-      // OPTION FOR DOWNLOAD THE CONTRACT IN FILE VERSION:
-
     },
 
     async salesContractTemplate(prop)
@@ -469,9 +482,8 @@ export default {
 
       let buyer       = this.userLogged;
       buyer           = buyer.split(",");
-      console.log("BUYER: " ,buyer);
-      const seller    = await Dapp.getUserData(prop.owner);
-      console.log("SELLER: ", seller);
+      let seller      = await Dapp.getUserData(prop.owner);
+
       const date      = new Date().toLocaleString();
 
       return (
