@@ -215,7 +215,6 @@ export default {
       const account = await Dapp.currentAddr();
       try {
         const owner = this.userLogged.split(",")[4];
-        console.log(owner);
         
         // Call to Strapi's API
         const response = await axios.get(
@@ -223,7 +222,7 @@ export default {
           ).then(response => {
               const props = response.data.data;
               this.propertyVerified = props.filter(prop => prop.attributes.idowner === owner && prop.attributes.idproperty === propertyForm["id"].value);
-              console.log(this.propertyVerified);
+              // console.log(this.propertyVerified);
           })
         
           if (this.propertyVerified.length == 1)

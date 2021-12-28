@@ -202,6 +202,7 @@
 
 <script>
 import { Dapp } from '@/dapp';
+import axios from 'axios';
 import auth from '@/src/auth';
 import * as IPFS from 'ipfs';
 import { saveAs } from 'file-saver';
@@ -322,6 +323,18 @@ export default {
     // ----------------------- Send transactions and create custom sweet alert -----------------------
     async sendTransaction(type, prop, tokens, arg)
     {
+      let buyer       = this.userLogged;
+      buyer           = buyer.split(",");
+
+      const getPropertyId = await axios.get(
+          'http://localhost:1337/api/properties/'   
+          ).then(response => {
+              const propsData = response.data.data;
+              this.propertyVerified = propsData.filter(propData => propData.attributes.idproperty === prop.id);
+              
+              this.propId = this.propertyVerified[0].id;
+          })
+
       Swal.fire({
         title: 'Are you sure you want to make the transaction?',
         text: "If you accept, the payment of " + this.currencyConversion(prop.price, 'ETH') + "ETH will be made at this moment",
@@ -341,11 +354,22 @@ export default {
             'You have sent the payment of ' + this.currencyConversion(prop.price, 'ETH') + 'ETH to ' + prop.owner + '.',
             'success'
           ).then(async() => {
-            // PENDING: MOVE CALLS BEFORE SWAL, TO ADD THE IPFS CONTRACT TO THE 2ND SWAL
             switch (type) {
               case "buy":
                 await Dapp.buyProperty(from, prop.id, prop.price);
                 await this.generateContract(prop, 'ipfs');
+
+                // Update name and idCard from property
+                await axios({
+                  method: "PUT",
+                  url: `http://localhost:1337/api/properties/${this.propId}`, 
+                  data: {
+                    "data": {
+                      "owner": buyer[1],
+                      "idowner": buyer[4]
+                    }
+                  }
+                });
 
                 Swal.fire({
                   text: "Do you want to download the contract?",
@@ -366,12 +390,18 @@ export default {
                 });
 
                 break;
+
+
               case "rent":
                 await Dapp.rentProperty(from, prop.id, arg, prop.price);
                 break;
+
+
               case "buy-token":
                 await Dapp.buyTokens(from, prop.id, tokens, arg);
                 break;
+
+                
             }
             // window.location.reload();
           });
