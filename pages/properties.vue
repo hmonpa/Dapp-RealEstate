@@ -407,14 +407,11 @@ export default {
                 );
               }
 
-
               break;
-
 
             case "rent":
               await Dapp.rentProperty(from, prop.id, arg, prop.price);
               break;
-
 
             case "buy-token":
               await Dapp.buyTokens(from, prop.id, tokens, arg);
