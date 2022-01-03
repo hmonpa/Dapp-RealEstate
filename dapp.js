@@ -88,7 +88,6 @@ export const Dapp = {
     propertyExists: async(id) => {
         let res = await Dapp.Properties.getPropertyById(id);
         return res;
-
     },
 
     uploadPropertyData: async(owner, rooms, area, bathrooms) => {
@@ -103,8 +102,6 @@ export const Dapp = {
         await Dapp.Properties.uploadProperty(id, owner, city, addr, priceInWei, sellOrRent, tokens, rentalEndDate, cid, {
             from: owner
         });
-
-        // window.location.reload()
     },
 
     buyProperty: async(from, id, value) => {

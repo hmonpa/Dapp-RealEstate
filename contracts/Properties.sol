@@ -57,20 +57,6 @@ contract Properties {
     
     constructor()
     {
-        // Example for sell
-        // uploadProperty(
-        //     msg.sender,                         // Owner
-        //     "Sant Boi de Llobregat",            // City
-        //     "C/ Mossèn Antoni Solanes, 105",    // Physical address
-        //     5000,                               // Price in EUR
-        //     3,                                  // Num of rooms 
-        //     80,                                 // Area in m²
-        //     1,                                  // Num of bathrooms
-        //     1,                                  // Sell --> 1 / Rent --> 0
-        //     0,                                  // Tokens
-        //     0                                   // Rental end date
-        // );
-
         // Example for rent with tokens
         addPropertyData(
             2,                                                  // Num of rooms 

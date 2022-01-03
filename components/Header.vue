@@ -79,7 +79,16 @@
                         <h6>Name: {{ userLogged[1] }}</h6>
                         <h6>ID card: {{ userLogged[4] }}</h6>
                         <h6>Email: {{ userLogged[2] }}</h6> 
-                        <h6>User since: {{ new Date(userLogged[3]*1000).toLocaleString() }}</h6> 
+                        <h6>User since: {{ new Date(userLogged[3]*1000).toLocaleString() }}</h6>
+                        <div v-if="myProperties.length > 0" style="margin-top: 30px">
+                            <h6>My Properties: {{ myProperties.length }}</h6>
+                            <div 
+                                v-for="(prop, index) in myProperties"
+                                :key="index"
+                            >
+                                <p>{{ prop }}</p>
+                            </div>
+                        </div>
                     </div>
                     <div class="modal-footer">
                     <button
@@ -121,9 +130,14 @@ export default {
             fade: "modal fade",
             autoplay: true,
             account,
+            properties: [],
+            myProperties: []
         }
     },
     async beforeMount(){
+        await Dapp.init();
+        this.account = await Dapp.currentAddr();
+
         // Checking every second if MetaMask have an account
         var accountInterval = setInterval(async() => {
             this.account = await Dapp.currentAddr();
@@ -135,6 +149,9 @@ export default {
                 window.location.href = "/";
             }
         }, 1000);
+
+        await this.renderProperties();
+        await this.getMyProperties();
     },
     methods: {
         isAccountChanged(){
@@ -158,6 +175,16 @@ export default {
                 });
             }
         },
+
+        async getMyProperties(){
+            for (let i=0; i<this.properties.length; i++)
+            {
+                if (this.properties[i].owner.toLowerCase() == this.account){
+                    this.myProperties.push(this.properties[i].id);
+                    console.log(this.properties[i].id);
+                }
+            }
+        },
         
         async logout() {
             Swal.fire({
@@ -171,9 +198,33 @@ export default {
                 if(res.isConfirmed) {
                     let user = auth.getUserLogged();
                     auth.logoutUser(user);
+                    this.myProperties = [];
                     window.location.href = "/";
                 }
             });
+        },
+
+        // Catch the current created properties
+        async renderProperties(){
+            try {
+                this.properties     = [];
+
+                const invalidAddr   = 0x0000000000000000000000000000000000000000;
+                // const props = await Dapp.Properties.properties;
+                // console.log(props);
+                let numProperties   = await Dapp.Properties.cnt();
+
+                for (let i = 0; i < numProperties.toNumber(); i++)
+                {
+                    let prop = await Dapp.Properties.properties(i);
+                    let owner = prop.owner;
+
+                    if (owner != invalidAddr)
+                        this.properties.push(prop);
+                }         
+            } catch (err) {
+                console.log(err);
+            }
         },
 
         pause() {

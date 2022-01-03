@@ -518,7 +518,7 @@ export default {
     // ----------------------- Get CID of the image from mapping -----------------------
     getCidFromImg(index)
     {
-      console.log(this.propertiesImages[index]["ipfsImage"]);
+      // console.log(this.propertiesImages[index]["ipfsImage"]);
       if(this.propertiesImages[index]) return this.propertiesImages[index]["ipfsImage"];
     },
 
