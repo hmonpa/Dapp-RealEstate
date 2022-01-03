@@ -35,7 +35,10 @@
                             {{ account }}
                         </a>
                         <!-- End Modal -->
-                        <NuxtLink v-else class="access scrollto" to="access">Access</NuxtLink>
+                        <div v-else>
+                            <NuxtLink class="access scrollto-access" to="access" style="display:inline">Sign in</NuxtLink>
+                            <NuxtLink class="access scrollto-access" to="create" style="display:inline">Sign up</NuxtLink>
+                        </div>
                     </li>
                     <li>
                         <a v-if="!account" class="metamask" style="cursor: pointer" @click="connectWallet"></a>
@@ -148,7 +151,6 @@ export default {
                     icon: "error"
                 })
             } else {
-                // Vue.prototype.$account = this.account;
                 Swal.fire({
                     title: "Great!",
                     text: 'Your account with public key ' + this.account + ' is already connected',
@@ -158,22 +160,20 @@ export default {
         },
         
         async logout() {
-            // Swal.fire({
-            //     title: 'Are you sure you want to exit?',
-            //     icon: 'warning',
-            //     showDenyButton: true,
-            //     confirmButtonText: 'Yes, I want to go out',
-            //     denyButtonText: 'No, I want to stay'
-            // }).then((res) => {
-            //     if(res.isConfirmed) {
-            //         let user = auth.getUserLogged();
-            //         auth.logoutUser(user);
-            //         window.location.href = "/";
-            //     }
-            // });
-            let user = auth.getUserLogged();
-            auth.logoutUser(user);
-            window.location.href = "/";
+            Swal.fire({
+                title: 'Are you sure you want to exit?',
+                icon: 'warning',
+                showDenyButton: true,
+                confirmButtonColor: '#00F838',
+                confirmButtonText: 'Yes, I want to go out',
+                denyButtonText: 'No, I want to stay'
+            }).then((res) => {
+                if(res.isConfirmed) {
+                    let user = auth.getUserLogged();
+                    auth.logoutUser(user);
+                    window.location.href = "/";
+                }
+            });
         },
 
         pause() {

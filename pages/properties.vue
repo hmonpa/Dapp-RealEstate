@@ -133,7 +133,9 @@
                 <p v-if="propertiesTokens[index]">Initial tokens: {{ getNumOfTokens(index) }}</p>
                 <p>Rental end date: {{ getStringDate(tokenizedPropDates[index]) }}</p>
                 <p>Available tokens: {{ tokenizedProperties[index] }}</p>
-                <p v-if="propertiesTokens[index]">Price per token: {{ (currencyConversion(prop.price, 'EUR') / getNumOfTokens(index)) }}€ ({{ (currencyConversion(prop.price, 'ETH') / getNumOfTokens(index)) }} ETH)</p>
+                <p v-if="propertiesTokens[index]">
+                  Price per token: {{ (currencyConversion(prop.price, 'EUR') / getNumOfTokens(index)) }}€ ({{ (currencyConversion(prop.price, 'ETH') / getNumOfTokens(index)) }} ETH)
+                </p>
 
                 <div v-if="userLogged && !isOwner(prop.owner)">
                   <span>Number of tokens:</span>
@@ -440,7 +442,7 @@ export default {
 
           Swal.fire(
             'Deleted!',
-            'The property with id ' + id + ' has been deleted.',
+            'The property with reference ' + id + ' has been deleted.',
             'success'
           ).then(function() {
             window.location.reload();

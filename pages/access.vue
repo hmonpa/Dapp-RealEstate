@@ -12,7 +12,7 @@
           <div class="col-lg-6 col-md-12" data-aos="fade-up" data-aos-delay="300">
             <form id="loginForm" class="php-email-form">
               <div class="form-group">
-                <input type="password" v-model="password" class="form-control" name="password" id="password" placeholder="Password" required>
+                <input type="password" v-model="password" class="form-control" name="password" id="password" placeholder="Enter your password..." required>
               </div>
               <div class="text-center" style="margin-top:50px">
                 <button type="submit" @click="signIn">Access</button>

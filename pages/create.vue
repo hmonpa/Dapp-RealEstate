@@ -11,7 +11,7 @@
             <form id="createForm" class="php-email-form">
               <div class="form-group">
                 <span>Full name:</span>
-                <input type="text" v-model="name" class="form-control" name="name" id="name" placeholder="Enter your name..." required>
+                <input type="text" v-model="name" class="form-control" name="name" id="name" placeholder="Héctor Montesinos Parra" required>
               </div>
               <div class="form-group">
                 <span>ID Card:</span>
@@ -66,6 +66,7 @@ export default {
     vatid: "",
     ipfsImage: ''
   }),
+
   methods: {
     // Load the contracts
     async start(){
@@ -75,16 +76,14 @@ export default {
       createForm.addEventListener("submit", e => {
           e.preventDefault();
       });
-      const account = document.getElementById("account").innerText;
+      const account = await Dapp.currentAddr();
 
+      // Check if MetaMask is connected with account
       if(!account){
-        swal({
+        Swal.fire({
           title: "Error!",
           text: "Please connect your MetaMask wallet",
-          icon: "error",
-          dangerMode: true
-        }).then(function() {
-          window.location.reload();
+          icon: "error"
         });
       } else { 
         let exists = await Dapp.checkExists(account);
