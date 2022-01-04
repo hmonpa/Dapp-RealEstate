@@ -12,7 +12,7 @@
             <option value="all" selected>All</option>
             <option value="mine">My properties</option>
           </select>
-          <input type="text" v-model="search" placeholder="Search properties..." id="search" />
+          <input type="text" v-model="search" placeholder="Search properties by city..." id="search" />
         </div>
         <div class="row">
           <div v-for="(prop, index) in filter"
@@ -260,7 +260,7 @@ export default {
 
       if(this.search != '' && this.search){
         tmpProps = tmpProps.filter((prop) => {
-          if(prop.city.toLowerCase().includes(this.search) || prop.city.toUpperCase().includes(this.search) || prop.city.includes(this.search))
+          if(prop.city.toLowerCase().includes(this.search.toLowerCase()))
             return prop
         })
       }
