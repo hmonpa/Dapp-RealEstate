@@ -7,9 +7,9 @@
           <h2>Properties</h2>
           <p>Check out the current properties uploaded to the platform!</p>
         </div>
-        <div class="row">
-          <select name="filter" id="select" v-model="filter">
-            <option value="all">All</option>
+        <div class="row filters">
+          <select v-if="userLogged" name="filter" id="select" v-model="select">
+            <option value="all" selected>All</option>
             <option value="mine">My properties</option>
           </select>
           <input type="text" v-model="search" placeholder="Search properties..." id="search" />
@@ -42,8 +42,7 @@
                 </div>
               </div>
               <div class="img-preview">
-                <!--<i class="bx bxl-dribbble"></i>-->
-                <img :src="`https://ipfs.io/ipfs/${getCidFromImg(index)}`">
+                <img :src="`https://ipfs.io/ipfs/${getCidFromImg(prop.id)}`">
               </div>
               <h4 class="title">
                 <a href="">
@@ -98,7 +97,7 @@
                     <img src="/img/icons/trash.png">
                   </button>
                 </div>
-                <img class="images" :src="`https://ipfs.io/ipfs/${getCidFromImg(index)}`">
+                <img class="images" :src="`https://ipfs.io/ipfs/${getCidFromImg(prop.id)}`">
               </div>
               <span class="line"></span>
               <h6 style="margin-top:20px">Owner: {{ prop.owner }}</h6>
@@ -238,7 +237,8 @@ export default {
       priceEthEur: '',
       cidContract: '',
 
-      search: ''
+      search: '',
+      select: 'all'
     } 
   },
   
@@ -257,24 +257,25 @@ export default {
 
     filter() {
       let tmpProps = this.properties;
-      // // if (this.properties != '') console.log(this.properties.length);
-      // for (let i=0; i<this.properties.length;i++)
-      // {
-      //   console.log(this.properties[i].city);
-      //   tmpProps += this.properties[i].city;
-      // }
+
       if(this.search != '' && this.search){
-        console.log(this.search);
         tmpProps = tmpProps.filter((prop) => {
-          // console.log(this.search.toUpperCase());
-          if(prop.city.includes(this.search) || prop.city.includes(this.search.toUpperCase()))
+          if(prop.city.toLowerCase().includes(this.search) || prop.city.toUpperCase().includes(this.search) || prop.city.includes(this.search))
             return prop
         })
+      }
 
+      if(this.select == 'mine')
+      {
+        tmpProps = tmpProps.filter((prop) => {
+          if(prop.owner.toLowerCase() == window.ethereum.selectedAddress)
+            return prop;
+        })
       }
 
       return tmpProps;
-    }
+    },
+
   },
 
   methods: {  
@@ -298,7 +299,7 @@ export default {
           let prop        = await Dapp.Properties.properties(i);
           let propData    = await Dapp.Properties.propertiesData(i);
           let imageProp   = await Dapp.Properties.propertyImg(i);
-
+     
           let owner = prop.owner;
 
           if (owner != invalidAddr)
@@ -547,10 +548,14 @@ export default {
     },
 
     // ----------------------- Get CID of the image from mapping -----------------------
-    getCidFromImg(index)
+    getCidFromImg(id)
     {
-      // console.log(this.propertiesImages[index]["ipfsImage"]);
-      if(this.propertiesImages[index]) return this.propertiesImages[index]["ipfsImage"];
+      for (let i = 0; i < this.propertiesImages.length; i++)
+      {
+        if(this.propertiesImages[i].id == id){
+          return this.propertiesImages[i].ipfsImage;
+        }
+      }
     },
 
     // 
@@ -640,6 +645,33 @@ export default {
 
 <style scoped>
   /* Properties */
+
+  .filters {
+    display: inline;
+    background-color: #3498db;
+    padding: 20px 0 20px 0;
+    border-radius: 10px;
+    
+  }
+
+  .filters select {
+    width: 15%;
+    margin-left: 35%;
+    height: 30px; 
+    border-radius: 10px;
+    border: none;
+    background-color: #fff;
+  }
+
+  .filters input {
+    width: 20%;
+    height: 30px; 
+    margin-right: 30%;
+    margin-left: 10px;
+    border-radius: 10px;
+    border: none;
+  }
+
   .properties .container {
     margin-bottom: 150px;
   }
@@ -655,6 +687,7 @@ export default {
     height: 100%;
     width: 100%;
     z-index: 1;
+    margin-top: 40px;
   }
 
   .properties .icon-box::before {
@@ -668,6 +701,7 @@ export default {
     border-radius: 50px;
     transition: all 0.3s;
     z-index: -1;
+    
   }
 
   .properties .icon-box:hover::before {
