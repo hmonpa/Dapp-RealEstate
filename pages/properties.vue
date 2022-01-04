@@ -8,7 +8,14 @@
           <p>Check out the current properties uploaded to the platform!</p>
         </div>
         <div class="row">
-          <div v-for="(prop, index) in properties"
+          <select name="filter" id="select" v-model="filter">
+            <option value="all">All</option>
+            <option value="mine">My properties</option>
+          </select>
+          <input type="text" v-model="search" placeholder="Search properties..." id="search" />
+        </div>
+        <div class="row">
+          <div v-for="(prop, index) in filter"
             :key="index"
             class="col-md-6 col-lg-3 d-flex align-items-stretch mb-5 mb-lg-0"
             style="margin:10px 0 10px 0"
@@ -61,7 +68,7 @@
 
       <!-- ################## MODAL ################## -->
        <div
-        v-for="(prop, index) in properties"
+        v-for="(prop, index) in filter"
         :id="'property_' + index"
         :key="index"
         :class="fade"
@@ -95,6 +102,7 @@
               </div>
               <span class="line"></span>
               <h6 style="margin-top:20px">Owner: {{ prop.owner }}</h6>
+              <p>Address: {{ prop.physicalAddr }}</p>
               <p>Published on: {{ getStringDate(prop.createdAt) }}</p> 
               <p>Price: {{ currencyConversion(prop.price, 'EUR') }}€ ({{ currencyConversion(prop.price, 'ETH') }} ETH)</p>
               <p>Rooms: {{ getPropertyData(index, 'rooms') }}</p>
@@ -228,7 +236,9 @@ export default {
       tokens: 1,
 
       priceEthEur: '',
-      cidContract: ''
+      cidContract: '',
+
+      search: ''
     } 
   },
   
@@ -243,6 +253,27 @@ export default {
   computed: {
     userLogged() {
       return auth.getUserLogged();
+    },
+
+    filter() {
+      let tmpProps = this.properties;
+      // // if (this.properties != '') console.log(this.properties.length);
+      // for (let i=0; i<this.properties.length;i++)
+      // {
+      //   console.log(this.properties[i].city);
+      //   tmpProps += this.properties[i].city;
+      // }
+      if(this.search != '' && this.search){
+        console.log(this.search);
+        tmpProps = tmpProps.filter((prop) => {
+          // console.log(this.search.toUpperCase());
+          if(prop.city.includes(this.search) || prop.city.includes(this.search.toUpperCase()))
+            return prop
+        })
+
+      }
+
+      return tmpProps;
     }
   },
 
@@ -264,8 +295,8 @@ export default {
 
         for (let i = 0; i < numProperties.toNumber(); i++)
         {
-          let prop = await Dapp.Properties.properties(i);
-          let propData = await Dapp.Properties.propertiesData(i);
+          let prop        = await Dapp.Properties.properties(i);
+          let propData    = await Dapp.Properties.propertiesData(i);
           let imageProp   = await Dapp.Properties.propertyImg(i);
 
           let owner = prop.owner;
@@ -748,6 +779,7 @@ export default {
   }
 
   .properties .images {
+    width: 500px;
     max-width: 700px;
     max-height: 700px;
   }

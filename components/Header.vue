@@ -80,11 +80,13 @@
                         <h6>ID card: {{ userLogged[4] }}</h6>
                         <h6>Email: {{ userLogged[2] }}</h6> 
                         <h6>User since: {{ new Date(userLogged[3]*1000).toLocaleString() }}</h6>
-                        <div v-if="myProperties.length > 0" style="margin-top: 30px">
+                        <div style="margin-top: 30px">
                             <h6>My Properties: {{ myProperties.length }}</h6>
                             <div 
+                                v-if="myProperties.length > 0"
                                 v-for="(prop, index) in myProperties"
                                 :key="index"
+                                style="margin-top: 10px"
                             >
                                 <p>{{ prop }}</p>
                             </div>
@@ -131,7 +133,9 @@ export default {
             autoplay: true,
             account,
             properties: [],
-            myProperties: []
+            tokenizedProperties: [],
+            myProperties: [],
+            myTokens: []
         }
     },
     async beforeMount(){
@@ -151,7 +155,8 @@ export default {
         }, 1000);
 
         await this.renderProperties();
-        await this.getMyProperties();
+        this.getMyProperties();
+        this.getMyTokens();
     },
     methods: {
         isAccountChanged(){
@@ -176,14 +181,18 @@ export default {
             }
         },
 
-        async getMyProperties(){
+        getMyProperties(){
             for (let i=0; i<this.properties.length; i++)
             {
                 if (this.properties[i].owner.toLowerCase() == this.account){
+                    console.log("aa");
                     this.myProperties.push(this.properties[i].id);
-                    console.log(this.properties[i].id);
                 }
             }
+        },
+
+        getMyTokens(){
+            
         },
         
         async logout() {
@@ -208,10 +217,9 @@ export default {
         async renderProperties(){
             try {
                 this.properties     = [];
+                this.tokenizedProperties = [];
 
                 const invalidAddr   = 0x0000000000000000000000000000000000000000;
-                // const props = await Dapp.Properties.properties;
-                // console.log(props);
                 let numProperties   = await Dapp.Properties.cnt();
 
                 for (let i = 0; i < numProperties.toNumber(); i++)
@@ -219,8 +227,16 @@ export default {
                     let prop = await Dapp.Properties.properties(i);
                     let owner = prop.owner;
 
-                    if (owner != invalidAddr)
+                    if (owner != invalidAddr){
                         this.properties.push(prop);
+                        
+                        // let propTokenized = await Dapp.Properties.tokenizedProperties(i);
+                        // if (propTokenized.idProperty != null){
+                        //     this.tokenizedProperties.push(propTokenized);
+                        //     this.propertiesTokens.push(tokensProp);
+                        // } else
+                        //     this.tokenizedProperties.push(0);
+                    }
                 }         
             } catch (err) {
                 console.log(err);
