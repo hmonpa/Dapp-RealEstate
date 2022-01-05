@@ -451,7 +451,9 @@ export default {
               await Dapp.buyTokens(from, prop.id, tokens, arg);
               break; 
           }
-            // window.location.reload();
+
+          window.location.reload();
+        
         }
       }).catch(Swal.fire.noop);
     },

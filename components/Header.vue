@@ -91,6 +91,17 @@
                                 <p>{{ prop }}</p>
                             </div>
                         </div>
+                        <div style="margin-top: 30px" v-if="tokensRender">
+                            <h6>My Tokens: {{ myTokens.length }}</h6>
+                            <div 
+                                v-if="myTokens.length > 0"
+                                v-for="(token, index) in myTokens"
+                                :key="index"
+                            >
+                                <p>Token from property: {{ token.id }}</p>
+                                <p>Number of tokens: {{ token.tokens }}</p>
+                            </div>
+                        </div>
                     </div>
                     <div class="modal-footer">
                     <button
@@ -135,7 +146,8 @@ export default {
             properties: [],
             tokenizedProperties: [],
             myProperties: [],
-            myTokens: []
+            myTokens: [],
+            tokensRender: false
         }
     },
     async beforeMount(){
@@ -156,7 +168,7 @@ export default {
 
         await this.renderProperties();
         this.getMyProperties();
-        this.getMyTokens();
+        await this.getMyTokens();
     },
     methods: {
         isAccountChanged(){
@@ -185,14 +197,36 @@ export default {
             for (let i=0; i<this.properties.length; i++)
             {
                 if (this.properties[i].owner.toLowerCase() == this.account){
-                    console.log("aa");
                     this.myProperties.push(this.properties[i].id);
                 }
             }
         },
 
-        getMyTokens(){
-            
+        async getMyTokens(){
+            try {
+                this.myTokens = [];
+
+                let numTokensPurchased   = await Dapp.Properties.cntTokens();
+
+                for (let i = 0; i < numTokensPurchased.toNumber(); i++){
+                    let tokenIndex = await Dapp.Properties.ownershipTokens(i);
+                    
+                    if(tokenIndex.owner.toLowerCase() == this.account)
+                    {
+                        for (let j = 0; j < this.myTokens.length; j++){
+                            if(this.myTokens[j].id == tokenIndex.id){
+                                this.myTokens[j].tokens += tokenIndex.tokens.toNumber;
+                            }
+                        }
+                        this.myTokens.push(tokenIndex);
+                    }
+                }
+                
+                this.tokensRender = true;
+
+            } catch (err) {
+                console.log(err);
+            }
         },
         
         async logout() {
@@ -207,7 +241,8 @@ export default {
                 if(res.isConfirmed) {
                     let user = auth.getUserLogged();
                     auth.logoutUser(user);
-                    this.myProperties = [];
+                    this.myProperties   = [];
+                    this.myTokens       = [];
                     window.location.href = "/";
                 }
             });
@@ -216,8 +251,8 @@ export default {
         // Catch the current created properties
         async renderProperties(){
             try {
-                this.properties     = [];
-                this.tokenizedProperties = [];
+                this.properties             = [];
+                this.tokenizedProperties    = [];
 
                 const invalidAddr   = 0x0000000000000000000000000000000000000000;
                 let numProperties   = await Dapp.Properties.cnt();
@@ -227,17 +262,10 @@ export default {
                     let prop = await Dapp.Properties.properties(i);
                     let owner = prop.owner;
 
-                    if (owner != invalidAddr){
+                    if (owner != invalidAddr)
                         this.properties.push(prop);
-                        
-                        // let propTokenized = await Dapp.Properties.tokenizedProperties(i);
-                        // if (propTokenized.idProperty != null){
-                        //     this.tokenizedProperties.push(propTokenized);
-                        //     this.propertiesTokens.push(tokensProp);
-                        // } else
-                        //     this.tokenizedProperties.push(0);
-                    }
-                }         
+                }
+                
             } catch (err) {
                 console.log(err);
             }

@@ -42,9 +42,16 @@ contract Properties {
         uint256 tokens;
     }
 
-    struct initialTokens
+    struct structTokens
     {
         string id;
+        uint256 tokens;
+    }
+
+    struct tokensPurchased
+    {
+        string id;
+        address owner;
         uint256 tokens;
     }
 
@@ -105,15 +112,18 @@ contract Properties {
     mapping (uint256 => propertyForRenting) public rentalProperties;
     mapping (uint256 => tokenizedProperty) public tokenizedProperties;
 
-    mapping (uint256 => initialTokens) public startedTokens;
     mapping (uint256 => propertyImages) public propertyImg;
-    
-    // Array
-    Property[] public props;
-    // propertyData[] public propsData;
 
-    // Counter
+    mapping (uint256 => structTokens) public startedTokens;
+
+    mapping (uint256 => tokensPurchased) public ownershipTokens;
+
+    // Arrays
+    Property[] public props;
+
+    // Counters
     uint public cnt = 0;
+    uint public cntTokens = 0;
 
     // ----------------------- EVENTS -----------------------
     event PropertyCreated(
@@ -171,7 +181,7 @@ contract Properties {
         
         if (_tokens != 0){
             tokenizedProperties[cnt] = tokenizedProperty(_id, _rentalEndDate, _tokens);
-            startedTokens[cnt] = initialTokens(_id, _tokens);
+            startedTokens[cnt] = structTokens(_id, _tokens);
 
             emit TokenizedPropertyCreated(_id, _rentalEndDate, _tokens);
         }
@@ -268,6 +278,9 @@ contract Properties {
         this.sendBalance(payable(addr), msg.value); // Msg value is price / numTokens
         
         emit propertyTokenPurchased(_from, _id, _numTokens, (props[index].price/_numTokens));
+
+        ownershipTokens[cntTokens] = tokensPurchased(_id, _from, _numTokens);
+        cntTokens += _numTokens;
         
         // Updating current number of tokens
         uint256 currentTokens = tokenizedProperties[index].tokens;
