@@ -66,7 +66,7 @@ contract Properties {
     {
         // Example for rent with tokens
         addPropertyData(
-            2,                                                  // Num of rooms 
+            3,                                                  // Num of rooms 
             70,                                                 // Area in m²
             1                                                   // Num of bathrooms
         );
@@ -78,7 +78,7 @@ contract Properties {
             "Avinguda Barcelona, 88, Bajo",                     // Physical address
             2000000000000000000,                                // Price in wei (2 ETH)
             0,                                                  // Rent --> 0
-            2,                                                  // Tokens
+            3,                                                  // Tokens
             1672614000,                                         // Rental end date
             'QmaxxE5EADVcqX6fVmtoqwMtawnapGJ7AaiX9kYrKqiKyx'    // CID
         );

@@ -92,7 +92,7 @@
                             </div>
                         </div>
                         <div style="margin-top: 30px" v-if="tokensRender">
-                            <h6>My Tokens: {{ myTokens.length }}</h6>
+                            <h6>My Tokens: {{ totalUserTokens }}</h6>
                             <div 
                                 v-if="myTokens.length > 0"
                                 v-for="(token, index) in myTokens"
@@ -147,7 +147,8 @@ export default {
             tokenizedProperties: [],
             myProperties: [],
             myTokens: [],
-            tokensRender: false
+            tokensRender: false,
+            totalUserTokens: 0
         }
     },
     async beforeMount(){
@@ -201,33 +202,6 @@ export default {
                 }
             }
         },
-
-        async getMyTokens(){
-            try {
-                this.myTokens = [];
-
-                let numTokensPurchased   = await Dapp.Properties.cntTokens();
-
-                for (let i = 0; i < numTokensPurchased.toNumber(); i++){
-                    let tokenIndex = await Dapp.Properties.ownershipTokens(i);
-                    
-                    if(tokenIndex.owner.toLowerCase() == this.account)
-                    {
-                        for (let j = 0; j < this.myTokens.length; j++){
-                            if(this.myTokens[j].id == tokenIndex.id){
-                                this.myTokens[j].tokens += tokenIndex.tokens.toNumber;
-                            }
-                        }
-                        this.myTokens.push(tokenIndex);
-                    }
-                }
-                
-                this.tokensRender = true;
-
-            } catch (err) {
-                console.log(err);
-            }
-        },
         
         async logout() {
             Swal.fire({
@@ -266,6 +240,69 @@ export default {
                         this.properties.push(prop);
                 }
                 
+            } catch (err) {
+                console.log(err);
+            }
+        },
+
+        async getMyTokens(){
+            try {
+                this.myTokens = [];
+                this.myFilteredTokens = [];
+
+                let numTokensPurchased   = await Dapp.Properties.cntTokens();
+                for (let i = 0; i < numTokensPurchased.toNumber(); i++){
+                    let tokenIndex = await Dapp.Properties.ownershipTokens(i);
+                    
+                    if(tokenIndex.owner.toLowerCase() == this.account)
+                    {
+                        this.myTokens.push(tokenIndex);
+                    }
+                }
+                
+                for (let i = 0; i < this.myTokens.length; i++)
+                {
+                    let firstToken = this.myTokens[i].id;
+                    for (let j = i; j < this.myTokens.length; j++)
+                    {
+                        if(this.myTokens[j].id == firstToken){
+                            let tokensA;
+                            let tokensB;
+                            if(typeof(this.myTokens[i].tokens) != 'number') 
+                                tokensA = this.myTokens[i].tokens.toNumber();
+                            else
+                                tokensA = this.myTokens[i].tokens;
+
+
+                            if(typeof(this.myTokens[j].tokens) != 'number') 
+                                tokensB = this.myTokens[j].tokens.toNumber();
+                            else
+                                tokensB = this.myTokens[j].tokens;
+
+                            let sumTokens = tokensA + tokensB;
+                            this.myTokens[i].tokens = sumTokens;
+                        }
+                    }
+                }
+
+                for (let i = 0; i < this.myTokens.length; i++)
+                {
+                    let firstToken = this.myTokens[i].id;
+                    for (let j = i; j < this.myTokens.length; j++)
+                    {
+                        if(this.myTokens[j].id == firstToken){
+                            this.myTokens.splice(j, 1);
+                        }
+                    }
+                }
+
+                for (let i = 0; i < this.myTokens.length; i++)
+                {
+                    this.totalUserTokens += this.myTokens[i].tokens;
+                }
+
+                this.tokensRender = true;
+
             } catch (err) {
                 console.log(err);
             }
