@@ -545,16 +545,12 @@ export default {
       var content   = '';
       switch (type){
         case "buy":
-          await this.salesContractTemplate(prop);
+          content = await this.salesContractTemplate(prop);
           break;
 
         case "rent":
-          await this.rentContractTemplate(prop);
-          break;
-
-        case "buy-token":
-          await this.tokenContractTemplate(prop);
-          break;      
+          content = await this.rentContractTemplate(prop);
+          break;   
       }
 
       // any kind of extension (.txt,.cpp,.cs,.bat)
@@ -565,13 +561,13 @@ export default {
       });
 
       switch (action) {
-        case 'ipfs':
+        case "ipfs":
           const node  = await IPFS.create({ silent: true });
           let cid     = await node.add(blob);
           this.cidContract = cid.path;
           console.log("Contract added to: ", cid.path);
           break;
-        case 'save':
+        case "save":
           saveAs(blob, filename);
           break;
       }
@@ -598,8 +594,8 @@ export default {
           + '<p style="margin: 20px;text-align:justify"><b>' + "SEGUNDO.-" + '</b>' + "Que la parte compradora abonara el siguiente importe a la parte vendedora: " + '<br>'
           + '<ul><li>' + this.currencyConversion(prop.price, 'EUR') + "EUR ( " + this.currencyConversion(prop.price, 'ETH') + "ETH ) " + '</li></ul><b>' + "TERCERO.-" + '</b>' + "Para que quede constancia y hacer valer el contrato, ambas partes han firmado digitalmente la transaccion mediante la wallet MetaMask." 
           + '<br>' + "La parte vendedora en el momento de publicar la propiedad, y la parte compradora en el momento de abonar el importe, el " + date 
-          + '<br></p><p style="text-align:center"><b>' + "Transaccion realizada desde la aplicacion descentralizada en la red de Ethereum" + '</b><br>'
-          + "Impulsado por:" + '</p><img style="margin: 10px 0px 0px 250px" src="https://ipfs.io/ipfs/QmQNw5BUgkP9YHbsLUW8gnXoHVeqomsv3j8scnjm6YcFBP"></div></div>'
+          + '<br></p><p style="text-align:center"><b>' + "Transaccion realizada desde la aplicacion descentralizada en la red de Ethereum" + '</b><br><br>'
+          + "Impulsado por:" + '</p><img style="margin: 10px 0px 0px 600px" src="https://ipfs.io/ipfs/QmQNw5BUgkP9YHbsLUW8gnXoHVeqomsv3j8scnjm6YcFBP"></div></div>'
       )
     },
 
@@ -618,13 +614,13 @@ export default {
           + buyer[0] + "." + '</p><p style="margin: 20px;text-align:justify"><b>' + "De otro, como arrendador:"
           + '</b><br>' + "D/Da " + seller[1] + " con DNI " + seller[4] + ", y direccion de clave publica " + seller[0] + "." 
           + '</p><p style="text-align:center"><b>' + "EXPONEN" + '</b></p><p style="margin: 20px;text-align:justify"><b>'
-          + "PRIMERO.-" + '</b>' + "Que la parte vendedora es duena de pleno dominio de la siguiente finca: " + '<br><ul><li>'
+          + "PRIMERO.-" + '</b>' + "Que la parte arrendadora es duena de pleno dominio de la siguiente finca: " + '<br><ul><li>'
           + "Catastro: " + prop.id + '</li><li>' + "Direccion: " + prop.physicalAddr + '</li><li>' + "Poblacion: " + prop.city + '</li></ul></p>'
-          + '<p style="margin: 20px;text-align:justify"><b>' + "SEGUNDO.-" + '</b>' + "Que la parte compradora abonara el siguiente importe a la parte vendedora: " + '<br>'
+          + '<p style="margin: 20px;text-align:justify"><b>' + "SEGUNDO.-" + '</b>' + "Que la parte arrendataria abonara el siguiente importe a la parte arrendadora: " + '<br>'
           + '<ul><li>' + this.currencyConversion(prop.price, 'EUR') + "EUR ( " + this.currencyConversion(prop.price, 'ETH') + "ETH ) " + '</li></ul><b>' + "TERCERO.-" + '</b>' + "Para que quede constancia y hacer valer el contrato, ambas partes han firmado digitalmente la transaccion mediante la wallet MetaMask." 
-          + '<br>' + "La parte vendedora en el momento de publicar la propiedad, y la parte compradora en el momento de abonar el importe, el " + date 
-          + '<br></p><p style="text-align:center"><b>' + "Transaccion realizada desde la aplicacion descentralizada en la red de Ethereum" + '</b><br>'
-          + "Impulsado por:" + '</p><img style="margin: 10px 0px 0px 250px" src="https://ipfs.io/ipfs/QmQNw5BUgkP9YHbsLUW8gnXoHVeqomsv3j8scnjm6YcFBP"></div></div>'
+          + '<br>' + "La parte arrendadora en el momento de publicar la propiedad, y la parte arrendataria en el momento de abonar el importe, el " + date 
+          + '<br></p><p style="text-align:center"><b>' + "Transaccion realizada desde la aplicacion descentralizada en la red de Ethereum" + '</b><br><br>'
+          + "Impulsado por:" + '</p><img style="margin: 10px 0px 0px 600px" src="https://ipfs.io/ipfs/QmQNw5BUgkP9YHbsLUW8gnXoHVeqomsv3j8scnjm6YcFBP"></div></div>'
       )
     },
 
