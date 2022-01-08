@@ -78,6 +78,11 @@
           <div class="modal-content">
             <div class="modal-header">
               <h6 style="text-align:center">{{ prop.id }} ({{ prop.city }})</h6>
+              <div v-if="isOwner(prop.owner) && userLogged">
+                <button class="remove-property" @click="removeProperty(prop.owner, prop.id)">
+                  <img src="/img/icons/trash.png">
+                </button>
+              </div>
               <button
                 type="button"
                 class="btn-close"
@@ -88,15 +93,10 @@
             </div>
 
             <div class="modal-body" style="padding: 40px;text-align:center">
-              <div v-if="prop.sellOrRent == 0 && tokenizedProperties[index] > 0" style="background-color:yellow;width:100%">
+              <div v-if="prop.sellOrRent == 0 && tokenizedProperties[index] > 0" class="tokenized-div">
                 <p class="description">TOKENIZED PROPERTY</p>
               </div>
               <div v-if="properties">
-                <div v-if="isOwner(prop.owner) && userLogged">
-                  <button class="remove-property" @click="removeProperty(prop.owner, prop.id)">
-                    <img src="/img/icons/trash.png">
-                  </button>
-                </div>
                 <img class="images" :src="`https://ipfs.io/ipfs/${getCidFromImg(prop.id)}`">
               </div>
               <span class="line"></span>
@@ -157,7 +157,7 @@
                   v-if="userLogged && prop.id && !isOwner(prop.owner)"
                   type="button"
                   class="buy-property"
-                  @click="sendTransaction('buy-token', prop, tokens, ((prop.price) / tokenizedProperties[index]))"
+                  @click="sendTransaction('buy-token', prop, tokens, index)"
                 >
                   Buy tokens
                 </button>
@@ -359,6 +359,7 @@ export default {
     {
       let buyer       = this.userLogged;
       buyer           = buyer.split(",");
+      let price       = '';
 
       // Getting the API ID of the property...
       const getPropertyId = await axios.get(
@@ -369,11 +370,17 @@ export default {
             
             this.propId = this.propertyVerified[0].id;
         })
+      
+      if (type == 'buy-token'){
+        let pricePerToken = prop.price / this.tokenizedProperties[arg];
+        arg = tokens * pricePerToken;
+        price = arg;
+      } else if (type == 'buy' || type == 'rent')
+        price = prop.price;
 
       Swal.fire({
-
         title: 'Are you sure you want to make the transaction?',
-        text: "If you accept, the payment of " + this.currencyConversion(prop.price, 'ETH') + "ETH will be made at this moment",
+        text: "If you accept, the payment of " + this.currencyConversion(price, 'ETH') + "ETH will be made at this moment",
         imageUrl: 'https://cdn.dribbble.com/users/2574702/screenshots/6702374/metamask.gif',
         imageWidth: 400,
         imageHeight: 300,
@@ -386,19 +393,19 @@ export default {
       }).then(async(result) => {
         if (result.isConfirmed) {
           let from = await Dapp.loadEthereum();
+          let res = '';
           switch (type) {
             case "buy":
-              let res = await Dapp.buyProperty(from, prop.id, prop.price);
+              res = await Dapp.buyProperty(from, prop.id, price);
               
               if (typeof(res) == 'object'){
-                
                 // Transaction doing successfully
                 Swal.fire(
                   'Done!',
-                  'You have sent the payment of ' + this.currencyConversion(prop.price, 'ETH') + 'ETH to ' + prop.owner + '.',
+                  'You have sent the payment of ' + this.currencyConversion(price, 'ETH') + 'ETH to ' + prop.owner + '.',
                   'success'
                 ).then(async() => {
-                  await this.generateContract(prop, 'ipfs');
+                  await this.generateContract(prop, 'ipfs', 'buy');
                   
                   // Update name and idCard from property
                   await axios({
@@ -424,13 +431,18 @@ export default {
                     cancelButtonColor: '#d33',
                     confirmButtonText: 'Download',
                     cancelButtonText: 'No',
-                    footer: '<div class="row" style="text-align:center"><a target="_blank" style="display:inline" href="https://ipfs.io/ipfs/' + this.cidContract + '">Want to see the contract in IPFS?</a><p style="display:inline">Save the CID\n<b>' + this.cidContract + '</b>\nto access it forever!</p></div>'
+                    footer: '<div class="row" style="text-align:center"><a target="_blank" style="display:inline" href="https://ipfs.io/ipfs/' + this.cidContract + '">Want to see the contract in IPFS?</a><p style="display:inline">Save the CID\n<b>' + this.cidContract + '</b>\nto access it forever!</p></div>',
+                    
+                    
                   }).then(async(res) => {
                     if(res.isConfirmed) {
-                      await this.generateContract(prop, 'save');
+                      await this.generateContract(prop, 'save', 'buy');
+                    } else {
+                      window.location.reload();
                     }
                   });
                 });
+                  
 
               } else {
                 // Error, insufficient balance
@@ -440,11 +452,54 @@ export default {
                   'error'
                 );
               }
-
+              
               break;
 
             case "rent":
-              await Dapp.rentProperty(from, prop.id, arg, prop.price);
+              res = await Dapp.rentProperty(from, prop.id, arg, prop.price);
+
+              if (typeof(res) == 'object'){
+                // Transaction doing successfully
+                Swal.fire(
+                  'Done!',
+                  'You have sent the payment of ' + this.currencyConversion(price, 'ETH') + 'ETH to ' + prop.owner + '.',
+                  'success'
+                ).then(async() => {
+                  await this.generateContract(prop, 'ipfs', 'rent');
+
+                  // Option for download the IPFS contract
+                  Swal.fire({
+                    text: "Do you want to download the contract?",
+                    imageUrl: 'https://docs.ipfs.io/images/ipfs-logo.svg',
+                    imageWidth: 169,
+                    imageHeight: 196,
+                    imageAlt: 'IPFS image',
+                    showCancelButton: true,
+                    confirmButtonColor: '#00F838',
+                    cancelButtonColor: '#d33',
+                    confirmButtonText: 'Download',
+                    cancelButtonText: 'No',
+                    footer: '<div class="row" style="text-align:center"><a target="_blank" style="display:inline" href="https://ipfs.io/ipfs/' + this.cidContract + '">Want to see the contract in IPFS?</a><p style="display:inline">Save the CID\n<b>' + this.cidContract + '</b>\nto access it forever!</p></div>',
+                    
+                    
+                  }).then(async(res) => {
+                    if(res.isConfirmed) {
+                      await this.generateContract(prop, 'save', 'rent');
+                    } else {
+                      window.location.reload();
+                    }
+                  });
+                });
+                  
+
+              } else {
+                // Error, insufficient balance
+                Swal.fire(
+                  'Error!',
+                  'Your balance is ' + this.currencyConversion(res, 'ETH') + 'ETH. It is insufficient to complete the transaction',
+                  'error'
+                );
+              }
               break;
 
             case "buy-token":
@@ -452,7 +507,7 @@ export default {
               break; 
           }
 
-          window.location.reload();
+          
         
         }
       }).catch(Swal.fire.noop);
@@ -485,9 +540,23 @@ export default {
       })
     },
 
-    async generateContract(prop, action)
+    async generateContract(prop, action, type)
     {
-      var content   = await this.salesContractTemplate(prop);
+      var content   = '';
+      switch (type){
+        case "buy":
+          await this.salesContractTemplate(prop);
+          break;
+
+        case "rent":
+          await this.rentContractTemplate(prop);
+          break;
+
+        case "buy-token":
+          await this.tokenContractTemplate(prop);
+          break;      
+      }
+
       // any kind of extension (.txt,.cpp,.cs,.bat)
       var filename  = "Contract " + prop.id;
 
@@ -511,8 +580,6 @@ export default {
 
     async salesContractTemplate(prop)
     {
-      // const buyerAddr = await Dapp.currentAddr();
-
       let buyer       = this.userLogged;
       buyer           = buyer.split(",");
       let seller      = await Dapp.getUserData(prop.owner);
@@ -524,6 +591,31 @@ export default {
           + "Contrato de compra venta del inmueble " + prop.id + '</b></p><p style="margin: 20px;text-align:justify"><b>'
           + "De un lado, la parte compradora:" + '</b><br>' + "D/Da " + buyer[1] + " con DNI " + buyer[4] + ", y direccion de clave publica " 
           + buyer[0] + "." + '</p><p style="margin: 20px;text-align:justify"><b>' + "De otro, la parte vendedora:"
+          + '</b><br>' + "D/Da " + seller[1] + " con DNI " + seller[4] + ", y direccion de clave publica " + seller[0] + "." 
+          + '</p><p style="text-align:center"><b>' + "EXPONEN" + '</b></p><p style="margin: 20px;text-align:justify"><b>'
+          + "PRIMERO.-" + '</b>' + "Que la parte vendedora es duena de pleno dominio de la siguiente finca: " + '<br><ul><li>'
+          + "Catastro: " + prop.id + '</li><li>' + "Direccion: " + prop.physicalAddr + '</li><li>' + "Poblacion: " + prop.city + '</li></ul></p>'
+          + '<p style="margin: 20px;text-align:justify"><b>' + "SEGUNDO.-" + '</b>' + "Que la parte compradora abonara el siguiente importe a la parte vendedora: " + '<br>'
+          + '<ul><li>' + this.currencyConversion(prop.price, 'EUR') + "EUR ( " + this.currencyConversion(prop.price, 'ETH') + "ETH ) " + '</li></ul><b>' + "TERCERO.-" + '</b>' + "Para que quede constancia y hacer valer el contrato, ambas partes han firmado digitalmente la transaccion mediante la wallet MetaMask." 
+          + '<br>' + "La parte vendedora en el momento de publicar la propiedad, y la parte compradora en el momento de abonar el importe, el " + date 
+          + '<br></p><p style="text-align:center"><b>' + "Transaccion realizada desde la aplicacion descentralizada en la red de Ethereum" + '</b><br>'
+          + "Impulsado por:" + '</p><img style="margin: 10px 0px 0px 250px" src="https://ipfs.io/ipfs/QmQNw5BUgkP9YHbsLUW8gnXoHVeqomsv3j8scnjm6YcFBP"></div></div>'
+      )
+    },
+
+    async rentContractTemplate(prop)
+    {
+      let buyer       = this.userLogged;
+      buyer           = buyer.split(",");
+      let seller      = await Dapp.getUserData(prop.owner);
+
+      const date      = new Date().toLocaleString();
+
+      return (
+        '<div class="container"><div class="col-md-4></div><div class="col-md-4"><p style="text-align:center"><b>' 
+          + "Contrato de alquiler del inmueble " + prop.id + '</b></p><p style="margin: 20px;text-align:justify"><b>'
+          + "De un lado, como arrendatario:" + '</b><br>' + "D/Da " + buyer[1] + " con DNI " + buyer[4] + ", y direccion de clave publica " 
+          + buyer[0] + "." + '</p><p style="margin: 20px;text-align:justify"><b>' + "De otro, como arrendador:"
           + '</b><br>' + "D/Da " + seller[1] + " con DNI " + seller[4] + ", y direccion de clave publica " + seller[0] + "." 
           + '</p><p style="text-align:center"><b>' + "EXPONEN" + '</b></p><p style="margin: 20px;text-align:justify"><b>'
           + "PRIMERO.-" + '</b>' + "Que la parte vendedora es duena de pleno dominio de la siguiente finca: " + '<br><ul><li>'
@@ -560,7 +652,7 @@ export default {
       }
     },
 
-    // 
+    // Get property data from array
     getPropertyData(index, type)
     {
       if(this.propertiesData[index])
@@ -653,7 +745,6 @@ export default {
     background-color: #3498db;
     padding: 20px 0 20px 0;
     border-radius: 10px;
-    
   }
 
   .filters select {
@@ -674,6 +765,7 @@ export default {
     border: none;
   }
 
+  /* Property Box */
   .properties .container {
     margin-bottom: 150px;
   }
@@ -804,7 +896,6 @@ export default {
     border-radius: 45px 0 0 45px;
   }
 
-
   .properties .img-preview img {
     width: 100px;
     height: 100px;
@@ -812,6 +903,14 @@ export default {
     object-fit: cover;
     object-position: center center;
     border-radius: 60%;
+  }
+
+  .properties .tokenized-div {
+    background-color: yellow;
+    margin-left: 102px;
+    width: 500px;
+    max-width: 700px;
+    max-height: 700px;
   }
 
   .properties .images {
@@ -875,11 +974,11 @@ export default {
   /* Remove Property Class*/
   .properties .remove-property {
     border: none;
-    margin-left: 640px;
+    margin-left: 450px;
     background-color: #fff;
   }
   .properties .remove-property img {
-    max-width: 50px;
-    max-height: 50px;
+    max-width: 40px;
+    max-height: 40px;
   }
 </style>

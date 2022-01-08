@@ -102,6 +102,25 @@ contract Properties {
             'QmYUAQbT6Q4UZh4LdWtSH3sPbXvR2xWP2LqDtkM3JQcUrk'    // CID
         );
 
+        // Example for rent (without tokens)
+        addPropertyData(
+            2,                                                  // Num of rooms 
+            80,                                                 // Area in m²
+            1                                                   // Num of bathrooms
+        );
+
+        uploadProperty(
+            "19-HM0001-0001-SD",                                // ID
+            0x53bdBcba4f533536cAB110cFdcF3600642e10134,         // Owner
+            "Viladecans",                                       // City
+            "Carrer del Foc, 44, 1er 2a",                       // Physical address
+            2000000000000000000,                                // Price in wei (2 ETH)
+            0,                                                  // Sell --> 1
+            0,                                                  // Tokens
+            1672614000,                                         // Rental end date
+            'QmP2LT4xgLwgesSJnwZAGJAuMR1tjFE5vNwcxDsn9EEY9P'    // CID
+        );
+
     }
 
     // ----------------------- MAPPINGS & VARIABLES -----------------------

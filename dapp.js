@@ -126,7 +126,7 @@ export const Dapp = {
             });
 
         } catch (err) {
-            console.log(err);
+            return await web3.eth.getBalance(from);
         }
     },
 
