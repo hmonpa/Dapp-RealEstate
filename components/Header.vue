@@ -263,7 +263,8 @@ export default {
                 for (let i = 0; i < this.myTokens.length; i++)
                 {
                     let firstToken = this.myTokens[i].id;
-                    for (let j = i; j < this.myTokens.length; j++)
+                    let j = i;
+                    for (j = i+1; j < this.myTokens.length; j++)
                     {
                         if(this.myTokens[j].id == firstToken){
                             let tokensA;
@@ -281,17 +282,16 @@ export default {
 
                             let sumTokens = tokensA + tokensB;
                             this.myTokens[i].tokens = sumTokens;
+                            this.myTokens[j].id = 'revised';
                         }
                     }
-                }
-
-                for (let i = 0; i < this.myTokens.length; i++)
-                {
-                    let firstToken = this.myTokens[i].id;
-                    for (let j = i; j < this.myTokens.length; j++)
+                    if (j == this.myTokens.length)
                     {
-                        if(this.myTokens[j].id == firstToken){
-                            this.myTokens.splice(j, 1);
+                        for (j = 0; j < this.myTokens.length; j++)
+                        {
+                            if(this.myTokens[j].id == 'revised'){
+                                this.myTokens.splice(j, 1);
+                            }
                         }
                     }
                 }

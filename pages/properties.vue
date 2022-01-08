@@ -141,7 +141,7 @@
                 <p>Rental end date: {{ getStringDate(tokenizedPropDates[index]) }}</p>
                 <p>Available tokens: {{ tokenizedProperties[index] }}</p>
                 <p v-if="propertiesTokens[index]">
-                  Price per token: {{ (currencyConversion(prop.price, 'EUR') / getNumOfTokens(index)) }}€ ({{ (currencyConversion(prop.price, 'ETH') / getNumOfTokens(index)) }} ETH)
+                  Price per token: {{ (currencyConversion(prop.price, 'EUR') / getNumOfTokens(index)).toFixed(2) }}€ ({{ (currencyConversion(prop.price, 'ETH') / getNumOfTokens(index)).toFixed(2) }} ETH)
                 </p>
 
                 <div v-if="userLogged && !isOwner(prop.owner)">
