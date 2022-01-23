@@ -74,32 +74,32 @@
                         ></button>
                     </div>
                     <div class="modal-body" style="padding: 40px;text-align:center">
-                        <span class="line"></span>
-                        <img :src="`https://ipfs.io/ipfs/${userLogged[5]}`">
-                        <h6>Name: {{ userLogged[1] }}</h6>
-                        <h6>ID card: {{ userLogged[4] }}</h6>
-                        <h6>Email: {{ userLogged[2] }}</h6> 
-                        <h6>User since: {{ new Date(userLogged[3]*1000).toLocaleString() }}</h6>
+                        <!--<span class="line"></span>-->
+                        <img id="ipfsImage" :src="`https://ipfs.io/ipfs/${userLogged[5]}`">
+                        <h6 class="params">Name: <b>{{ userLogged[1] }}</b></h6>
+                        <h6 class="params">ID card: <b>{{ userLogged[4] }}</b></h6>
+                        <h6 class="params">Email: <b>{{ userLogged[2] }}</b></h6> 
+                        <h6 class="params">User since: <b>{{ new Date(userLogged[3]*1000).toLocaleString() }}</b></h6>
                         <div style="margin-top: 30px">
-                            <h6>My Properties: {{ myProperties.length }}</h6>
+                            <h6 class="params">My Properties: <b>{{ myProperties.length }}</b></h6>
                             <div 
                                 v-if="myProperties.length > 0"
                                 v-for="(prop, index) in myProperties"
                                 :key="index"
                                 style="margin-top: 10px"
                             >
-                                <p>{{ prop }}</p>
+                                <h6><b>{{ prop }}</b></h6>
                             </div>
                         </div>
                         <div style="margin-top: 30px" v-if="tokensRender">
-                            <h6>My Tokens: {{ totalUserTokens }}</h6>
+                            <h6 class="params">My Tokens: <b>{{ totalUserTokens }}</b></h6>
                             <div 
                                 v-if="myTokens.length > 0"
                                 v-for="(token, index) in myTokens"
                                 :key="index"
                             >
-                                <p>Token from property: {{ token.id }}</p>
-                                <p>Number of tokens: {{ token.tokens }}</p>
+                                <h6>Token from property: <b>{{ token.id }}</b></h6>
+                                <h6>Number of tokens: <b>{{ token.tokens }}</b></h6>
                             </div>
                         </div>
                     </div>

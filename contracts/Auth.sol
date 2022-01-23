@@ -11,11 +11,11 @@ contract Auth {
     uint public usersCounter = 0;
     struct User 
     {
-        address addr;                   // Wallet @
-        string name;    
+        address addr;                   // Account @
+        string name;
         string email;            
         string password;
-        string vatId;                   // DNI
+        string idCard;                  // DNI
         string ipfsImage;               // Image
         bool isLoggedIn;
         uint256 createdAt;
@@ -29,9 +29,9 @@ contract Auth {
         signUp(0x08a012d3647B2093F8D9b5907AAE6d7A021aEB45, "Prueba", "test@gmail.com", "a", "0000000X", "QmexEk7JfbJ6qj3vHEtVSY7LT3pA6VPevH5DGn5PRzz7Ge");
     }
 
-    // ----------------------- MAPPINGS -----------------------
+    // ----------------------- MAPPINGS & ARRAYS -----------------------
+    
     mapping(address => User) public usersByAddr;
-    // mapping(uint256 => User) public users;
     User[] public users;
 
     // ----------------------- EVENTS -----------------------
@@ -40,7 +40,7 @@ contract Auth {
         string name,
         string email,
         string password,
-        string _vatId, 
+        string _idCard, 
         string _ipfsImage,
         bool isLoggedIn,
         uint256 createdAt
@@ -65,16 +65,16 @@ contract Auth {
         string memory _name,
         string memory _email,
         string memory _password,
-        string memory _vatId,
+        string memory _idCard,
         string memory _ipfsImage
     ) public returns (bool) 
     {
-        users.push(User(_address, _name, _email, _password, _vatId, _ipfsImage, false, block.timestamp));
-        usersByAddr[_address] = User(_address, _name, _email, _password, _vatId, _ipfsImage,false, block.timestamp);
+        users.push(User(_address, _name, _email, _password, _idCard, _ipfsImage, false, block.timestamp));
+        usersByAddr[_address] = User(_address, _name, _email, _password, _idCard, _ipfsImage,false, block.timestamp);
         
         usersCounter++;
 
-        emit newUser(_address, _name, _email, _password,_vatId, _ipfsImage, false, block.timestamp);
+        emit newUser(_address, _name, _email, _password,_idCard, _ipfsImage, false, block.timestamp);
         return true;
     }
 
@@ -86,7 +86,6 @@ contract Auth {
             && 
             usersByAddr[_address].addr == _address)
         {
-            // users[usersCounter].isLoggedIn      = true;
             usersByAddr[_address].isLoggedIn   = true;
             emit userLogged(_address, usersByAddr[_address].name, usersByAddr[_address].isLoggedIn);
             
@@ -100,7 +99,7 @@ contract Auth {
     // Get complete user from @
     function getUser(address _address) public view returns (address, string memory, string memory, uint256, string memory, string memory)
     {
-        return (usersByAddr[_address].addr, usersByAddr[_address].name, usersByAddr[_address].email, usersByAddr[_address].createdAt, usersByAddr[_address].vatId, usersByAddr[_address].ipfsImage);
+        return (usersByAddr[_address].addr, usersByAddr[_address].name, usersByAddr[_address].email, usersByAddr[_address].createdAt, usersByAddr[_address].idCard, usersByAddr[_address].ipfsImage);
     }
 
     // Get @ from index
@@ -110,6 +109,7 @@ contract Auth {
     }
 
     // Get name from @
+    // TO DELETE
     function getName(address _address) public view returns (string memory)
     {
         for (uint i = 0; i < usersCounter; i++)
@@ -121,7 +121,7 @@ contract Auth {
 
     // --------------- CHECK STATUSES OF SESSIONS ---------------
     // Checking login status by index
-    function checkIsUserLogged(uint _usersCounter) public view returns (bool)
+    function checkIfUserLogged(uint _usersCounter) public view returns (bool)
     {
         return (users[_usersCounter].isLoggedIn);
     }

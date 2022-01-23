@@ -99,6 +99,17 @@ body .modal-backdrop {
   max-height: 100px;
 }
 
+#header .modal-body .params {
+  margin-top: 20px;
+}
+
+#header #ipfsImage {
+  position: relative;
+  width: 400px;
+  height: auto;
+  overflow: hidden;
+}
+
 /*--------------------------------------------------------------
 # Navigation Menu
 --------------------------------------------------------------*/

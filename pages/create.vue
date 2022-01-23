@@ -118,10 +118,6 @@ export default {
 
     async uploadToIPFS(img)
     {
-      const options = {
-        wrapWithDirectory: true
-      }
-
       const node = await IPFS.create({ silent: true });
       console.log(node);
       let cid = await node.add(img);

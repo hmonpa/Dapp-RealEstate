@@ -6,9 +6,10 @@ pragma solidity ^0.8.0;
 
 contract Properties {
 
+    // Datos generales de una propiedad
     struct Property 
     {
-        string id;                     // Ref. catastral              
+        string id;         
         address owner;
         string city;
         string physicalAddr;            
@@ -16,12 +17,20 @@ contract Properties {
         uint256 rooms;
         uint256 area;
         uint256 bathrooms;
-        uint sellOrRent;   
+        uint sellOrRent;            // Sell -> 1 : Rent -> 0
         // Dates
         uint256 createdAt;
         uint256 soldOn;
     }
 
+    // Imagen de una propiedad
+    struct propertyImages
+    {
+        string id;
+        string ipfsImage;
+    }
+
+    // Datos extra de una propiedad
     struct propertyData
     {
         uint256 rooms;
@@ -29,12 +38,14 @@ contract Properties {
         uint256 bathrooms;
     }
 
+    // Propiedad en alquiler
     struct propertyForRenting
     {
         string idProperty;
         uint256 rentalEndDate;
     }
 
+    // Propiedad en alquiler de manera tokenizada
     struct tokenizedProperty
     {
         string idProperty;
@@ -42,25 +53,22 @@ contract Properties {
         uint256 tokens;
     }
 
-    struct structTokens
+    // Tokens de una propiedad
+    struct propertyTokens
     {
-        string id;
+        string idProperty;
         uint256 tokens;
     }
 
+    // Tokens vendidos
     struct tokensPurchased
     {
-        string id;
+        string idProperty;
         address owner;
         uint256 tokens;
     }
 
-    struct propertyImages
-    {
-        string id;
-        string ipfsImage;
-    }
-
+    // ...
     
     constructor()
     {
@@ -133,7 +141,7 @@ contract Properties {
 
     mapping (uint256 => propertyImages) public propertyImg;
 
-    mapping (uint256 => structTokens) public startedTokens;
+    mapping (uint256 => propertyTokens) public startedTokens;
 
     mapping (uint256 => tokensPurchased) public ownershipTokens;
 
@@ -145,6 +153,8 @@ contract Properties {
     uint public cntTokens = 0;
 
     // ----------------------- EVENTS -----------------------
+
+    // Nueva propiedad publicada
     event PropertyCreated(
         string id,             
         address owner,
@@ -154,12 +164,23 @@ contract Properties {
         uint sellOrRent,
         uint256 createdAt
     );
+
+    // Nueva propiedad publicada en alquiler
     event PropertyForRentingCreated(string idProperty, uint256 rentalEndDate);
+
+    // Nueva propiedad publicada en alquiler de manera tokenizada
     event TokenizedPropertyCreated(string idProperty, uint256 rentalEndDate, uint256 tokens);
 
+    // Propiedad vendida
     event propertySold (address soldBy, uint256 price, uint256 soldOn);
+
+    // Propiedad alquilada
     event propertyRented (address rentedBy, uint256 price, uint256 rentalEndDate);
+
+    // Token(s) adquirido(s) en una propiedad alquilada de manera tokenizada
     event propertyTokenPurchased (address purchasedBy, string idProperty, uint256 numberOfTokens, uint256 pricePerToken);
+
+    // Propiedad eliminada
     event propertyRemoved (address byOwner, string id);
 
 
@@ -200,7 +221,7 @@ contract Properties {
         
         if (_tokens != 0){
             tokenizedProperties[cnt] = tokenizedProperty(_id, _rentalEndDate, _tokens);
-            startedTokens[cnt] = structTokens(_id, _tokens);
+            startedTokens[cnt] = propertyTokens(_id, _tokens);
 
             emit TokenizedPropertyCreated(_id, _rentalEndDate, _tokens);
         }
@@ -210,6 +231,7 @@ contract Properties {
 
     // --------------- GETTERS ---------------
     // Returns the number of properties already created
+    // TO DELETE
     function getAllProperties() public view returns (uint)
     {
         return cnt;

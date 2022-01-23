@@ -77,7 +77,7 @@
         >
           <div class="modal-content">
             <div class="modal-header">
-              <h6 style="text-align:center">{{ prop.id }} ({{ prop.city }})</h6>
+              <h6>{{ prop.id }} ({{ prop.city }})</h6>
               <div v-if="isOwner(prop.owner) && userLogged">
                 <button class="remove-property" @click="removeProperty(prop.owner, prop.id)">
                   <img src="/img/icons/trash.png">
@@ -94,20 +94,22 @@
 
             <div class="modal-body" style="padding: 40px;text-align:center">
               <div v-if="prop.sellOrRent == 0 && tokenizedProperties[index] > 0" class="tokenized-div">
-                <p class="description">TOKENIZED PROPERTY</p>
+                <h6 class="description">TOKENIZED PROPERTY</h6>
               </div>
-              <div v-if="properties">
+              <div>
                 <img class="images" :src="`https://ipfs.io/ipfs/${getCidFromImg(prop.id)}`">
               </div>
-              <span class="line"></span>
-              <h6 style="margin-top:20px">Owner: {{ prop.owner }}</h6>
-              <p>Address: {{ prop.physicalAddr }}</p>
-              <p>Published on: {{ getStringDate(prop.createdAt) }}</p> 
-              <p>Price: {{ currencyConversion(prop.price, 'EUR') }}€ ({{ currencyConversion(prop.price, 'ETH') }} ETH)</p>
-              <p>Rooms: {{ getPropertyData(index, 'rooms') }}</p>
-              <p>Bathrooms: {{ getPropertyData(index, 'bathrooms') }}</p>
-              <p>Area: {{ getPropertyData(index, 'area') }}m²</p>
-
+              <div v-if="properties">
+                <h6 style="margin-top:20px">Owner: <br><b>{{ prop.owner }}</b></h6>
+                <h6>Contact: <br><b>{{ owners[index] }}</b></h6>
+                <hr class="line">
+                <h6 style="margin-top:20px">Address: <br><b>{{ prop.physicalAddr }}</b></h6>
+                <h6>Published on: <br><b>{{ getStringDate(prop.createdAt) }}</b></h6> 
+                <h6>Price: <br><b>{{ currencyConversion(prop.price, 'EUR') }}€ ({{ currencyConversion(prop.price, 'ETH') }} ETH)</b></h6>
+                <h6>Rooms: <br><b>{{ getPropertyData(index, 'rooms') }}</b></h6>
+                <h6>Bathrooms: <br><b>{{ getPropertyData(index, 'bathrooms') }}</b></h6>
+                <h6>Area: <br><b>{{ getPropertyData(index, 'area') }}m²</b></h6>
+              </div>
               <!-- #################### DIFFERENT BUTTONS AND CASES #################### -->
               <!-- For selling -->
               <button
@@ -123,7 +125,7 @@
               <div
                 v-if="restrictionForRenting(prop, index)" 
               >
-                <p>Rental end date: {{ getStringDate(rentalProperties[index]) }}</p>
+                <h6>Rental end date: <br><b>{{ getStringDate(rentalProperties[index]) }}</b></h6>
                 <button
                   type="button"
                   class="buy-property"
@@ -137,15 +139,16 @@
                <div 
                 v-if="restrictionForTokenization(prop,index)"
               >
-                <p v-if="propertiesTokens[index]">Initial tokens: {{ getNumOfTokens(index) }}</p>
-                <p>Rental end date: {{ getStringDate(tokenizedPropDates[index]) }}</p>
-                <p>Available tokens: {{ tokenizedProperties[index] }}</p>
-                <p v-if="propertiesTokens[index]">
-                  Price per token: {{ (currencyConversion(prop.price, 'EUR') / getNumOfTokens(index)).toFixed(2) }}€ ({{ (currencyConversion(prop.price, 'ETH') / getNumOfTokens(index)).toFixed(2) }} ETH)
-                </p>
+                <h6 v-if="propertiesTokens[index]">Initial tokens: <br><b>{{ getNumOfTokens(index) }}</b></h6>
+                <h6>Rental end date: <br><b>{{ getStringDate(tokenizedPropDates[index]) }}</b></h6>
+                <h6>Available tokens: <br><b>{{ tokenizedProperties[index] }}</b></h6>
+                <h6 v-if="propertiesTokens[index]">
+                  Price per token: <br><b>{{ (currencyConversion(prop.price, 'EUR') / getNumOfTokens(index)).toFixed(2) }}€ ({{ (currencyConversion(prop.price, 'ETH') / getNumOfTokens(index)).toFixed(2) }} ETH)</b>
+                </h6>
 
                 <div v-if="userLogged && !isOwner(prop.owner)">
-                  <span>Number of tokens:</span>
+                  <br>
+                  <h6>Number of tokens:</h6>
                   <div class="container-rooms">
                     <label id="minus" @click="decrement(index)">-</label>
                     <input :id="'input-tokens-' + index" name="input-tokens" class="input-tokens" type="number" min="1" value="1" readonly>
@@ -237,6 +240,8 @@ export default {
       priceEthEur: '',
       cidContract: '',
 
+      owners: [],
+
       search: '',
       select: 'all'
     } 
@@ -248,6 +253,12 @@ export default {
     this.priceEthEur = await Dapp.getEtherPrice();
 
     await this.renderProperties();
+    
+    for (let i=0;i<this.properties.length;i++)
+    {
+      this.owners.push(await this.getPropertyOwner(this.properties[i].owner));
+    }
+    
   },
 
   computed: {
@@ -667,6 +678,14 @@ export default {
       }
     },
 
+    async getPropertyOwner(addr)
+    {
+      let data = await Dapp.getUserData(addr);
+      let owner = data[2];
+
+      return owner;
+    },
+
     // ----------------------- Check if current address is the owner -----------------------
     isOwner(propOwner)
     {
@@ -881,6 +900,13 @@ export default {
     outline: none;
   }
 
+  .properties .line {
+    width: 70%;
+    margin-left:100px;
+    border:0.5px black solid;
+  }
+
+
   /* Sell or rent style */
   #plus {
     padding: 15px 25px 15px 5px;
@@ -902,7 +928,8 @@ export default {
   }
 
   .properties .tokenized-div {
-    background-color: yellow;
+    background-color: #3498db;
+    color: #fff;
     margin-left: 102px;
     width: 500px;
     max-width: 700px;
