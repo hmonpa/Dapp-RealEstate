@@ -565,14 +565,11 @@ export default {
           break;   
       }
 
-      // any kind of extension (.txt,.cpp,.cs,.bat)
       var filename  = "Contract " + prop.id;
 
       var blob = new Blob([content], {
         type: "text/html;charset=utf-8;charset=ANSI"
       });
-
-      html2pdf().from(blob).save();
 
       switch (action) {
         case "ipfs":
