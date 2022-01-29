@@ -218,6 +218,7 @@ import axios from 'axios';
 import auth from '@/src/auth';
 import * as IPFS from 'ipfs';
 import { saveAs } from 'file-saver';
+import html2pdf from 'html2pdf.js'
 
 import swal from 'sweetalert';
 import Swal from 'sweetalert2';
@@ -571,6 +572,8 @@ export default {
         type: "text/html;charset=utf-8;charset=ANSI"
       });
 
+      html2pdf().from(blob).save();
+
       switch (action) {
         case "ipfs":
           const node  = await IPFS.create({ silent: true });
@@ -579,7 +582,15 @@ export default {
           console.log("Contract added to: ", cid.path);
           break;
         case "save":
-          saveAs(blob, filename);
+          html2pdf(blob, {
+            margin: 1,
+            filename: filename,
+            image: { type: 'jpeg', quality: 0.98 },
+            html2canvas: { dpi: 192, letterRendering: true },
+            jsPDF: { unit: 'in', format: 'letter', orientation: 'landscape' }
+          });
+          // console.log(pdfContract);
+          // saveAs(pdfContract, filename);
           break;
       }
 
@@ -594,7 +605,7 @@ export default {
       const date      = new Date().toLocaleString();
 
       return (
-        '<div class="container"><div class="col-md-4></div><div class="col-md-4"><p style="text-align:center"><b>' 
+        '<div class="container" style="margin:40px"><div class="col-md-4></div><div class="col-md-4"><p style="text-align:center"><b>' 
           + "Contrato de compra venta del inmueble " + prop.id + '</b></p><p style="margin: 20px;text-align:justify"><b>'
           + "De un lado, la parte compradora:" + '</b><br>' + "D/Da " + buyer[1] + " con DNI " + buyer[4] + ", y direccion de clave publica " 
           + buyer[0] + "." + '</p><p style="margin: 20px;text-align:justify"><b>' + "De otro, la parte vendedora:"
@@ -606,7 +617,7 @@ export default {
           + '<ul><li>' + this.currencyConversion(prop.price, 'EUR') + "EUR ( " + this.currencyConversion(prop.price, 'ETH') + "ETH ) " + '</li></ul><b>' + "TERCERO.-" + '</b>' + "Para que quede constancia y hacer valer el contrato, ambas partes han firmado digitalmente la transaccion mediante la wallet MetaMask." 
           + '<br>' + "La parte vendedora en el momento de publicar la propiedad, y la parte compradora en el momento de abonar el importe, el " + date 
           + '<br></p><p style="text-align:center"><b>' + "Transaccion realizada desde la aplicacion descentralizada en la red de Ethereum" + '</b><br><br>'
-          + "Impulsado por:" + '</p><img style="margin: 10px 0px 0px 600px" src="https://ipfs.io/ipfs/QmQNw5BUgkP9YHbsLUW8gnXoHVeqomsv3j8scnjm6YcFBP"></div></div>'
+          + "Impulsado por:" + '</p><img style="margin: 10px 0px 0px 800px" src="/img/logo-with-name"></div></div>'
       )
     },
 
@@ -619,7 +630,7 @@ export default {
       const date      = new Date().toLocaleString();
 
       return (
-        '<div class="container"><div class="col-md-4></div><div class="col-md-4"><p style="text-align:center"><b>' 
+        '<div class="container" style="margin:40px"><div class="col-md-4></div><div class="col-md-4"><p style="text-align:center"><b>' 
           + "Contrato de alquiler del inmueble " + prop.id + '</b></p><p style="margin: 20px;text-align:justify"><b>'
           + "De un lado, como arrendatario:" + '</b><br>' + "D/Da " + buyer[1] + " con DNI " + buyer[4] + ", y direccion de clave publica " 
           + buyer[0] + "." + '</p><p style="margin: 20px;text-align:justify"><b>' + "De otro, como arrendador:"
@@ -631,7 +642,7 @@ export default {
           + '<ul><li>' + this.currencyConversion(prop.price, 'EUR') + "EUR ( " + this.currencyConversion(prop.price, 'ETH') + "ETH ) " + '</li></ul><b>' + "TERCERO.-" + '</b>' + "Para que quede constancia y hacer valer el contrato, ambas partes han firmado digitalmente la transaccion mediante la wallet MetaMask." 
           + '<br>' + "La parte arrendadora en el momento de publicar la propiedad, y la parte arrendataria en el momento de abonar el importe, el " + date 
           + '<br></p><p style="text-align:center"><b>' + "Transaccion realizada desde la aplicacion descentralizada en la red de Ethereum" + '</b><br><br>'
-          + "Impulsado por:" + '</p><img style="margin: 10px 0px 0px 600px" src="https://ipfs.io/ipfs/QmQNw5BUgkP9YHbsLUW8gnXoHVeqomsv3j8scnjm6YcFBP"></div></div>'
+          + "Impulsado por:" + '</p><img style="margin: 10px 0px 0px 800px" src="/img/logo-with-name"></div></div>'
       )
     },
 

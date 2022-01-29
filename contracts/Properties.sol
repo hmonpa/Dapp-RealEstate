@@ -100,7 +100,7 @@ contract Properties {
 
         uploadProperty(
             "19-HM0001-0001-SC",                                // ID
-            0x53bdBcba4f533536cAB110cFdcF3600642e10134,         // Owner
+            0xBDBC72E47F837a72abD5f715eB8436D648A40Ba4,         // Owner
             "Sant Boi de Llobregat",                            // City
             "Carrer de la Mort, 123",                           // Physical address
             2000000000000000000,                                // Price in wei (2 ETH)
@@ -119,7 +119,7 @@ contract Properties {
 
         uploadProperty(
             "19-HM0001-0001-SD",                                // ID
-            0x53bdBcba4f533536cAB110cFdcF3600642e10134,         // Owner
+            0xBDBC72E47F837a72abD5f715eB8436D648A40Ba4,         // Owner
             "Viladecans",                                       // City
             "Carrer del Foc, 44, 1er 2a",                       // Physical address
             2000000000000000000,                                // Price in wei (2 ETH)
