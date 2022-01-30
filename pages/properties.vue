@@ -258,6 +258,7 @@ export default {
     for (let i=0;i<this.properties.length;i++)
     {
       this.owners.push(await this.getPropertyOwner(this.properties[i].owner));
+      console.log(this.properties[i].price);
     }
     
   },
