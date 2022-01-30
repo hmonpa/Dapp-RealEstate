@@ -67,8 +67,6 @@ contract Properties {
         address owner;
         uint256 tokens;
     }
-
-    // ...
     
     constructor()
     {

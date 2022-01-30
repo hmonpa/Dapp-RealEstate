@@ -1,6 +1,7 @@
 const Web3          = require('web3');
 const auth          = require('./src/auth');
 const axios         = require('axios');
+const { jsPDF }     = require('jspdf');
 
 // https://www.trufflesuite.com/docs/truffle/advanced/build-processes
 
@@ -223,6 +224,18 @@ export const Dapp = {
         return web3.utils.fromWei(wei, 'ether');
     },
 
+
+
+    generatePDF: (content, filename) => {
+        // const domElement = content;
+        // html2canvas(domElement).then((canvas) => {
+        //     const img = canvas.toDataURL('image/png');
+        //     const pdf = new jsPDF();
+        //     pdf.addImage(imgData, 'JPEG', 0, 0, width, height);
+        //     pdf.save(filename);
+        // })
+        // in progress: https://www.etemkeskin.com/index.php/2021/06/06/create-pdf-file-from-html-using-jspdf-javascript-library-on-client-side/
+    }
 
 
 };
