@@ -224,18 +224,22 @@ export const Dapp = {
         return web3.utils.fromWei(wei, 'ether');
     },
 
-
-
+    // ----------------------- PDF generator ----------------------- 
     generatePDF: (content, filename) => {
-        // const domElement = content;
-        // html2canvas(domElement).then((canvas) => {
-        //     const img = canvas.toDataURL('image/png');
-        //     const pdf = new jsPDF();
-        //     pdf.addImage(imgData, 'JPEG', 0, 0, width, height);
-        //     pdf.save(filename);
-        // })
-        // in progress: https://www.etemkeskin.com/index.php/2021/06/06/create-pdf-file-from-html-using-jspdf-javascript-library-on-client-side/
-    }
 
+        let doc = new jsPDF('p', 'mm', [1200, 1200]);
+        
+        let fixTemplate = content.replace(/\s/g, "&nbsp");
+        fixTemplate = fixTemplate.replace(/(?<=\w)-(?=\w)/g, "&nbsp");
+        fixTemplate += '<div><img style="margin: 10px 0px 0px 100px" src="https://ipfs.io/ipfs/QmQNw5BUgkP9YHbsLUW8gnXoHVeqomsv3j8scnjm6YcFBP"></div>';
+
+        doc.html(fixTemplate, {
+            callback: function(doc) {
+                doc.save(filename);
+            },
+            x: 10,
+            y: 10
+        });
+    }
 
 };

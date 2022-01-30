@@ -24,9 +24,9 @@ contract Auth {
     constructor()
     {
         // Register first user
-        signUp(msg.sender, "Hector", "hmonpa@gmail.com", "a", "47667744F", "QmexEk7JfbJ6qj3vHEtVSY7LT3pA6VPevH5DGn5PRzz7Ge");
-        signUp(0xBDBC72E47F837a72abD5f715eB8436D648A40Ba4, "Random User", "test@gmail.com", "a", "1234567X", "QmexEk7JfbJ6qj3vHEtVSY7LT3pA6VPevH5DGn5PRzz7Ge");
-        signUp(0x75a250d7BA9DF92BAF57856664f0D9c2D24d2db5, "Prueba", "test@gmail.com", "a", "0000000X", "QmexEk7JfbJ6qj3vHEtVSY7LT3pA6VPevH5DGn5PRzz7Ge");
+        signUp(msg.sender, "Hector Montesinos", "hmonpa@gmail.com", "a", "47667744F", "QmexEk7JfbJ6qj3vHEtVSY7LT3pA6VPevH5DGn5PRzz7Ge");
+        signUp(0xBDBC72E47F837a72abD5f715eB8436D648A40Ba4, "Francisco Serrano", "f.serrano@gmail.com", "a", "1234567X", "QmexEk7JfbJ6qj3vHEtVSY7LT3pA6VPevH5DGn5PRzz7Ge");
+        signUp(0x75a250d7BA9DF92BAF57856664f0D9c2D24d2db5, "Claudia Pena", "claudia.penya@gmail.com", "a", "0000000X", "QmexEk7JfbJ6qj3vHEtVSY7LT3pA6VPevH5DGn5PRzz7Ge");
     }
 
     // ----------------------- MAPPINGS & ARRAYS -----------------------

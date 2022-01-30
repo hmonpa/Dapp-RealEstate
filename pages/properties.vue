@@ -514,7 +514,17 @@ export default {
               break;
 
             case "buy-token":
-              await Dapp.buyTokens(from, prop.id, tokens, arg);
+              res = await Dapp.buyTokens(from, prop.id, tokens, arg);
+              if (typeof(res) == 'object'){
+                // Transaction doing successfully
+                Swal.fire(
+                  'Done!',
+                  'You have sent the payment of ' + this.currencyConversion(price, 'ETH') + 'ETH to ' + prop.owner + '.',
+                  'success'
+                ).then(async() => {
+                  window.location.reload();
+                });
+              };
               break; 
           }
 
@@ -564,7 +574,7 @@ export default {
           break;   
       }
 
-      var filename  = "Contract " + prop.id;
+      var filename  = "Contract_" + prop.id + "-" + new Date().toLocaleString();
 
       var blob = new Blob([content], {
         type: "text/html;charset=utf-8;charset=ANSI"
@@ -598,7 +608,7 @@ export default {
       const date      = new Date().toLocaleString();
 
       return (
-        '<div class="container" style="margin:40px"><div class="col-md-4></div><div class="col-md-4"><p style="text-align:center"><b>' 
+        '<div class="container" style="margin:40px;width:100%"><div class="col-md-4></div><div class="col-md-4"><p style="text-align:center"><b>' 
           + "Contrato de compra venta del inmueble " + prop.id + '</b></p><p style="margin: 20px;text-align:justify"><b>'
           + "De un lado, la parte compradora:" + '</b><br>' + "D/Da " + buyer[1] + " con DNI " + buyer[4] + ", y direccion de clave publica " 
           + buyer[0] + "." + '</p><p style="margin: 20px;text-align:justify"><b>' + "De otro, la parte vendedora:"
