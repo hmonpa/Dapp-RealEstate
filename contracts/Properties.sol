@@ -79,7 +79,7 @@ contract Properties {
 
         uploadProperty(
             "19-HM0001-0001-SB",                                // ID
-            msg.sender,                                         // Owner
+            msg.sender,                                         // Owner (Acc1)
             "Cunit",                                            // City
             "Avinguda Barcelona, 88, Bajo",                     // Physical address
             2000000000000000000,                                // Price in wei (2 ETH)
@@ -98,7 +98,7 @@ contract Properties {
 
         uploadProperty(
             "19-HM0001-0001-SC",                                // ID
-            0xBDBC72E47F837a72abD5f715eB8436D648A40Ba4,         // Owner
+            0xBDBC72E47F837a72abD5f715eB8436D648A40Ba4,         // Owner (Acc2)
             "Sant Boi de Llobregat",                            // City
             "Carrer de la Mort, 123",                           // Physical address
             2000000000000000000,                                // Price in wei (2 ETH)
@@ -117,7 +117,7 @@ contract Properties {
 
         uploadProperty(
             "19-HM0001-0001-SD",                                // ID
-            0xBDBC72E47F837a72abD5f715eB8436D648A40Ba4,         // Owner
+            0xBDBC72E47F837a72abD5f715eB8436D648A40Ba4,         // Owner (Acc2)
             "Viladecans",                                       // City
             "Carrer del Foc, 44, 1er 2a",                       // Physical address
             2000000000000000000,                                // Price in wei (2 ETH)

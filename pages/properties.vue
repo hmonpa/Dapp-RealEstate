@@ -8,9 +8,9 @@
           <p>Check out the current properties uploaded to the platform!</p>
         </div>
         <div class="row filters">
-          <select v-if="userLogged" name="filter" id="select" v-model="select">
+          <select name="filter" id="select" v-model="select">
             <option value="all" selected>All</option>
-            <option value="mine">My properties</option>
+            <option value="mine" v-if="userLogged" >My properties</option>
           </select>
           <input type="text" v-model="search" placeholder="Search properties by city..." id="search" />
         </div>
@@ -207,7 +207,6 @@
       </div>
       
       <!-- ################## END OF MODAL ################## -->
-
     </section>
   <!-- End Properties Section -->
 </template>
@@ -726,7 +725,7 @@ export default {
       switch (currency) {
         case 'EUR':
           let ethers = priceInWei/1000000000000000000;
-          return (ethers*this.priceEthEur).toFixed(2);
+          return (ethers*this.priceEthEur).toFixed(0);
           break;
         case 'ETH':
           return (priceInWei/1000000000000000000).toFixed(2);
