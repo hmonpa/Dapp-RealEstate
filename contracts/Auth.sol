@@ -26,7 +26,7 @@ contract Auth {
         // Register first user
 
         // (Acc1)
-        signUp(msg.sender, "Hector Montesinos", "hmonpa@gmail.com", "a", "47667744F", "QmexEk7JfbJ6qj3vHEtVSY7LT3pA6VPevH5DGn5PRzz7Ge");
+        signUp(msg.sender, "Hector Montesinos", "hmonpa@gmail.com", "hectorhector", "47667744F", "QmexEk7JfbJ6qj3vHEtVSY7LT3pA6VPevH5DGn5PRzz7Ge");
         
         // (Acc2)
         signUp(0xBDBC72E47F837a72abD5f715eB8436D648A40Ba4, "Francisco Serrano", "f.serrano@gmail.com", "a", "1234567X", "QmexEk7JfbJ6qj3vHEtVSY7LT3pA6VPevH5DGn5PRzz7Ge");

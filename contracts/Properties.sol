@@ -82,7 +82,7 @@ contract Properties {
             msg.sender,                                         // Owner (Acc1)
             "Cunit",                                            // City
             "Avinguda Barcelona, 88, Bajo",                     // Physical address
-            2000000000000000000,                                // Price in wei (2 ETH)
+            40000000000000000000,                                // Price in wei (40 ETH)
             0,                                                  // Rent --> 0
             3,                                                  // Tokens
             1672614000,                                         // Rental end date
@@ -101,7 +101,7 @@ contract Properties {
             0xBDBC72E47F837a72abD5f715eB8436D648A40Ba4,         // Owner (Acc2)
             "Sant Boi de Llobregat",                            // City
             "Carrer de la Mort, 123",                           // Physical address
-            2000000000000000000,                                // Price in wei (2 ETH)
+            45000000000000000000,                               // Price in wei (45 ETH)
             1,                                                  // Sell --> 1
             0,                                                  // Tokens
             0,                                                  // Rental end date
@@ -120,7 +120,7 @@ contract Properties {
             0xBDBC72E47F837a72abD5f715eB8436D648A40Ba4,         // Owner (Acc2)
             "Viladecans",                                       // City
             "Carrer del Foc, 44, 1er 2a",                       // Physical address
-            2000000000000000000,                                // Price in wei (2 ETH)
+            5000000000000000000,                                // Price in wei (5 ETH)
             0,                                                  // Sell --> 1
             0,                                                  // Tokens
             1672614000,                                         // Rental end date

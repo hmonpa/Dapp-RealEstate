@@ -591,12 +591,15 @@ export default {
           // const jspdf = window.jspdf;
           // console.log(window.jspdf);
           Dapp.generatePDF(content, filename);
-
+          const myTimeout = setTimeout(this.autoReload, 10000);
 
           // saveAs(pdfContract, filename);
           break;
       }
+    },
 
+    autoReload(){
+      window.location.reload();
     },
 
     async salesContractTemplate(prop)

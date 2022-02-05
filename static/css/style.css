@@ -103,11 +103,20 @@ body .modal-backdrop {
   margin-top: 20px;
 }
 
-#header #ipfsImage {
+/* #header #ipfsImage {
   position: relative;
-  max-width: 150px;
+  max-height: 250px;
   height: auto;
   overflow: hidden;
+} */
+
+#header #ipfsImage  {
+  width: 200px;
+  height: 200px;
+  /* margin: 0 0 20px 60px; */
+  object-fit: cover;
+  object-position: center center;
+  border-radius: 60%;
 }
 
 /*--------------------------------------------------------------

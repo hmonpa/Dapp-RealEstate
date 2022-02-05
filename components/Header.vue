@@ -98,7 +98,7 @@
                                 v-for="(token, index) in myTokens"
                                 :key="index"
                             >
-                                <h6>Token from property: <b>{{ token.id }}</b></h6>
+                                <h6>Token from property: <b>{{ token.idProperty }}</b></h6>
                                 <h6>Number of tokens: <b>{{ token.tokens }}</b></h6>
                             </div>
                         </div>
@@ -300,7 +300,7 @@ export default {
                 {
                     this.totalUserTokens += this.myTokens[i].tokens;
                 }
-
+                console.log(this.myTokens);
                 this.tokensRender = true;
 
             } catch (err) {
