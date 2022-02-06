@@ -13,8 +13,8 @@ var Auth            = TruffleContract(authJson);
 var Properties      = TruffleContract(propertiesJson);
 
 Properties.defaults({
-    gas: 4712388,
-    gasPrice: 100000000000
+    gas: 4712388,                   // Gas limit
+    gasPrice: 100000000000          // 100 GWei
 });
 
 
