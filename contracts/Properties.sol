@@ -82,7 +82,7 @@ contract Properties {
             msg.sender,                                         // Owner (Acc1)
             "Cunit",                                            // City
             "Avinguda Barcelona, 88, Bajo",                     // Physical address
-            40000000000000000000,                                // Price in wei (40 ETH)
+            4000000000000000000,                                // Price in wei (4 ETH)
             0,                                                  // Rent --> 0
             3,                                                  // Tokens
             1672614000,                                         // Rental end date
