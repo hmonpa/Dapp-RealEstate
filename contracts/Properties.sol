@@ -152,7 +152,6 @@ contract Properties {
 
     // ----------------------- EVENTS -----------------------
 
-    // Nueva propiedad publicada
     event PropertyCreated(
         string id,             
         address owner,
@@ -163,22 +162,16 @@ contract Properties {
         uint256 createdAt
     );
 
-    // Nueva propiedad publicada en alquiler
     event PropertyForRentingCreated(string idProperty, uint256 rentalEndDate);
 
-    // Nueva propiedad publicada en alquiler de manera tokenizada
     event TokenizedPropertyCreated(string idProperty, uint256 rentalEndDate, uint256 tokens);
 
-    // Propiedad vendida
     event propertySold (address soldBy, uint256 price, uint256 soldOn);
 
-    // Propiedad alquilada
     event propertyRented (address rentedBy, uint256 price, uint256 rentalEndDate);
 
-    // Token(s) adquirido(s) en una propiedad alquilada de manera tokenizada
     event propertyTokenPurchased (address purchasedBy, string idProperty, uint256 numberOfTokens, uint256 pricePerToken);
 
-    // Propiedad eliminada
     event propertyRemoved (address byOwner, string id);
 
 
@@ -228,13 +221,6 @@ contract Properties {
     }
 
     // --------------- GETTERS ---------------
-    // Returns the number of properties already created
-    // TO DELETE
-    function getAllProperties() public view returns (uint)
-    {
-        return cnt;
-    }
-
     // Get a property by their ID
     function getPropertyById(string memory _id) public view returns (uint)
     {
@@ -257,12 +243,6 @@ contract Properties {
         }
         
         return 999999;
-    }
-
-    function getPropertyOwner(string memory _id) public view returns (address)
-    {
-        uint i = getPropertyById(_id);
-        return props[i].owner;
     }
 
     // Send balance to account

@@ -1,11 +1,6 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.0;
 
-// import "https://github.com/0xcert/ethereum-erc721/src/contracts/tokens/nf-token-metadata.sol";
-// import "https://github.com/0xcert/ethereum-erc721/src/contracts/ownership/ownable.sol";
-
-// import "../node_modules/@openzeppelin/contracts/token/ERC721/ERC721.sol";
-
 contract Auth {
 
     uint public usersCounter = 0;
@@ -24,14 +19,8 @@ contract Auth {
     constructor()
     {
         // Register first user
-
-        // (Acc1)
         signUp(msg.sender, "Hector Montesinos", "hmonpa@gmail.com", "hectorhector", "47667744F", "QmexEk7JfbJ6qj3vHEtVSY7LT3pA6VPevH5DGn5PRzz7Ge");
-        
-        // (Acc2)
         signUp(0xBDBC72E47F837a72abD5f715eB8436D648A40Ba4, "Francisco Serrano", "f.serrano@gmail.com", "a", "1234567X", "QmexEk7JfbJ6qj3vHEtVSY7LT3pA6VPevH5DGn5PRzz7Ge");
-        
-        // (Acc3)
         // signUp(0x75a250d7BA9DF92BAF57856664f0D9c2D24d2db5, "Claudia Pena", "claudia.penya@gmail.com", "a", "0000003X", "QmexEk7JfbJ6qj3vHEtVSY7LT3pA6VPevH5DGn5PRzz7Ge");
     }
 
@@ -114,23 +103,7 @@ contract Auth {
         return users[_index].addr;
     }
 
-    // Get name from @
-    // TO DELETE
-    function getName(address _address) public view returns (string memory)
-    {
-        for (uint i = 0; i < usersCounter; i++)
-        {
-            if (_address == users[i].addr) return users[i].name;
-        }
-        revert('Not found');
-    }
-
     // --------------- CHECK STATUSES OF SESSIONS ---------------
-    // Checking login status by index
-    function checkIfUserLogged(uint _usersCounter) public view returns (bool)
-    {
-        return (users[_usersCounter].isLoggedIn);
-    }
 
     // Checking login status by @
     function checkIsUserLoggedByAddr(address _address) public view returns (bool)
