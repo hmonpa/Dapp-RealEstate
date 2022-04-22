@@ -588,12 +588,9 @@ export default {
           console.log("Contract added to: ", cid.path);
           break;
         case "save":
-          // const jspdf = window.jspdf;
-          // console.log(window.jspdf);
           Dapp.generatePDF(content, filename);
           const myTimeout = setTimeout(this.autoReload, 10000);
 
-          // saveAs(pdfContract, filename);
           break;
       }
     },
@@ -781,9 +778,8 @@ export default {
 }
 </script>
 
-<style scoped>
-  /* Properties */
 
+<style scoped>
   .filters {
     display: inline;
     background-color: #3498db;

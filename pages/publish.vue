@@ -245,8 +245,7 @@ export default {
               if (result.isConfirmed) {
                 
                 await Dapp.uploadPropertyData(account, this.rooms, propertyForm["area"].value, this.bathrooms);
-                // console.log(propertyForm["id"].value, account, propertyForm["city"].value, propertyForm["address"].value, propertyForm["price"].value, this.rooms, propertyForm["area"].value, this.bathrooms, this.typeOfProperty, this.tokens, parseInt(moment(propertyForm["date-end"].value).unix()), this.ipfsImage);
-                // Upload property depending if it's for sale or for rent
+
                 this.typeOfProperty == 0 && this.rooms > 1 ? 
                   await Dapp.uploadProperty(propertyForm["id"].value, account, propertyForm["city"].value, propertyForm["address"].value, propertyForm["price"].value, this.typeOfProperty, this.tokens, parseInt(moment(propertyForm["date-end"].value).unix()), this.ipfsImage) 
                   : 

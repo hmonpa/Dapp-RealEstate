@@ -17,9 +17,6 @@
               <div class="text-center" style="margin-top:50px">
                 <button type="submit" @click="signIn">Access</button>
               </div>
-              <!--<div class="text-center" style="margin:30px 0 200px 0">
-                <p>If you don't have an account <a href="/create">click here</a>!</p>
-              </div>-->
             </form>
           </div>
         </div>
@@ -98,12 +95,7 @@ export default {
               let user = await Dapp.getUserData(account);
               auth.setUserLogged(Object.values(user));
 
-              // Swal.fire({
-              //   title: "Login successfully",
-              //   icon: "success"
-              // }).then(function() {
-                window.location.href = "/";
-              // });
+              window.location.href = "/";
             }
           }
         }

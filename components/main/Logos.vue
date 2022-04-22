@@ -10,7 +10,6 @@
             class="img-fluid" 
             alt="" 
           />
-          
           <p v-if="loaded" class="btn-get-started scrollto">
             <span>Current Ether price {{ this.Ether }}€</span>
           </p>
