@@ -212,9 +212,12 @@
 </template>
 
 <script>
-import { Dapp } from '@/dapp';
+import { Web3Controller } from '@/src/controllers/web3';
+import { PropertiesController } from '@/src/controllers/properties';
+import { CurrenciesController } from '@/src/controllers/currencies';
+import { TemplatesController } from '@/src/controllers/templates';
 import axios from 'axios';
-import auth from '@/src/auth';
+import auth from '@/src/services/auth';
 import * as IPFS from 'ipfs';
 import { jsPDF } from 'jspdf';
 import { saveAs } from 'file-saver';
@@ -249,8 +252,8 @@ export default {
   
   async beforeMount(){
     // Load the contracts
-    await Dapp.init();
-    this.priceEthEur = await Dapp.getEtherPrice();
+    await Web3Controller.init();
+    this.priceEthEur = await CurrenciesController.getEtherPrice();
 
     await this.renderProperties();
     
@@ -304,13 +307,13 @@ export default {
 
         const invalidAddr = 0x0000000000000000000000000000000000000000;
 
-        let numProperties = await Dapp.Properties.cnt();
+        let numProperties = await Web3Controller.Properties.cnt();
 
         for (let i = 0; i < numProperties.toNumber(); i++)
         {
-          let prop        = await Dapp.Properties.properties(i);
-          let propData    = await Dapp.Properties.propertiesData(i);
-          let imageProp   = await Dapp.Properties.propertyImg(i);
+          let prop        = await Web3Controller.Properties.properties(i);
+          let propData    = await Web3Controller.Properties.propertiesData(i);
+          let imageProp   = await Web3Controller.Properties.propertyImg(i);
      
           let owner = prop.owner;
 
@@ -323,8 +326,8 @@ export default {
             this.propertiesData.push(propData);
 
 
-            let propRental    = await Dapp.Properties.rentalProperties(i);
-            let propTokenized = await Dapp.Properties.tokenizedProperties(i);
+            let propRental    = await Web3Controller.Properties.rentalProperties(i);
+            let propTokenized = await Web3Controller.Properties.tokenizedProperties(i);
             
             // RENTAL PROPERTY: Add rental end date
             (propRental.idProperty) ? this.rentalProperties.push(propRental[1].toNumber()) : this.rentalProperties.push(0);
@@ -335,7 +338,7 @@ export default {
               this.tokenizedPropDates.push(propTokenized[1]);
               this.tokenizedProperties.push(propTokenized[2].toNumber());
               // Add initial tokens
-              let tokensProp  = await Dapp.Properties.startedTokens(i);
+              let tokensProp  = await Web3Controller.Properties.startedTokens(i);
               this.propertiesTokens.push(tokensProp[1].toNumber());
             } else {
               this.tokenizedPropDates.push(0);
@@ -403,11 +406,11 @@ export default {
 
       }).then(async(result) => {
         if (result.isConfirmed) {
-          let from = await Dapp.loadEthereum();
+          let from = await Web3Controller.loadEthereum();
           let res = '';
           switch (type) {
             case "buy":
-              res = await Dapp.buyProperty(from, prop.id, price);
+              res = await PropertiesController.buyProperty(from, prop.id, price);
               
               if (typeof(res) == 'object'){
                 // Transaction doing successfully
@@ -467,7 +470,7 @@ export default {
               break;
 
             case "rent":
-              res = await Dapp.rentProperty(from, prop.id, arg, prop.price);
+              res = await PropertiesController.rentProperty(from, prop.id, arg, prop.price);
 
               if (typeof(res) == 'object'){
                 // Transaction doing successfully
@@ -514,7 +517,7 @@ export default {
               break;
 
             case "buy-token":
-              res = await Dapp.buyTokens(from, prop.id, tokens, arg);
+              res = await PropertiesController.buyTokens(from, prop.id, tokens, arg);
               if (typeof(res) == 'object'){
                 // Transaction doing successfully
                 Swal.fire(
@@ -547,7 +550,7 @@ export default {
         confirmButtonText: 'Yes, delete it!'
       }).then(async(result) => {
         if (result.isConfirmed) {
-          await Dapp.removeProperty(owner, id);
+          await PropertiesController.removeProperty(owner, id);
           await this.renderProperties();
 
           Swal.fire(
@@ -588,7 +591,7 @@ export default {
           console.log("Contract added to: ", cid.path);
           break;
         case "save":
-          Dapp.generatePDF(content, filename);
+          Web3Controller.generatePDF(content, filename);
           const myTimeout = setTimeout(this.autoReload, 10000);
 
           break;
@@ -603,7 +606,7 @@ export default {
     {
       let buyer       = this.userLogged;
       buyer           = buyer.split(",");
-      let seller      = await Dapp.getUserData(prop.owner);
+      let seller      = await AuthController.getUserData(prop.owner);
 
       const date      = new Date().toLocaleString();
 
@@ -630,7 +633,7 @@ export default {
     {
       let buyer         = this.userLogged;
       buyer             = buyer.split(",");
-      let seller        = await Dapp.getUserData(prop.owner);
+      let seller        = await AuthController.getUserData(prop.owner);
       let found         = false;
       let rentalEndDate = '';
       const date        = new Date().toLocaleString();
@@ -706,7 +709,7 @@ export default {
 
     async getPropertyOwner(addr)
     {
-      let data = await Dapp.getUserData(addr);
+      let data = await AuthController.getUserData(addr);
       let owner = data[2];
 
       return owner;
@@ -735,13 +738,13 @@ export default {
     
     async weiToEur(price)
     {
-      this.priceInEur = await Dapp.convertWeiToEur(price);
+      this.priceInEur = await CurrenciesController.convertWeiToEur(price);
       return this.priceInEur;
     },
 
     async weiToEth(price)
     {
-      this.priceInEth = await Dapp.convertWeiToEth(price);
+      this.priceInEth = await CurrenciesController.convertWeiToEth(price);
       return this.priceInEth;
     },
 

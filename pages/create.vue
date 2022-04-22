@@ -43,10 +43,11 @@
     <!-- End Access Section -->
 </template>
 <script>
-import Vue from 'vue';
-import { Dapp } from '@/dapp';
-import auth from '@/src/auth';
-import * as IPFS from 'ipfs';
+import { AuthController } from '@/src/controllers/auth';
+import { Web3Controller } from '@/src/controllers/web3';
+import { uploadToIPFS } from '@/src/services/ipfs';
+import auth from '@/src/services/auth';
+
 import swal from 'sweetalert';
 import Swal from 'sweetalert2';
 
@@ -70,13 +71,13 @@ export default {
   methods: {
     // Load the contracts
     async start(){
-      await Dapp.init();
+      await Web3Controller.init();
     },
     async signUp() {
       createForm.addEventListener("submit", e => {
           e.preventDefault();
       });
-      const account = await Dapp.currentAddr();
+      const account = await Web3Controller.currentAddr();
 
       // Check if MetaMask is connected with account
       if(!account){
@@ -86,7 +87,7 @@ export default {
           icon: "error"
         });
       } else { 
-        let exists = await Dapp.checkExists(account);
+        let exists = await AuthController.checkExists(account);
 
         if (exists) {
           Swal.fire({
@@ -95,7 +96,7 @@ export default {
               icon: "error"
             })
         } else {
-          await Dapp.signUp(account, createForm["name"].value, createForm["email"].value, createForm["password"].value, createForm["vatid"].value, this.ipfsImage);
+          await AuthController.signUp(account, createForm["name"].value, createForm["email"].value, createForm["password"].value, createForm["vatid"].value, this.ipfsImage);
           
           Swal.fire({
             title: "Welcome " + createForm["name"].value + "!",
@@ -108,22 +109,14 @@ export default {
       }
     },
     // ----------------------- Upload images functions -----------------------
-    onImgSelected(event)
+    async onImgSelected(event)
     {
       event.preventDefault();
       event.stopPropagation();
       this.image = event.target.files[0];
       this.uploadToIPFS(this.image);
-    },
-
-    async uploadToIPFS(img)
-    {
-      const node = await IPFS.create({ silent: true });
-      console.log(node);
-      let cid = await node.add(img);
-      console.log("Node add: ", cid.path);
-      this.ipfsImage = cid.path;
-    },
+      this.ipfsImage = await uploadToIPFS(this.image);
+    }
   }
 }
 </script>

@@ -9,10 +9,10 @@ module.exports = {
       network_id: "*",              // Any network
       gas: 5000000                  // Gas limit used for deploys (in wei)
     },
-    kovan: {
-      provider: () => new HDWalletProvider(mnemonic, "https://kovan.infura.io/v3/080c6e0ac83a44958a72bfa92a3f5110"),
-      network_id: 42
-    }
+    // kovan: {
+    //   provider: () => new HDWalletProvider(mnemonic, "https://kovan.infura.io/v3/080c6e0ac83a44958a72bfa92a3f5110"),
+    //   network_id: 42
+    // }
   },
   compilers: {
     solc: {

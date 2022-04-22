@@ -96,17 +96,19 @@
 </template>
 
 <script>
-import auth from '@/src/auth';
+import auth from '@/src/services/auth';
+import { Web3Controller } from '@/src/controllers/web3';
+import { PropertiesController } from '@/src/controllers/properties';
+import { uploadToIPFS } from '@/src/services/ipfs';
+
 import axios from 'axios';
-import { Dapp } from '@/dapp';
 import moment from 'moment';
-import * as IPFS from 'ipfs';
 import swal from 'sweetalert';
 import Swal from 'sweetalert2';
 
 export default {
   async beforeMount(){
-    await Dapp.init();
+    await Web3Controller.init();
   },
   computed: {
     userLogged() {
@@ -126,25 +128,12 @@ export default {
   },
   methods: {  
     // ----------------------- Upload images functions -----------------------
-    onImgSelected(event)
+    async onImgSelected(event)
     {
       event.preventDefault();
       event.stopPropagation();
       this.image = event.target.files[0];
-      this.uploadToIPFS(this.image);
-    },
-
-    async uploadToIPFS(img)
-    {
-      const options = {
-        wrapWithDirectory: true
-      }
-
-      const node = await IPFS.create({ silent: true });
-      console.log(node);
-      let cid = await node.add(img);
-      console.log("Node add: ", cid.path);
-      this.ipfsImage = cid.path;
+      this.ipfsImage = await uploadToIPFS(this.image);
     },
 
     // ----------------------- Buttons functions -----------------------
@@ -212,7 +201,7 @@ export default {
         e.preventDefault(); 
       });
 
-      const account = await Dapp.currentAddr();
+      const account = await Web3Controller.currentAddr();
       try {
         const owner = this.userLogged.split(",")[4];
         
@@ -228,7 +217,8 @@ export default {
           {
             propertyForm["input-tokens"] == null ? this.tokens = 0 : this.tokens = propertyForm["input-tokens"].value;
 
-            const allowed = await this.isAllowedProperty(propertyForm["id"].value);
+            const allowed = await PropertiesController.propertyExists(propertyForm["id"].value);
+            
 
           if (allowed){
             Swal.fire({
@@ -244,12 +234,12 @@ export default {
             }).then(async(result) => {
               if (result.isConfirmed) {
                 
-                await Dapp.uploadPropertyData(account, this.rooms, propertyForm["area"].value, this.bathrooms);
+                await PropertiesController.uploadPropertyData(account, this.rooms, propertyForm["area"].value, this.bathrooms);
 
                 this.typeOfProperty == 0 && this.rooms > 1 ? 
-                  await Dapp.uploadProperty(propertyForm["id"].value, account, propertyForm["city"].value, propertyForm["address"].value, propertyForm["price"].value, this.typeOfProperty, this.tokens, parseInt(moment(propertyForm["date-end"].value).unix()), this.ipfsImage) 
+                  await PropertiesController.uploadProperty(propertyForm["id"].value, account, propertyForm["city"].value, propertyForm["address"].value, propertyForm["price"].value, this.typeOfProperty, this.tokens, parseInt(moment(propertyForm["date-end"].value).unix()), this.ipfsImage) 
                   : 
-                  await Dapp.uploadProperty(propertyForm["id"].value, account, propertyForm["city"].value, propertyForm["address"].value, propertyForm["price"].value, this.typeOfProperty, 0, 0, this.ipfsImage);
+                  await PropertiesController.uploadProperty(propertyForm["id"].value, account, propertyForm["city"].value, propertyForm["address"].value, propertyForm["price"].value, this.typeOfProperty, 0, 0, this.ipfsImage);
 
                 Swal.fire(
                   'Done!',
@@ -280,14 +270,6 @@ export default {
       } catch (err) {
         console.log(err);
       }
-    }, 
-
-    async isAllowedProperty(id)
-    {
-      const allowedProperty = 999999;
-      const exists = await Dapp.propertyExists(id);
-
-      return (exists == allowedProperty) ? true : false;
     }
   }
 }

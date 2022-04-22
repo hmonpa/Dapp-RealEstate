@@ -121,9 +121,9 @@
 </template>
 
 <script>
-import Vue from 'vue';
-import { Dapp } from '@/dapp';
-import auth from '@/src/auth';
+import { Web3Controller } from '@/src/controllers/web3';
+import auth from '@/src/services/auth';
+
 import swal from 'sweetalert';
 import Swal from 'sweetalert2';
 
@@ -152,12 +152,12 @@ export default {
         }
     },
     async beforeMount(){
-        await Dapp.init();
-        this.account = await Dapp.currentAddr();
+        await Web3Controller.init();
+        this.account = await Web3Controller.currentAddr();
 
         // Checking every second if MetaMask have an account
         var accountInterval = setInterval(async() => {
-            this.account = await Dapp.currentAddr();
+            this.account = await Web3Controller.currentAddr();
             // If userLogged and account changes, force the logout
             if((!this.account && this.userLogged) || (this.userLogged && this.isAccountChanged()))
             {
@@ -177,7 +177,7 @@ export default {
         },
 
         async connectWallet() {
-            this.account = await Dapp.loadEthereum();            
+            this.account = await Web3Controller.loadEthereum();            
             if (!this.account)
             {
                 Swal.fire({
@@ -229,11 +229,11 @@ export default {
                 this.tokenizedProperties    = [];
 
                 const invalidAddr   = 0x0000000000000000000000000000000000000000;
-                let numProperties   = await Dapp.Properties.cnt();
+                let numProperties   = await Web3Controller.Properties.cnt();
 
                 for (let i = 0; i < numProperties.toNumber(); i++)
                 {
-                    let prop = await Dapp.Properties.properties(i);
+                    let prop = await Web3Controller.Properties.properties(i);
                     let owner = prop.owner;
 
                     if (owner != invalidAddr)
@@ -250,9 +250,9 @@ export default {
                 this.myTokens = [];
                 this.myFilteredTokens = [];
 
-                let numTokensPurchased   = await Dapp.Properties.cntTokens();
+                let numTokensPurchased   = await Web3Controller.Properties.cntTokens();
                 for (let i = 0; i < numTokensPurchased.toNumber(); i++){
-                    let tokenIndex = await Dapp.Properties.ownershipTokens(i);
+                    let tokenIndex = await Web3Controller.Properties.ownershipTokens(i);
                     
                     if(tokenIndex.owner.toLowerCase() == this.account)
                     {
@@ -300,7 +300,7 @@ export default {
                 {
                     this.totalUserTokens += this.myTokens[i].tokens;
                 }
-                console.log(this.myTokens);
+
                 this.tokensRender = true;
 
             } catch (err) {

@@ -28,9 +28,10 @@
     <!-- End Access Section -->
 </template>
 <script>
-import Vue from 'vue';
-import { Dapp } from '@/dapp';
-import auth from '@/src/auth';
+import { Web3Controller } from '@/src/controllers/web3';
+import { AuthController } from '@/src/controllers/auth';
+import auth from '@/src/services/auth';
+
 import swal from 'sweetalert';
 import Swal from 'sweetalert2';
 
@@ -50,14 +51,14 @@ export default {
   methods: {
     // Load the contracts
     async start(){
-      await Dapp.init();
+      await Web3Controller.init();
     },
     async signIn() {
         loginForm.addEventListener("submit", e => {
             e.preventDefault();
         });
 
-        const account = await Dapp.currentAddr();
+        const account = await Web3Controller.currentAddr();
 
         // Check if MetaMask is connected with account
         if(!account) {
@@ -68,7 +69,7 @@ export default {
           });
         } else { 
           // Check if the account already exists
-          const exists = await Dapp.checkExists(account);
+          const exists = await AuthController.checkExists(account);
           
           if (!exists)
           {
@@ -80,7 +81,7 @@ export default {
             });
           } else {
             // Try to connect
-            const correctPass = await Dapp.tryToConnect(account, this.password);
+            const correctPass = await AuthController.tryToConnect(account, this.password);
 
             if(!correctPass)
             {
@@ -91,8 +92,8 @@ export default {
               });
             } else {
               // Connection
-              await Dapp.signIn(account, this.password);
-              let user = await Dapp.getUserData(account);
+              await AuthController.signIn(account, this.password);
+              let user = await AuthController.getUserData(account);
               auth.setUserLogged(Object.values(user));
 
               window.location.href = "/";

@@ -21,22 +21,22 @@
 </template>
 
 <script>
-  import { Dapp } from '@/dapp';
-
-  export default {
-    data() {
-      return {
-        Ether: '',
-        loaded: false
-      }
-    },
-    async beforeMount() {
-      var accountInterval = setInterval(async() => {
-        this.Ether = await Dapp.getEtherPrice();
-        this.loaded = true;
-      }, 1000);
+import { Web3Controller } from '@/src/controllers/web3';
+import { CurrenciesController } from '@/src/controllers/currencies';
+export default {
+  data() {
+    return {
+      Ether: '',
+      loaded: false
     }
+  },
+  async beforeMount() {
+    var accountInterval = setInterval(async() => {
+      this.Ether = await CurrenciesController.getEtherPrice();
+      this.loaded = true;
+    }, 10000);
   }
+}
 </script>
 
 <style scoped>
