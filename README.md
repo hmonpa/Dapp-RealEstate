@@ -20,7 +20,7 @@ To carry out this concept test, an investigation will be carried out within the 
     <img height="350" width="650" src="https://github.com/hmonpa/Dapp-RealEstate/blob/master/static/img/doc-imgs/Architecture.png" />
  </p>
  
-  If you want to review the documentation, you can consult the [article](https://github.com/hmonpa/Dapp-RealEstate/blob/master/static/docs/paper.pdf) and the project [report](https://github.com/hmonpa/Dapp-RealEstate/blob/master/static/docs/report.pdf), or visit the [public link](https://upcommons.upc.edu/handle/2117/363147) where it is published.
+  If you want to review the documentation, it is in Spanish :es:, and you can consult the [article](https://github.com/hmonpa/Dapp-RealEstate/blob/master/static/docs/paper.pdf) and the project [report](https://github.com/hmonpa/Dapp-RealEstate/blob/master/static/docs/report.pdf), or visit the [public link](https://upcommons.upc.edu/handle/2117/363147) where it is published.
 
  <p align="center">
     <img src="https://github.com/hmonpa/Dapp-RealEstate/blob/master/static/img/doc-imgs/DApp-Article-Home.png" />
