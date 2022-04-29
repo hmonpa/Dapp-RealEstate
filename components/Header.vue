@@ -123,7 +123,6 @@
 <script>
 import { Web3Controller } from '@/src/controllers/web3';
 import auth from '@/src/services/auth';
-
 import swal from 'sweetalert';
 import Swal from 'sweetalert2';
 
@@ -153,11 +152,11 @@ export default {
     },
     async beforeMount(){
         await Web3Controller.init();
-        this.account = await Web3Controller.currentAddr();
+        this.account = await Web3Controller.loadEthereum();
 
         // Checking every second if MetaMask have an account
         var accountInterval = setInterval(async() => {
-            this.account = await Web3Controller.currentAddr();
+            this.account = await Web3Controller.loadEthereum();
             // If userLogged and account changes, force the logout
             if((!this.account && this.userLogged) || (this.userLogged && this.isAccountChanged()))
             {
@@ -173,7 +172,7 @@ export default {
     },
     methods: {
         isAccountChanged(){
-            return this.account.toLowerCase() !== this.userLogged[0].toLowerCase();
+            return this.account.toLowerCase() != this.userLogged[0].toLowerCase();
         },
 
         async connectWallet() {

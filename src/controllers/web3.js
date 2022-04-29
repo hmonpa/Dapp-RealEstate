@@ -83,5 +83,4 @@ export const Web3Controller = {
         console.log("Contract", Web3Controller.Properties.address, "is deployed done");
     }
 
-
 };

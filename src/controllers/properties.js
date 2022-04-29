@@ -4,9 +4,7 @@ import { CurrenciesController } from './currencies';
 export const PropertiesController = {
 
     propertyExists: async(id) => {
-        console.log("hola")
-        let res = await Web3Controller.Properties.getPropertyById(id);
-        return res;
+        return await Web3Controller.Properties.getPropertyById(id);
     },
 
     uploadPropertyData: async(owner, rooms, area, bathrooms) => {
@@ -29,7 +27,7 @@ export const PropertiesController = {
             return await Web3Controller.Properties.buyProperty(from, id, {
                 from: from, 
                 value: value
-            });
+            })
 
         } catch (err) {
             return await web3.eth.getBalance(from);
@@ -42,9 +40,9 @@ export const PropertiesController = {
             return await Web3Controller.Properties.rentProperty(from, id, rentalEndDate, {
                 from: from, 
                 value: value
-            });
-
+            })
         } catch (err) {
+            console.log(err);
             return await web3.eth.getBalance(from);
         }
     },
@@ -70,7 +68,4 @@ export const PropertiesController = {
             console.log(err);
         }
     }
-
-
-
 }

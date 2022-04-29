@@ -24,7 +24,7 @@ export const CurrenciesController = {
     convertWeiToEur: async(wei) => {
         let ethers = web3.utils.fromWei(wei, 'ether');
         let priceEthEur = await CurrenciesController.getEtherPrice();
-        // console.log(ethers*priceEthEur);
+        
         return ethers*priceEthEur;
     },
 

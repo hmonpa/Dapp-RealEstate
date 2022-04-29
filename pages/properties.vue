@@ -212,15 +212,14 @@
 </template>
 
 <script>
+import { AuthController } from '@/src/controllers/auth';
 import { Web3Controller } from '@/src/controllers/web3';
 import { PropertiesController } from '@/src/controllers/properties';
 import { CurrenciesController } from '@/src/controllers/currencies';
 import { TemplatesController } from '@/src/controllers/templates';
+import { jsPDF } from 'jspdf';
 import axios from 'axios';
 import auth from '@/src/services/auth';
-import * as IPFS from 'ipfs';
-import { jsPDF } from 'jspdf';
-import { saveAs } from 'file-saver';
 
 import swal from 'sweetalert';
 import Swal from 'sweetalert2';
@@ -260,7 +259,6 @@ export default {
     for (let i=0;i<this.properties.length;i++)
     {
       this.owners.push(await this.getPropertyOwner(this.properties[i].owner));
-      console.log(this.properties[i].price);
     }
     
   },
@@ -588,13 +586,13 @@ export default {
           const node  = await IPFS.create({ silent: true });
           let cid     = await node.add(blob);
           this.cidContract = cid.path;
-          console.log("Contract added to: ", cid.path);
           break;
+
         case "save":
           Web3Controller.generatePDF(content, filename);
           const myTimeout = setTimeout(this.autoReload, 10000);
-
           break;
+          
       }
     },
 

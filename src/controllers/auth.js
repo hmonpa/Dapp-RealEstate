@@ -4,13 +4,12 @@ export const AuthController = {
     signIn: async(address, password) => {
         // let gas = web3.eth.getGasPrice();
         
-        let user0 = await Web3Controller.Auth.usersByAddr(address);
-        
         await Web3Controller.Auth.signIn(address, password, {
             from: address
         });
     
-        user0 = await Web3Controller.Auth.usersByAddr(address);
+        const user0 = await Web3Controller.Auth.usersByAddr(address);
+
         return user0.isLoggedIn;
     },
 
@@ -21,13 +20,13 @@ export const AuthController = {
     },
 
     tryToConnect: async(address, password) => {
-       let user = await Web3Controller.Auth.usersByAddr(address);
+       const user = await Web3Controller.Auth.usersByAddr(address);
        
        return user.password == password;
     },
 
     checkExists: async(address) => {
-        let user = await Web3Controller.Auth.usersByAddr(address);
+        const user = await Web3Controller.Auth.usersByAddr(address);
         return (user.email) ? 1 : 0;
     },
 

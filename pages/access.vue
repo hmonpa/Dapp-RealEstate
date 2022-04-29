@@ -58,7 +58,7 @@ export default {
             e.preventDefault();
         });
 
-        const account = await Web3Controller.currentAddr();
+        const account = await Web3Controller.loadEthereum();
 
         // Check if MetaMask is connected with account
         if(!account) {
