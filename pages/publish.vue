@@ -201,7 +201,7 @@ export default {
         e.preventDefault(); 
       });
 
-      const account = await Web3Controller.loadEthereum();
+      const account = await Web3Controller.currentAccount();
       try {
         const owner = this.userLogged.split(",")[4];
         

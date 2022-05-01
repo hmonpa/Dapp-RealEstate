@@ -404,7 +404,7 @@ export default {
 
       }).then(async(result) => {
         if (result.isConfirmed) {
-          let from = await Web3Controller.loadEthereum();
+          let from = await Web3Controller.currentAccount();
           let res = '';
           switch (type) {
             case "buy":
@@ -714,10 +714,12 @@ export default {
     },
 
     // ----------------------- Check if current address is the owner -----------------------
-    isOwner(propOwner)
+
+    async isOwner(propOwner)
     {
-      let currentAddr = window.ethereum.selectedAddress;
-      return (currentAddr) ? propOwner.toLowerCase() == currentAddr.toLowerCase() : false;
+      // Changed, check if it's fails
+      let currentAddr = await Web3Controller.currentAccount();
+      return (currentAddr) ? propOwner.toLowerCase() === currentAddr.toLowerCase() : false;
     },
 
     // ----------------------- Currencies conversions ----------------------- 

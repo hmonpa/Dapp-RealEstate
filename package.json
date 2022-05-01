@@ -20,7 +20,7 @@
   },
   "homepage": "https://github.com/hmonpa/TFG#readme",
   "devDependencies": {
-    "axios": "^0.24.0",
+    "axios": "^0.27.2",
     "jspdf": "^2.5.1",
     "solc": "^0.8.0",
     "truffle-hdwallet-provider": "^1.0.17",

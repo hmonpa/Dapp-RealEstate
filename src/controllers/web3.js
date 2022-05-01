@@ -40,14 +40,9 @@ export const Web3Controller = {
     },
 
     // ----------------- WALLET & ACCOUNT FUNCTIONS -----------------
-    
-    // Return the account connected in MetaMask
-    currentAddr: async() => {
-        return window.ethereum.selectedAddress;
-    },
 
     // Open MetaMask to choose an account (public key)
-    loadEthereum: async() => {
+    currentAccount: async() => {
         if (window.ethereum){
             try {
                 Web3Controller.web3Provider = window.ethereum;
@@ -62,7 +57,7 @@ export const Web3Controller = {
         } 
         else {
             console.log('There is no Ethereum wallet installed. Try installing MetaMask');
-            return 0;
+            return null;
         }
     },
 

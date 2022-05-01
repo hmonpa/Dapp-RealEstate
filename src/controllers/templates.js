@@ -7,6 +7,7 @@ export const TemplatesController = {
         
         let fixTemplate = content.replace(/\s/g, "&nbsp");
         fixTemplate = fixTemplate.replace(/(?<=\w)-(?=\w)/g, "&nbsp");
+        // Logo hardcoded added to the current template
         fixTemplate += '<div><img style="margin: 10px 0px 0px 100px" src="https://ipfs.io/ipfs/QmQNw5BUgkP9YHbsLUW8gnXoHVeqomsv3j8scnjm6YcFBP"></div>';
         
         doc.html(fixTemplate, {

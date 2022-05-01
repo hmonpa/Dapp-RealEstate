@@ -152,11 +152,11 @@ export default {
     },
     async beforeMount(){
         await Web3Controller.init();
-        this.account = await Web3Controller.loadEthereum();
+        this.account = await Web3Controller.currentAccount();
 
         // Checking every second if MetaMask have an account
         var accountInterval = setInterval(async() => {
-            this.account = await Web3Controller.loadEthereum();
+            this.account = await Web3Controller.currentAccount();
             // If userLogged and account changes, force the logout
             if((!this.account && this.userLogged) || (this.userLogged && this.isAccountChanged()))
             {
@@ -176,7 +176,7 @@ export default {
         },
 
         async connectWallet() {
-            this.account = await Web3Controller.loadEthereum();            
+            this.account = await Web3Controller.currentAccount();            
             if (!this.account)
             {
                 Swal.fire({
